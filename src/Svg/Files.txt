@@ -1,0 +1,10 @@
+Point.h
+Point.cpp
+Rgb.h
+Rgb.cpp
+Color.h
+Color.cpp
+Objects.h
+Objects.cpp
+Document.h
+Document.cpp

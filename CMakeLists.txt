@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(TransportDirectory LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_compile_options(-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC)
+
+set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/")
+include_directories(${SOURCE_DIR})
+
+set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
+file(GLOB_RECURSE Source "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.h")
+add_executable(TransportDirectory ${Source})
+
+include(GNUInstallDirs)
+install(TARGETS TransportDirectory
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
