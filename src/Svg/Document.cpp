@@ -1,5 +1,6 @@
 #include "Document.h"
 #include "Objects.h"
+#include "utils.h"
 
 using namespace Svg;
 
@@ -21,8 +22,8 @@ void Document::Render(std::ostream &out)
 
 void Document::RenderHead(std::ostream &out)
 {
-    out << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
-    out << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">";
+    out << EscapeSpecialCharacters("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+    out << EscapeSpecialCharacters("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">");
 }
 
 void Document::RenderObjects(std::ostream &out)

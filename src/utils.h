@@ -43,3 +43,4 @@ const V* GetValuePointer(const std::unordered_map<K, V>& map, const K& key) {
 std::string_view Strip(std::string_view line);
 
 bool IsEqual(double lhs, double rhs, double eps = 0.0001);
+std::string EscapeSpecialCharacters(const std::string& input);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include "Objects.h"
+#include "utils.h"
 
 using namespace Svg;
 
@@ -116,7 +117,7 @@ void Circle::Render(std::ostream& out) const
 
 void Circle::RenderOpenTag(std::ostream &out) const
 {
-    out << "<circle ";
+    out << EscapeSpecialCharacters("<circle ");
 }
 
 void Circle::RenderCenter(std::ostream &out) const
@@ -132,7 +133,7 @@ void Circle::RenderRadius(std::ostream &out) const
 
 void Circle::RenderCloseTag(std::ostream &out) const
 {
-    out << "/>";
+    out << EscapeSpecialCharacters("/>");
 }
 
 Polyline &Polyline::AddPoint(const Point &point)
@@ -181,7 +182,7 @@ void Polyline::Render(std::ostream &out) const
 
 void Polyline::RenderOpenTag(std::ostream &out) const
 {
-    out << "<polyline ";
+    out << EscapeSpecialCharacters("<polyline ");
 }
 
 void Polyline::RenderPoints(std::ostream &out) const
@@ -191,7 +192,7 @@ void Polyline::RenderPoints(std::ostream &out) const
 
 void Polyline::RenderCloseTag(std::ostream &out) const
 {
-    out << "/>";
+    out << EscapeSpecialCharacters("/>");
 }
 
 std::string Polyline::FormPointsStr() const
@@ -287,7 +288,7 @@ void Text::Render(std::ostream &out) const
 
 void Text::RenderOpenTag(std::ostream &out) const
 {
-    out << "<text ";
+    out << EscapeSpecialCharacters("<text ");
 }
 
 void Text::RenderPoint(std::ostream &out) const
@@ -325,5 +326,5 @@ void Text::RenderData(std::ostream &out) const
 
 void Text::RenderCloseTag(std::ostream &out) const
 {
-    out << "</text>";
+    out << EscapeSpecialCharacters("</text>");
 }

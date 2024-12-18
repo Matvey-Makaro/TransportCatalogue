@@ -23,7 +23,7 @@ protected:
     template<typename K, typename V>
     void RenderProperty(std::ostream& out, const K& name, const V& value) const
     {
-        out << name << "=" << "\"" << value << "\" ";
+        out << name << "=" << "\\\"" << value << "\\\" ";
     }
 
     void RenderCommonProperties(std::ostream& out) const;
