@@ -1,8 +1,13 @@
 #include <algorithm>
+#include <functional>
+#include <unordered_map>
 #include "MapVisualizer.h"
 #include "Objects.h"
 
 using namespace Svg;
+
+const std::string MapVisualizer::DefaultFontFamily = "Verdana";
+
 
 namespace
 {
@@ -33,9 +38,11 @@ MapVisualizer::MapVisualizer(
 
 void MapVisualizer::Render(std::ostream &out) const
 {
-    RenderBuses();
-    RenderStopCircles();
-    RenderStopNames();
+    for(const auto& layer : _renderSettins.layers)
+    {
+        auto renderFunc = GetRenderFuncByLayerName(layer);
+        renderFunc(*this);
+    }
     _mapDoc.Render(out);
 }
 
@@ -68,13 +75,25 @@ void MapVisualizer::SetupCoordinateMapper()
     _coordMapper.SetMinLat(minLat->second->position.latitude);
 }
 
-void MapVisualizer::RenderBuses() const
+MapVisualizer::RenderFunc MapVisualizer::GetRenderFuncByLayerName(const std::string &layerName) const
+{
+    static const std::unordered_map<std::string, RenderFunc> layerNameToRenderFunc = {
+        {"bus_lines", &MapVisualizer::RenderBusesLines},
+        {"bus_labels", &MapVisualizer::RenderBusesNames},
+        {"stop_points", &MapVisualizer::RenderStopPoints},
+        {"stop_labels", &MapVisualizer::RenderStopNames}
+    };
+    return layerNameToRenderFunc.at(layerName);
+}
+
+void MapVisualizer::RenderBusesLines() const
 {
     size_t busIndex = 0;
     const std::string defaultStrokeLineCap("round");
     const std::string defaultStrokeLineJoin("round");
-    for(const auto& [_, bus] : _buses)
+    for(auto it = cbegin(_buses); it != cend(_buses); it++, busIndex++)
     {
+        const auto* bus = it->second;
         Polyline busPath;
         for(const auto& stopName : bus->stops)
         {
@@ -84,16 +103,28 @@ void MapVisualizer::RenderBuses() const
             const auto& stop = it->second;
             busPath.AddPoint(_coordMapper.Map(stop->position));
         }
-        busPath.SetStrokeColor(_renderSettins.colorPalette[busIndex % _renderSettins.colorPalette.size()]);
+        busPath.SetStrokeColor(GetBusColorByIndex(busIndex));
         busPath.SetStrokeWidth(_renderSettins.busLineWidth);
         busPath.SetStrokeLineCap(defaultStrokeLineCap);
         busPath.SetStrokeLineJoin(defaultStrokeLineJoin);
-        busIndex++;
         _mapDoc.Add(busPath);
     }
 }
 
-void MapVisualizer::RenderStopCircles() const
+void MapVisualizer::RenderBusesNames() const
+{
+    size_t busIndex = 0;
+    for(auto it = cbegin(_buses); it != cend(_buses); it++, busIndex++)
+    {
+        const auto* bus = it->second;
+        auto [firstStop, lastStop] = bus->GetTerminals();
+        RenderBusName(bus->name, firstStop, GetBusColorByIndex(busIndex));
+        if(firstStop != lastStop)
+            RenderBusName(bus->name, lastStop, GetBusColorByIndex(busIndex));
+    }
+}
+
+void MapVisualizer::RenderStopPoints() const
 {
     const Color defaultStopColor("white");
     for(const auto& [_, stop] : _stops)
@@ -108,7 +139,6 @@ void MapVisualizer::RenderStopCircles() const
 
 void MapVisualizer::RenderStopNames() const
 {
-    const std::string defaultFontFamily = "Verdana";
     const std::string defaultStrokeLineCap("round");
     const std::string defaultStrokeLineJoin("round");
     const Color textColor("black");
@@ -119,7 +149,7 @@ void MapVisualizer::RenderStopNames() const
         substrate.SetPoint(stopPoint)
             .SetOffset(_renderSettins.stopLabelOffset)
             .SetFontSize(_renderSettins.stopLabelFontSize)
-            .SetFontFamily(defaultFontFamily)
+            .SetFontFamily(DefaultFontFamily)
             .SetData(stop->name)
             .SetFillColor(_renderSettins.substrateUnderlayerColor)
             .SetStrokeColor(_renderSettins.substrateUnderlayerColor)
@@ -132,9 +162,48 @@ void MapVisualizer::RenderStopNames() const
         stopName.SetPoint(stopPoint)
             .SetOffset(_renderSettins.stopLabelOffset)
             .SetFontSize(_renderSettins.stopLabelFontSize)
-            .SetFontFamily(defaultFontFamily)
+            .SetFontFamily(DefaultFontFamily)
             .SetData(stop->name)
             .SetFillColor(textColor);
         _mapDoc.Add(stopName);
     }
+}
+
+void MapVisualizer::RenderBusName(const std::string &busName, const std::string &stopName, const Color &busColor) const
+{
+    auto stopIt = _stops.find(stopName);
+    if(stopIt == cend(_stops))
+        return;
+    const auto* stop = stopIt->second;
+    auto coord = _coordMapper.Map(stop->position);
+    const std::string defaultStrokeLineCap("round");
+    const std::string defaultStrokeLineJoin("round");
+    Text substrate;
+    substrate.SetPoint(coord)
+        .SetOffset(_renderSettins.busLabelOffset)
+        .SetFontSize(_renderSettins.busLabelFontSize)
+        .SetFontFamily(DefaultFontFamily)
+        .SetFontWeight("bold")
+        .SetData(busName)
+        .SetFillColor(_renderSettins.substrateUnderlayerColor)
+        .SetStrokeColor(_renderSettins.substrateUnderlayerColor)
+        .SetStrokeWidth(_renderSettins.underlayerWidth)
+        .SetStrokeLineCap(defaultStrokeLineCap)
+        .SetStrokeLineJoin(defaultStrokeLineJoin);
+    _mapDoc.Add(substrate);
+
+    Text busText;
+    busText.SetPoint(coord)
+        .SetOffset(_renderSettins.busLabelOffset)
+        .SetFontSize(_renderSettins.busLabelFontSize)
+        .SetFontFamily(DefaultFontFamily)
+        .SetFontWeight("bold")
+        .SetData(busName)
+        .SetFillColor(busColor);
+    _mapDoc.Add(busText);
+}
+
+const Color &MapVisualizer::GetBusColorByIndex(size_t index) const
+{
+    return _renderSettins.colorPalette[index % _renderSettins.colorPalette.size()];
 }

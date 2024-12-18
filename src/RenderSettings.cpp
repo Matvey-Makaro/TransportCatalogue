@@ -59,6 +59,18 @@ std::vector<Color> ParseColorPaletteFrom(const Json::Node& node)
     return colorPalette;
 }
 
+std::vector<std::string> ParseStringVecFrom(const Json::Node& node)
+{
+    const auto& jsonArr = node.AsArray();
+    std::vector<std::string> stringVec;
+    stringVec.reserve(jsonArr.size());
+    for(const auto& n : jsonArr)
+    {
+        stringVec.push_back(n.AsString());
+    }
+    return stringVec;
+}
+
 }
 
 RenderSettings RenderSettings::ParseFrom(const Json::Dict &attrs)
@@ -73,7 +85,10 @@ RenderSettings RenderSettings::ParseFrom(const Json::Dict &attrs)
         .stopLabelOffset = ParsePointFrom(attrs.at("stop_label_offset")),
         .substrateUnderlayerColor = ParseColorFrom(attrs.at("underlayer_color")),
         .underlayerWidth = attrs.at("underlayer_width").AsDouble(),
-        .colorPalette = ParseColorPaletteFrom(attrs.at("color_palette"))
+        .colorPalette = ParseColorPaletteFrom(attrs.at("color_palette")),
+        .busLabelFontSize = static_cast<decltype(RenderSettings::busLabelFontSize)>(attrs.at("bus_label_font_size").AsInt()),
+        .busLabelOffset = ParsePointFrom(attrs.at("bus_label_offset")),
+        .layers = ParseStringVecFrom(attrs.at("layers")),
     };
     return settings;
 }

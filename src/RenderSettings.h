@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 #include "json.h"
 #include "Svg/Point.h"
 #include "Svg/Color.h"
@@ -18,6 +19,9 @@ struct RenderSettings
     Svg::Color substrateUnderlayerColor;
     double underlayerWidth;
     std::vector<Svg::Color> colorPalette;
+    uint32_t busLabelFontSize;
+    Svg::Point busLabelOffset;
+    std::vector<std::string> layers;
 
     static RenderSettings ParseFrom(const Json::Dict& attrs);
 };

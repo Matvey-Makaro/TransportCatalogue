@@ -7,7 +7,7 @@
 namespace
 {
 
-void Test1()
+void Example1()
 {
     std::string input = R"({
     "routing_settings": {
@@ -20,6 +20,11 @@ void Test1()
         "padding": 50,
         "stop_radius": 5,
         "line_width": 14,
+        "bus_label_font_size": 20,
+        "bus_label_offset": [
+            7,
+            15
+        ],
         "stop_label_font_size": 20,
         "stop_label_offset": [
             7,
@@ -40,6 +45,11 @@ void Test1()
                 0
             ],
             "red"
+        ],
+        "layers": [
+            "bus_lines",
+            "stop_points",
+            "bus_labels"
         ]
     },
     "base_requests": [
@@ -191,7 +201,7 @@ void Test1()
     std::stringstream in(input);
     // std::stringstream out;
     std::fstream out;
-    out.open("out.txt", std::ios_base::out);
+    out.open("Example1.out.txt", std::ios_base::out);
     Program program;
     program.Run(in, out);
 
@@ -203,7 +213,7 @@ void Test1()
 
 }
 
-void Test2()
+void Example2()
 {
     std::string input = R"({
     "stat_requests": [
@@ -213,18 +223,24 @@ void Test2()
         }
     ],
     "render_settings": {
-        "underlayer_width": 3,
+        "bus_label_font_size": 18,
+        "padding": 50,
         "height": 950,
-        "stop_radius": 3,
+        "line_width": 10,
         "underlayer_color": [
             255,
             255,
             255,
             0.85
         ],
-        "width": 1500,
+        "underlayer_width": 3,
         "stop_label_font_size": 13,
-        "padding": 50,
+        "stop_radius": 3,
+        "width": 1500,
+        "bus_label_offset": [
+            7,
+            15
+        ],
         "color_palette": [
             "red",
             "green",
@@ -236,7 +252,12 @@ void Test2()
             7,
             -3
         ],
-        "line_width": 10
+        "layers": [
+            "bus_lines",
+            "bus_labels",
+            "stop_points",
+            "stop_labels"
+        ]
     },
     "base_requests": [
         {
@@ -654,13 +675,13 @@ void Test2()
     std::stringstream in(input);
     // std::stringstream out;
     std::fstream out;
-    out.open("Test2.txt", std::ios_base::out);
+    out.open("Example2.out.txt", std::ios_base::out);
     Program program;
     program.Run(in, out);
 }
 
 void RunComplexTests(const TestRunner& tr)
 {
-    RUN_TEST(tr, Test1);
-    RUN_TEST(tr, Test2);
+    RUN_TEST(tr, Example1);
+    RUN_TEST(tr, Example2);
 }

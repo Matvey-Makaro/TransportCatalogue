@@ -210,7 +210,8 @@ Text::Text() :
     _offset(DefaultOffset),
     _fontSize(DefaultFontSize),
     _fontFamily(),
-    _data()
+    _data(),
+    _fontWeight()
 {}
 
 Text &Text::SetPoint(const Point &point)
@@ -234,6 +235,12 @@ Text &Text::SetFontSize(uint32_t fontSize)
 Text &Text::SetFontFamily(const std::string &fontFamily)
 {
     _fontFamily = fontFamily;
+    return *this;
+}
+
+Text &Text::SetFontWeight(const std::string &fontWeight)
+{
+    _fontWeight = fontWeight;
     return *this;
 }
 
@@ -280,6 +287,7 @@ void Text::Render(std::ostream &out) const
     RenderOffset(out);
     RenderFontSize(out);
     RenderFontFamily(out);
+    RenderFontWeight(out);
     RenderCommonProperties(out);
     RenderClosePropertiesTag(out);
     RenderData(out);
@@ -312,6 +320,12 @@ void Text::RenderFontFamily(std::ostream &out) const
 {
     if(!_fontFamily.empty())
         RenderProperty(out, "font-family", _fontFamily);
+}
+
+void Text::RenderFontWeight(std::ostream &out) const
+{
+    if(_fontWeight && !_fontWeight->empty())
+        RenderProperty(out, "font-weight", *_fontWeight);
 }
 
 void Text::RenderClosePropertiesTag(std::ostream &out) const

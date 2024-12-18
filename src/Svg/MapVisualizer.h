@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <functional>
 #include "CoordinateMapper.h"
 #include "descriptions.h"
 #include "RenderSettings.h"
@@ -20,12 +21,21 @@ public:
 
 private:
     void SetupCoordinateMapper();
-    void RenderBuses() const;
-    void RenderStopCircles() const;
+
+    using RenderFunc = std::function<void(const MapVisualizer&)>;
+    RenderFunc GetRenderFuncByLayerName(const std::string& layerName) const;
+    void RenderBusesLines() const;
+    void RenderBusesNames() const;
+    void RenderStopPoints() const;
     void RenderStopNames() const;
 
+    void RenderBusName(const std::string& busName, const std::string& stopName, const Color& busColor) const;
+
+    const Color& GetBusColorByIndex(size_t index) const;
 
 private:
+    static const std::string DefaultFontFamily;
+
     std::map<std::string, const Descriptions::Stop*> _stops;
     std::map<std::string, const Descriptions::Bus*> _buses;
     RenderSettings _renderSettins;

@@ -24,7 +24,10 @@ namespace Descriptions {
   struct Bus {
     std::string name;
     std::vector<std::string> stops;
+    bool isRoundtrip;
 
+    using Terminals = std::pair<std::string, std::string>;
+    Terminals GetTerminals() const;
     static Bus ParseFrom(const Json::Dict& attrs);
   };
 
