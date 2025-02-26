@@ -3,7 +3,9 @@
 #include <iostream>
 #include <map>
 #include <functional>
-#include "CoordinateMapper.h"
+#include <string_view>
+#include <memory>
+#include "StopsMappers.h"
 #include "descriptions.h"
 #include "RenderSettings.h"
 #include "Document.h"
@@ -20,7 +22,7 @@ public:
     void Render(std::ostream& out) const;
 
 private:
-    void SetupCoordinateMapper();
+    std::map<std::string, Point> MapStops(const std::vector<const Descriptions::Stop*>& stops) const;
 
     using RenderFunc = std::function<void(const MapVisualizer&)>;
     RenderFunc GetRenderFuncByLayerName(const std::string& layerName) const;
@@ -35,11 +37,11 @@ private:
 
 private:
     static const std::string DefaultFontFamily;
-
-    std::map<std::string, const Descriptions::Stop*> _stops;
+    
+    IStopsMapperUnp _stopsMapper;
+    std::map<std::string, Point> _stops;
     std::map<std::string, const Descriptions::Bus*> _buses;
-    RenderSettings _renderSettins;
-    CoordinateMapper _coordMapper;
+    RenderSettings _renderSettings;
     mutable Document _mapDoc;
 };
 
