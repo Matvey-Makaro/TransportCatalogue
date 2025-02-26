@@ -13,6 +13,12 @@ ObjectCommon::ObjectCommon() :
     _strokeLineJoin()
 {}
 
+ObjectCommon &Svg::ObjectCommon::SetPrecision(int precision)
+{
+    _precision = precision;
+    return *this;
+}
+
 ObjectCommon &ObjectCommon::SetFillColor(const Color &fillColor)
 {
     _fillColor = fillColor;
@@ -198,6 +204,7 @@ void Polyline::RenderCloseTag(std::ostream &out) const
 std::string Polyline::FormPointsStr() const
 {
     std::stringstream ss;
+    ss << std::setprecision(_precision);
     for(const auto& p : _points)
     {
         ss << p.x << "," << p.y << ' ';
@@ -342,3 +349,4 @@ void Text::RenderCloseTag(std::ostream &out) const
 {
     out << EscapeSpecialCharacters("</text>");
 }
+

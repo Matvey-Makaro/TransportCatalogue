@@ -1,3 +1,4 @@
+#include <iomanip>
 #include "descriptions.h"
 #include "json.h"
 #include "requests.h"
@@ -22,6 +23,7 @@ void Program::Run(std::istream &in, std::ostream &out)
         RenderSettings::ParseFrom(input_map.at("render_settings").AsMap())
         );
 
+    out << std::fixed << std::setprecision(14);
     Json::PrintValue(
         Requests::ProcessAll(db, input_map.at("stat_requests").AsArray()),
         out

@@ -33,4 +33,27 @@ namespace Svg
         RenderSettings _renderSettings;
         CoordinateMapper _coordMapper;
     };
+
+    class ZipStopMapper : public IStopsMapper
+    {
+    public:
+        ZipStopMapper(const RenderSettings &renderSettings);
+        std::map<std::string, Point> Map(const std::vector<const Descriptions::Stop *> &stops) override;
+
+    private:
+        RenderSettings _renderSettings;
+    };
+
+    // class ZipWithGluing : public IStopsMapper
+    // {
+    // public:
+    //     ZipWithGluing(const RenderSettings& renderSettings, const std::vector<const Descriptions::Bus *>& buses);
+    //     std::map<std::string, Point> Map(const std::vector<const Descriptions::Stop *> &stops) override;
+
+    // private:
+    //     bool IsRouteNeighbors(const Descriptions::Stop* lhs, const Descriptions::Stop* rhs) const;
+
+    // private:
+    //     RenderSettings _renderSettings;
+    // };
 }

@@ -16,7 +16,7 @@ void Example1()
     },
     "render_settings": {
         "width": 1200,
-        "height": 1200,
+        "height": 500,
         "padding": 50,
         "stop_radius": 5,
         "line_width": 14,
@@ -25,7 +25,7 @@ void Example1()
             7,
             15
         ],
-        "stop_label_font_size": 20,
+        "stop_label_font_size": 18,
         "stop_label_offset": [
             7,
             -3
@@ -48,8 +48,9 @@ void Example1()
         ],
         "layers": [
             "bus_lines",
+            "bus_labels",
             "stop_points",
-            "bus_labels"
+            "stop_labels"
         ]
     },
     "base_requests": [
@@ -201,7 +202,7 @@ void Example1()
     std::stringstream in(input);
     // std::stringstream out;
     std::fstream out;
-    out.open("Example1.out.txt", std::ios_base::out);
+    out.open("Example1.svg", std::ios_base::out);
     Program program;
     program.Run(in, out);
 
@@ -675,7 +676,7 @@ void Example2()
     std::stringstream in(input);
     // std::stringstream out;
     std::fstream out;
-    out.open("Example2.out.txt", std::ios_base::out);
+    out.open("Example2.svg", std::ios_base::out);
     Program program;
     program.Run(in, out);
 }

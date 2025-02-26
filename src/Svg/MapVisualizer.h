@@ -22,8 +22,6 @@ public:
     void Render(std::ostream& out) const;
 
 private:
-    std::map<std::string, Point> MapStops(const std::vector<const Descriptions::Stop*>& stops) const;
-
     using RenderFunc = std::function<void(const MapVisualizer&)>;
     RenderFunc GetRenderFuncByLayerName(const std::string& layerName) const;
     void RenderBusesLines() const;
@@ -37,6 +35,7 @@ private:
 
 private:
     static const std::string DefaultFontFamily;
+    static const int Precision = 15;
     
     IStopsMapperUnp _stopsMapper;
     std::map<std::string, Point> _stops;

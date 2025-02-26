@@ -3,6 +3,7 @@
 #include <variant>
 #include <vector>
 #include <optional>
+#include <iomanip>
 #include "Color.h"
 #include "Point.h"
 #include "utils.h"
@@ -12,6 +13,8 @@ namespace Svg
 
 class ObjectCommon
 {
+public:
+    ObjectCommon& SetPrecision(int precision);
 protected:
     ObjectCommon();
 
@@ -25,7 +28,8 @@ protected:
     template<typename K, typename V>
     void RenderProperty(std::ostream& out, const K& name, const V& value) const
     {
-        out << name
+        out << std::setprecision(_precision)
+            << name
             << EscapeSpecialCharacters("=")
             << EscapeSpecialCharacters("\"")
             << value
@@ -36,6 +40,7 @@ protected:
 
 protected:
     static constexpr double DefaultStrokeWidth = 1.0;
+    int _precision = 15;
 
     Color _fillColor;
     Color _strokeColor;

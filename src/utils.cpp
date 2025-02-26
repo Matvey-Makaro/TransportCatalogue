@@ -22,25 +22,25 @@ bool IsEqual(double lhs, double rhs, double eps)
 std::string EscapeSpecialCharacters(const std::string& input)
 {
     // TODO:
-    return input;
-    // static std::unordered_map<char, std::string> escape_map = {
-    //                                                     {'\n', "\\n"},
-    //                                                     {'\t', "\\t"},
-    //                                                     {'\r', "\\r"},
-    //                                                     {'\\', "\\\\"},
-    //                                                     {'"', "\\\""},
-    //                                                     {'\'', "\\\'"} };
-    // std::string escaped_string;
-    // for (char ch : input)
-    // {
-    //     if (escape_map.find(ch) != escape_map.end())
-    //     {
-    //         escaped_string += escape_map[ch];
-    //     }
-    //     else
-    //     {
-    //         escaped_string += ch;
-    //     }
-    // }
-    // return escaped_string;
+    // return input;
+    static std::unordered_map<char, std::string> escape_map = {
+                                                        {'\n', "\\n"},
+                                                        {'\t', "\\t"},
+                                                        {'\r', "\\r"},
+                                                        {'\\', "\\\\"},
+                                                        {'"', "\\\""},
+                                                        {'\'', "\\\'"} };
+    std::string escaped_string;
+    for (char ch : input)
+    {
+        if (escape_map.find(ch) != escape_map.end())
+        {
+            escaped_string += escape_map[ch];
+        }
+        else
+        {
+            escaped_string += ch;
+        }
+    }
+    return escaped_string;
 }

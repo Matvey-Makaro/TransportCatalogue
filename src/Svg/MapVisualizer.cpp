@@ -25,7 +25,7 @@ namespace
 MapVisualizer::MapVisualizer(
     const std::vector<const Descriptions::Stop *> &stops,
     const std::vector<const Descriptions::Bus *> &buses,
-    const RenderSettings &renderSettings) : _stopsMapper(std::make_unique<GeoStopMapper>(renderSettings)),
+    const RenderSettings &renderSettings) : _stopsMapper(std::make_unique<ZipStopMapper>(renderSettings)),
                                            _stops(_stopsMapper->Map(stops)),
                                            _buses(Map(buses)),
                                            _renderSettings(renderSettings),
@@ -36,50 +36,11 @@ void MapVisualizer::Render(std::ostream &out) const
 {
     for (const auto &layer : _renderSettings.layers)
     {
+        out << std::setprecision(Precision);
         auto renderFunc = GetRenderFuncByLayerName(layer);
         renderFunc(*this);
     }
     _mapDoc.Render(out);
-}
-
-std::map<std::string, Point> MapVisualizer::MapStops(const std::vector<const Descriptions::Stop *> &stops) const
-{
-    std::vector<const Descriptions::Stop *> sortedStops(cbegin(stops), cend(stops));
-    std::sort(begin(sortedStops), end(sortedStops), [](const Descriptions::Stop *lhs, const Descriptions::Stop *rhs)
-            { 
-                return lhs->position.longitude < rhs->position.longitude; 
-            });
-    std::map<std::string, Point> stopsPositions;
-    for(const auto* s : stops)
-    {
-        stopsPositions.insert({s->name, Point{}});
-    }
-
-
-    {
-        double xCurr = _renderSettings.padding;
-        double xStep = stopsPositions.size() > 1 ? (_renderSettings.maxMapWidth - 2 * _renderSettings.padding) / (stopsPositions.size() - 1) :
-                                                    0.0;
-        for(const auto* s : sortedStops)
-        {
-            auto& pos = stopsPositions[s->name];
-            pos.x = xCurr;
-            xCurr += xStep;
-        }
-    }
-    
-    {
-        double yCurr = _renderSettings.padding;
-        double yStep = stopsPositions.size() > 1 ? (_renderSettings.maxMapWidth - 2 * _renderSettings.padding) / (stopsPositions.size() - 1) :
-                                                    0.0;
-        for(const auto* s : sortedStops)
-        {
-            auto& pos = stopsPositions[s->name];
-            pos.y = yCurr;
-            yCurr += yStep;
-        }
-    }
-    return stopsPositions;
 }
 
 MapVisualizer::RenderFunc MapVisualizer::GetRenderFuncByLayerName(const std::string &layerName) const
@@ -101,6 +62,7 @@ void MapVisualizer::RenderBusesLines() const
     {
         const auto *bus = it->second;
         Polyline busPath;
+        busPath.SetPrecision(Precision);
         for (const auto &stopName : bus->stops)
         {
             auto it = _stops.find(stopName);
@@ -136,6 +98,7 @@ void MapVisualizer::RenderStopPoints() const
     for (const auto &[_, pos] : _stops)
     {
         Circle busCirle;
+        busCirle.SetPrecision(Precision);
         busCirle.SetCenter(pos);
         busCirle.SetRadius(_renderSettings.stopRadius);
         busCirle.SetFillColor(defaultStopColor);
@@ -151,6 +114,7 @@ void MapVisualizer::RenderStopNames() const
     for (const auto &[stopName, stopPoint] : _stops)
     {
         Text substrate;
+        substrate.SetPrecision(Precision);
         substrate.SetPoint(stopPoint)
             .SetOffset(_renderSettings.stopLabelOffset)
             .SetFontSize(_renderSettings.stopLabelFontSize)
@@ -164,6 +128,7 @@ void MapVisualizer::RenderStopNames() const
         _mapDoc.Add(substrate);
 
         Text stopNameText;
+        stopNameText.SetPrecision(Precision);
         stopNameText.SetPoint(stopPoint)
             .SetOffset(_renderSettings.stopLabelOffset)
             .SetFontSize(_renderSettings.stopLabelFontSize)
@@ -183,6 +148,7 @@ void MapVisualizer::RenderBusName(const std::string &busName, const std::string 
     const std::string defaultStrokeLineCap("round");
     const std::string defaultStrokeLineJoin("round");
     Text substrate;
+    substrate.SetPrecision(Precision);
     substrate.SetPoint(coord)
         .SetOffset(_renderSettings.busLabelOffset)
         .SetFontSize(_renderSettings.busLabelFontSize)
@@ -197,6 +163,7 @@ void MapVisualizer::RenderBusName(const std::string &busName, const std::string 
     _mapDoc.Add(substrate);
 
     Text busText;
+    busText.SetPrecision(Precision);
     busText.SetPoint(coord)
         .SetOffset(_renderSettings.busLabelOffset)
         .SetFontSize(_renderSettings.busLabelFontSize)

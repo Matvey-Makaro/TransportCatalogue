@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Program.h"
 
-#define TestMode
+// #define TestMode
 #ifdef TestMode
 #include "TestModule/TestModule.h"
 #endif
