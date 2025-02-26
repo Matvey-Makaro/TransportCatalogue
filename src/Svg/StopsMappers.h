@@ -44,16 +44,27 @@ namespace Svg
         RenderSettings _renderSettings;
     };
 
-    // class ZipWithGluing : public IStopsMapper
-    // {
-    // public:
-    //     ZipWithGluing(const RenderSettings& renderSettings, const std::vector<const Descriptions::Bus *>& buses);
-    //     std::map<std::string, Point> Map(const std::vector<const Descriptions::Stop *> &stops) override;
+    class ZipWithGluingStopMapper : public IStopsMapper
+    {
+    public:
+        ZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses);
+        std::map<std::string, Point> Map(const std::vector<const Descriptions::Stop *> &stops) override;
 
-    // private:
-    //     bool IsRouteNeighbors(const Descriptions::Stop* lhs, const Descriptions::Stop* rhs) const;
+    private:
+        void FillStopsPositions(const std::vector<const Descriptions::Stop *> &stops);
+        void FillSortedStops(const std::vector<const Descriptions::Stop *> &stops);
+        void SortStopsByLongitude();
+        void SortStopsByLatitude();
+        std::vector<std::vector<const Descriptions::Stop *>> CalculateIndexToStops();
+        void CalculateX(const std::vector<std::vector<const Descriptions::Stop *>>& indexToStops);
+        void CalculateY(const std::vector<std::vector<const Descriptions::Stop *>>& indexToStops);
+        bool IsRouteNeighbors(const Descriptions::Stop *lhs, const Descriptions::Stop *rhs) const;
+        void ClearCache();
 
-    // private:
-    //     RenderSettings _renderSettings;
-    // };
+    private:
+        RenderSettings _renderSettings;
+        const std::vector<const Descriptions::Bus *> &_buses;
+        std::map<std::string, Point> _stopsPositions;
+        std::vector<const Descriptions::Stop *> _sortedStops;
+    };
 }

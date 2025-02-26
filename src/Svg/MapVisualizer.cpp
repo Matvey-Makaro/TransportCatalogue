@@ -25,7 +25,7 @@ namespace
 MapVisualizer::MapVisualizer(
     const std::vector<const Descriptions::Stop *> &stops,
     const std::vector<const Descriptions::Bus *> &buses,
-    const RenderSettings &renderSettings) : _stopsMapper(std::make_unique<ZipStopMapper>(renderSettings)),
+    const RenderSettings &renderSettings) : _stopsMapper(std::make_unique<ZipWithGluingStopMapper>(renderSettings, buses)),
                                            _stops(_stopsMapper->Map(stops)),
                                            _buses(Map(buses)),
                                            _renderSettings(renderSettings),

@@ -7,8 +7,6 @@
 
 using namespace std;
 
-// TODO: Turn of
-// #define OnlyMap
 
 namespace Requests
 {
