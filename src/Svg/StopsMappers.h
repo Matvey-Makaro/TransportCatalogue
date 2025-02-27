@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <unordered_set>
 #include "descriptions.h"
 #include "Point.h"
 #include "RenderSettings.h"
@@ -56,8 +57,8 @@ namespace Svg
         void SortStopsByLongitude();
         void SortStopsByLatitude();
         std::vector<std::vector<const Descriptions::Stop *>> CalculateIndexToStops();
-        void CalculateX(const std::vector<std::vector<const Descriptions::Stop *>>& indexToStops);
-        void CalculateY(const std::vector<std::vector<const Descriptions::Stop *>>& indexToStops);
+        void CalculateX(const std::vector<std::vector<const Descriptions::Stop *>> &indexToStops);
+        void CalculateY(const std::vector<std::vector<const Descriptions::Stop *>> &indexToStops);
         bool IsRouteNeighbors(const Descriptions::Stop *lhs, const Descriptions::Stop *rhs) const;
         void ClearCache();
 
@@ -66,5 +67,24 @@ namespace Svg
         const std::vector<const Descriptions::Bus *> &_buses;
         std::map<std::string, Point> _stopsPositions;
         std::vector<const Descriptions::Stop *> _sortedStops;
+    };
+
+    class InterpolationZipWithGluingStopMapper : public IStopsMapper
+    {
+    public:
+        InterpolationZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses);
+        std::map<std::string, Point> Map(const std::vector<const Descriptions::Stop *> &stops) override;
+
+    private:
+        void FillStops(const std::vector<const Descriptions::Stop *> &stops);
+        std::unordered_set<std::string> CalculatePivotStops();
+        void RecalculateNonPivotStopsPosition(const std::unordered_set<std::string>& pivotStops);
+        std::map<std::string, Point> ZipWithGluing();
+        void ClearCache();
+        
+    private:
+        RenderSettings _renderSettings;
+        const std::vector<const Descriptions::Bus *> &_buses;
+        std::unordered_map<std::string, Descriptions::Stop> _stops;
     };
 }

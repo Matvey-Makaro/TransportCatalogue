@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
 #include "StopsMappers.h"
 
 using namespace Svg;
@@ -86,12 +88,12 @@ std::map<std::string, Point> Svg::ZipStopMapper::Map(const std::vector<const Des
     return stopsPositions;
 }
 
-Svg::ZipWithGluingStopMapper::ZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses) :
-    _renderSettings(renderSettings),
-    _buses(buses),
-    _stopsPositions(),
-    _sortedStops()
-{}
+Svg::ZipWithGluingStopMapper::ZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses) : _renderSettings(renderSettings),
+                                                                                                                                                   _buses(buses),
+                                                                                                                                                   _stopsPositions(),
+                                                                                                                                                   _sortedStops()
+{
+}
 
 std::map<std::string, Point> Svg::ZipWithGluingStopMapper::Map(const std::vector<const Descriptions::Stop *> &stops)
 {
@@ -157,11 +159,11 @@ std::vector<std::vector<const Descriptions::Stop *>> Svg::ZipWithGluingStopMappe
     return indexToStops;
 }
 
-void Svg::ZipWithGluingStopMapper::CalculateX(const std::vector<std::vector<const Descriptions::Stop*>>& indexToStops)
+void Svg::ZipWithGluingStopMapper::CalculateX(const std::vector<std::vector<const Descriptions::Stop *>> &indexToStops)
 {
     double xCurr = _renderSettings.padding;
     double xStep = indexToStops.size() > 1 ? (_renderSettings.maxMapWidth - 2 * _renderSettings.padding) / (indexToStops.size() - 1) : 0.0;
-    for (const auto& stops : indexToStops)
+    for (const auto &stops : indexToStops)
     {
         for (const auto *s : stops)
         {
@@ -184,18 +186,18 @@ void Svg::ZipWithGluingStopMapper::CalculateY(const std::vector<std::vector<cons
             pos.y = yCurr;
         }
         yCurr -= yStep;
-    }    
+    }
 }
 
 bool Svg::ZipWithGluingStopMapper::IsRouteNeighbors(const Descriptions::Stop *lhs, const Descriptions::Stop *rhs) const
 {
-    for(const auto* bus : _buses)
+    for (const auto *bus : _buses)
     {
-        for(int i = 0; i < bus->stops.size() - 1; i++)
+        for (int i = 0; i < bus->stops.size() - 1; i++)
         {
-            const auto& stopName = bus->stops[i];
-            const auto& nextStopName = bus->stops[i + 1];
-            if((lhs->name == stopName && rhs->name == nextStopName) ||
+            const auto &stopName = bus->stops[i];
+            const auto &nextStopName = bus->stops[i + 1];
+            if ((lhs->name == stopName && rhs->name == nextStopName) ||
                 lhs->name == nextStopName && rhs->name == stopName)
             {
                 return true;
@@ -217,4 +219,113 @@ void Svg::ZipWithGluingStopMapper::FillStopsPositions(const std::vector<const De
     {
         _stopsPositions.insert({s->name, Point{}});
     }
+}
+
+Svg::InterpolationZipWithGluingStopMapper::InterpolationZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses) : _renderSettings(renderSettings), _buses(buses)
+{
+}
+
+std::map<std::string, Point> Svg::InterpolationZipWithGluingStopMapper::Map(const std::vector<const Descriptions::Stop *> &stops)
+{
+    FillStops(stops);
+    auto pivotStops = CalculatePivotStops();
+    RecalculateNonPivotStopsPosition(pivotStops);
+    auto mappedStops = ZipWithGluing();
+    ClearCache();
+    return mappedStops;
+}
+
+void Svg::InterpolationZipWithGluingStopMapper::FillStops(const std::vector<const Descriptions::Stop *> &stops)
+{
+    _stops.reserve(stops.size());
+    for (const auto *s : stops)
+    {
+        _stops.insert({s->name, *s});
+    }
+}
+
+std::unordered_set<std::string> Svg::InterpolationZipWithGluingStopMapper::CalculatePivotStops()
+{
+    std::unordered_set<std::string> pivotStops;
+    for (const auto *bus : _buses)
+    {
+        auto terminals = bus->GetTerminals();
+        pivotStops.insert(std::move(terminals.first));
+        pivotStops.insert(std::move(terminals.second));
+    }
+
+    std::unordered_map<std::string, size_t> nameToEntriesCount;
+    for (const auto *bus : _buses)
+    {
+        std::unordered_set<std::string> processedStops;
+        for (const auto &stopName : bus->stops)
+        {
+            if(nameToEntriesCount.count(stopName) && !processedStops.count(stopName))
+            {
+                pivotStops.insert(stopName);
+                continue;
+            }
+            nameToEntriesCount[stopName] += 1;
+            processedStops.insert(stopName);
+        }
+    }
+
+    constexpr size_t minPivotStopEntriesCount = 3;
+    for (const auto &[stopName, entriesCount] : nameToEntriesCount)
+    {
+        if (entriesCount >= minPivotStopEntriesCount)
+        {
+            pivotStops.insert(stopName);
+        }
+    }
+    return pivotStops;
+}
+
+void Svg::InterpolationZipWithGluingStopMapper::RecalculateNonPivotStopsPosition(const std::unordered_set<std::string> &pivotStops)
+{
+    for (const auto *bus : _buses)
+    {
+        size_t startIndex = 0;
+        // First stop is always pivot
+        const auto &stopNames = bus->stops;
+        for (size_t currIndex = 1; currIndex < stopNames.size(); currIndex++)
+        {
+            if (pivotStops.count(stopNames[currIndex]))
+            {
+                auto &startStop = _stops[stopNames[startIndex]];
+                auto &finishStop = _stops[stopNames[currIndex]];
+                double lonStep = (finishStop.position.longitude - startStop.position.longitude) / (currIndex - startIndex);
+                double latStep = (finishStop.position.latitude - startStop.position.latitude) / (currIndex - startIndex);
+                double lonCurr = startStop.position.longitude + lonStep;
+                double latCurr = startStop.position.latitude + latStep;
+
+                for (size_t k = startIndex + 1; k < currIndex; k++)
+                {
+                    auto &stop = _stops[stopNames[k]];
+                    stop.position.longitude = lonCurr;
+                    stop.position.latitude = latCurr;
+                    lonCurr += lonStep;
+                    latCurr += latStep;
+                }
+                startIndex = currIndex;
+            }
+        }
+    }
+}
+
+std::map<std::string, Point> Svg::InterpolationZipWithGluingStopMapper::ZipWithGluing()
+{
+    std::vector<const Descriptions::Stop *> stopsWithNewPositions;
+    stopsWithNewPositions.reserve(_stops.size());
+    for (const auto &[_, stop] : _stops)
+    {
+        stopsWithNewPositions.emplace_back(&stop);
+    }
+    ZipWithGluingStopMapper zipWithGluingStopMapper(_renderSettings, _buses);
+    return zipWithGluingStopMapper.Map(stopsWithNewPositions);
+}
+
+void Svg::InterpolationZipWithGluingStopMapper::ClearCache()
+{
+    _stops = {};
 }
