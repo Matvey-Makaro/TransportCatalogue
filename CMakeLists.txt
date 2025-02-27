@@ -7,6 +7,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC)
 
+option(TestMode "Enable test mode" OFF)
+set(TestMode ON)
+if(TestMode)
+    add_definitions(-DRunTests)
+    add_definitions(-DOnlyMap)
+    add_definitions(-DNoEscapeNeeded)    
+    set(EscapeNeeded OFF)
+endif()
+
+
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/")
 include_directories(${SOURCE_DIR})
 

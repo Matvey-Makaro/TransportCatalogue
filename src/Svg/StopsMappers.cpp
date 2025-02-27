@@ -260,7 +260,7 @@ std::unordered_set<std::string> Svg::InterpolationZipWithGluingStopMapper::Calcu
         std::unordered_set<std::string> processedStops;
         for (const auto &stopName : bus->stops)
         {
-            if(nameToEntriesCount.count(stopName) && !processedStops.count(stopName))
+            if (nameToEntriesCount.count(stopName) && !processedStops.count(stopName))
             {
                 pivotStops.insert(stopName);
                 continue;
@@ -321,11 +321,42 @@ std::map<std::string, Point> Svg::InterpolationZipWithGluingStopMapper::ZipWithG
     {
         stopsWithNewPositions.emplace_back(&stop);
     }
-    ZipWithGluingStopMapper zipWithGluingStopMapper(_renderSettings, _buses);
+    ImprovedZipWithGluingStopMapper zipWithGluingStopMapper(_renderSettings, _buses);
     return zipWithGluingStopMapper.Map(stopsWithNewPositions);
 }
 
 void Svg::InterpolationZipWithGluingStopMapper::ClearCache()
 {
     _stops = {};
+}
+
+std::vector<std::vector<const Descriptions::Stop *>> Svg::ImprovedZipWithGluingStopMapper::CalculateIndexToStops()
+{
+    std::vector<std::vector<const Descriptions::Stop *>> indexToStops;
+    indexToStops.emplace_back();
+    indexToStops.front().push_back(_sortedStops.front());
+    for (size_t sortedStopsIndex = 1; sortedStopsIndex < _sortedStops.size(); sortedStopsIndex++)
+    {
+        size_t currStopIndex = 0;
+        bool isCurrStopIndexCalculated = false;
+        for (int i = indexToStops.size() - 1; i >= 0 && !isCurrStopIndexCalculated; i--)
+        {
+            for (const auto *s : indexToStops[i])
+            {
+                if (IsRouteNeighbors(_sortedStops[sortedStopsIndex], s))
+                {
+                    currStopIndex = i + 1;
+                    isCurrStopIndexCalculated = true;
+                    break;
+                }
+            }
+        }
+
+        if (currStopIndex == indexToStops.size())
+        {
+            indexToStops.emplace_back();
+        }
+        indexToStops[currStopIndex].push_back(_sortedStops[sortedStopsIndex]);
+    }
+    return indexToStops;
 }

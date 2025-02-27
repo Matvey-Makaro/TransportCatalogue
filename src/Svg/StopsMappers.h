@@ -51,24 +51,34 @@ namespace Svg
         ZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses);
         std::map<std::string, Point> Map(const std::vector<const Descriptions::Stop *> &stops) override;
 
-    private:
+    protected:
         void FillStopsPositions(const std::vector<const Descriptions::Stop *> &stops);
         void FillSortedStops(const std::vector<const Descriptions::Stop *> &stops);
         void SortStopsByLongitude();
         void SortStopsByLatitude();
-        std::vector<std::vector<const Descriptions::Stop *>> CalculateIndexToStops();
+        virtual std::vector<std::vector<const Descriptions::Stop *>> CalculateIndexToStops();
         void CalculateX(const std::vector<std::vector<const Descriptions::Stop *>> &indexToStops);
         void CalculateY(const std::vector<std::vector<const Descriptions::Stop *>> &indexToStops);
         bool IsRouteNeighbors(const Descriptions::Stop *lhs, const Descriptions::Stop *rhs) const;
         void ClearCache();
 
-    private:
+    protected:
         RenderSettings _renderSettings;
         const std::vector<const Descriptions::Bus *> &_buses;
         std::map<std::string, Point> _stopsPositions;
         std::vector<const Descriptions::Stop *> _sortedStops;
     };
 
+    class ImprovedZipWithGluingStopMapper : public ZipWithGluingStopMapper
+    {
+    public:
+        using ZipWithGluingStopMapper::ZipWithGluingStopMapper;
+
+    protected:
+        std::vector<std::vector<const Descriptions::Stop *>> CalculateIndexToStops() override;
+    };
+
+    
     class InterpolationZipWithGluingStopMapper : public IStopsMapper
     {
     public:
