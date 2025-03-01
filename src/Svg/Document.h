@@ -12,6 +12,11 @@ class Document
 {
 public:
     Document();
+    Document(const Document& other) = default;
+    Document(Document&& other) = default;
+
+    Document& operator=(const Document& other) = default;
+    Document& operator=(Document&& other) = default;
 
     void Add(Object obj);
     void Render(std::ostream& out);

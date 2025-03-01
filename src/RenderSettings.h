@@ -22,6 +22,7 @@ struct RenderSettings
     uint32_t busLabelFontSize;
     Svg::Point busLabelOffset;
     std::vector<std::string> layers;
+    double outerMargin;
 
     static RenderSettings ParseFrom(const Json::Dict& attrs);
 };

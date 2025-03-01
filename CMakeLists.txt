@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(TestMode "Enable test mode" OFF)
-set(TestMode ON)
+# set(TestMode ON)
 if(TestMode)
     add_definitions(-DRunTests)
     add_definitions(-DOnlyMap)

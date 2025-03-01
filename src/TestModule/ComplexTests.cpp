@@ -18,6 +18,7 @@ void Example1()
         "width": 1200,
         "height": 500,
         "padding": 50,
+        "outer_margin": 150,
         "stop_radius": 5,
         "line_width": 14,
         "bus_label_font_size": 20,
@@ -182,18 +183,18 @@ void Example1()
     ],
     "stat_requests": [
         {
-            "id": 826874078,
+            "id": 83786973,
             "type": "Bus",
             "name": "14"
         },
         {
-            "id": 1086967114,
+            "id": 133160474,
             "type": "Route",
             "from": "Морской вокзал",
             "to": "Параллельная улица"
         },
         {
-            "id": 1218663236,
+            "id": 1639812454,
             "type": "Map"
         }
     ]
@@ -219,6 +220,18 @@ void Example2()
     std::string input = R"({
     "stat_requests": [
         {
+            "from": "Улица Лизы Чайкиной",
+            "to": "Краево-Греческая улица",
+            "type": "Route",
+            "id": 822710686
+        },
+        {
+            "from": "Пансионат Нева",
+            "to": "Мацестинская долина",
+            "type": "Route",
+            "id": 299735397
+        },
+        {
             "type": "Map",
             "id": 1821171961
         }
@@ -237,6 +250,7 @@ void Example2()
         "underlayer_width": 3,
         "stop_label_font_size": 13,
         "stop_radius": 3,
+        "outer_margin": 150,
         "width": 1500,
         "bus_label_offset": [
             7,
