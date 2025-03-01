@@ -5,8 +5,6 @@ project(TransportDirectory LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC)
-
 option(TestMode "Enable test mode" OFF)
 set(TestMode ON)
 if(TestMode)
