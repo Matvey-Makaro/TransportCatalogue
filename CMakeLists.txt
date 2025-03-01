@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(TransportDirectory LANGUAGES CXX)
+project(TransportCatalogue LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,10 +20,10 @@ include_directories(${SOURCE_DIR})
 
 set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 file(GLOB_RECURSE Source "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.h")
-add_executable(TransportDirectory ${Source})
+add_executable(TransportCatalogue ${Source})
 
 include(GNUInstallDirs)
-install(TARGETS TransportDirectory
+install(TARGETS TransportCatalogue
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
