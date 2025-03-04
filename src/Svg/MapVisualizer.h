@@ -14,10 +14,22 @@
 #include "Document.h"
 #include "transport_router.h"
 
+namespace Descriptions
+{
+    class Bus;
+}
+
 namespace Svg
 {
     class MapVisualizer
     {
+        struct RouteItem
+        {
+            const Descriptions::Bus* bus;
+            std::vector<std::string> stopNames;
+        };
+        using Route = std::vector<RouteItem>;
+
     public:
         MapVisualizer(const std::vector<const Descriptions::Stop*>& stops,
             const std::vector<const Descriptions::Bus*>& buses,
@@ -35,21 +47,22 @@ namespace Svg
         void RenderAllStopPoints() const;
         void RenderAllStopNames() const;
 
-        void RenderRouteBusesLines(Document& doc, const TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const;
+        Route MapRoute(const TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const;
+        RouteItem MapRouteItem(const TransportRouter::RouteInfo::BusItem* busItem,
+            std::string_view firstStopName,
+            std::string_view lastStopName) const;
 
-        
         void RenderTranslucentRect(Document& doc) const;
-        void RenderBusName(const std::string& busName, const std::string& stopName, const Color& busColor) const;
+        void RenderRouteBusesLines(Document& doc, const Route& route) const;
+        void RenderRouteBusesNames(Document& doc, const Route& route) const;
+
+
+        void RenderBusName(Document& doc, const std::string& busName, const std::string& stopName, const Color& busColor) const;
 
 
         void CalculateBusColors();
         const Color& GetBusColor(const Descriptions::Bus* bus) const;
 
-        void RenderBusLine(Document& doc,
-            const TransportRouter::RouteInfo::BusItem* busItem,
-            std::string_view firstStopName,
-            std::string_view lastStopName) const;
-        
         template<typename It>
         void RenderBusLine(Document& doc,
             const Descriptions::Bus* bus,
@@ -84,10 +97,9 @@ namespace Svg
         // TODO: Переделать на string_view из самих buses
         std::map<std::string, const Descriptions::Bus*> _buses;
         RenderSettings _renderSettings;
-        // TODO: Оптимизация, сделать ленивую инициализацию на всю карту, а дальше по за просу на Route, дополнять только Route
         mutable Document _mapDoc;
         std::unordered_map<std::string_view, Color> _busNameToColor;
     };
-    
+
 }
 
