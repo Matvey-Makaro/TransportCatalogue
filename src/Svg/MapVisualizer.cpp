@@ -46,13 +46,22 @@ void MapVisualizer::Render(std::ostream& out) const
 void Svg::MapVisualizer::RenderRoute(std::ostream& out, const TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const
 {
     RenderWholeMapIfNeeded();
-    // TODO: Сделать Render согласно очередности слоев в settings
     Document routeDoc = _mapDoc;
     RenderTranslucentRect(routeDoc);
     auto route = MapRoute(routeInfo, finishStopName);
-    RenderRouteBusesLines(routeDoc, route);
-    RenderRouteBusesNames(routeDoc, route);
 
+    using RenderRouteLayerFunc = void (MapVisualizer::*)(Document&, const Route&) const;
+    static const std::unordered_map<std::string, RenderRouteLayerFunc> layerNameToFunc = {
+        {"bus_lines", &MapVisualizer::RenderRouteBusesLines},
+        {"bus_labels", &MapVisualizer::RenderRouteBusesNames},
+        {"stop_points", &MapVisualizer::RenderRouteStopPoints},
+        {"stop_labels", &MapVisualizer::RenderRouteStopNames}
+    };
+    for(const auto& layer: _renderSettings.layers)
+    {
+        RenderRouteLayerFunc renderFunc = layerNameToFunc.at(layer);
+        (this->*renderFunc)(routeDoc, route);
+    }
     routeDoc.Render(out);
 }
 
@@ -100,15 +109,9 @@ void MapVisualizer::RenderAllBusesNames() const
 
 void MapVisualizer::RenderAllStopPoints() const
 {
-    static const Color defaultStopColor("white");
     for (const auto& [_, pos] : _stops)
     {
-        Circle busCirle;
-        busCirle.SetPrecision(Precision);
-        busCirle.SetCenter(pos);
-        busCirle.SetRadius(_renderSettings.stopRadius);
-        busCirle.SetFillColor(defaultStopColor);
-        _mapDoc.Add(busCirle);
+        RenderStopPoint(_mapDoc, pos);
     }
 }
 
@@ -117,29 +120,7 @@ void MapVisualizer::RenderAllStopNames() const
     static const Color textColor("black");
     for (const auto& [stopName, stopPoint] : _stops)
     {
-        Text substrate;
-        substrate.SetPrecision(Precision);
-        substrate.SetPoint(stopPoint)
-            .SetOffset(_renderSettings.stopLabelOffset)
-            .SetFontSize(_renderSettings.stopLabelFontSize)
-            .SetFontFamily(DefaultFontFamily)
-            .SetData(stopName)
-            .SetFillColor(_renderSettings.substrateUnderlayerColor)
-            .SetStrokeColor(_renderSettings.substrateUnderlayerColor)
-            .SetStrokeWidth(_renderSettings.underlayerWidth)
-            .SetStrokeLineCap(DefaultStrokeLineCap)
-            .SetStrokeLineJoin(DefaultStrokeLineJoin);
-        _mapDoc.Add(substrate);
-
-        Text stopNameText;
-        stopNameText.SetPrecision(Precision);
-        stopNameText.SetPoint(stopPoint)
-            .SetOffset(_renderSettings.stopLabelOffset)
-            .SetFontSize(_renderSettings.stopLabelFontSize)
-            .SetFontFamily(DefaultFontFamily)
-            .SetData(stopName)
-            .SetFillColor(textColor);
-        _mapDoc.Add(stopNameText);
+        RenderStopName(_mapDoc, stopName, stopPoint);
     }
 }
 
@@ -203,7 +184,6 @@ MapVisualizer::RouteItem Svg::MapVisualizer::MapRouteItem(const TransportRouter:
     }
     assert(firstStopIt != cend(bus->stops));
     auto lastStopIt = std::next(firstStopIt, busItem->span_count + 1);
-    std::cerr << "Svg::MapVisualizer::MapRouteItem() " << "bus name " << bus->name << " stopCount: " << std::distance(firstStopIt, lastStopIt) << std::endl;
     return RouteItem{ .bus = bus, .stopNames = std::vector<std::string>(firstStopIt, lastStopIt) };
 }
 
@@ -243,6 +223,31 @@ void Svg::MapVisualizer::RenderRouteBusesNames(Document& doc, const Route& route
     }
 }
 
+void Svg::MapVisualizer::RenderRouteStopPoints(Document& doc, const Route& route) const
+{
+    for (const auto& routeItem : route)
+    {
+        for (const auto& stop : routeItem.stopNames)
+        {
+            RenderStopPoint(doc, _stops.at(stop));
+        }
+    }
+}
+
+void Svg::MapVisualizer::RenderRouteStopNames(Document& doc, const Route& route) const
+{
+    for(const auto& routeItem : route)
+    {
+        const auto& stopName = routeItem.stopNames.front();
+        RenderStopName(doc, stopName, _stops.at(stopName));
+    }
+    if(route.back().stopNames.size() > 1)
+    {
+        const auto& lastStop = route.back().stopNames.back();
+        RenderStopName(doc, lastStop, _stops.at(lastStop));
+    }
+}
+
 void MapVisualizer::RenderBusName(Document& doc, const std::string& busName, const std::string& stopName, const Color& busColor) const
 {
     auto stopIt = _stops.find(stopName);
@@ -274,6 +279,45 @@ void MapVisualizer::RenderBusName(Document& doc, const std::string& busName, con
         .SetData(busName)
         .SetFillColor(busColor);
     doc.Add(busText);
+}
+
+void Svg::MapVisualizer::RenderStopPoint(Document& doc, const Point& pos) const
+{
+    static const Color defaultStopColor("white");
+    Circle busCirle;
+    busCirle.SetPrecision(Precision);
+    busCirle.SetCenter(pos);
+    busCirle.SetRadius(_renderSettings.stopRadius);
+    busCirle.SetFillColor(defaultStopColor);
+    doc.Add(busCirle);
+}
+
+void Svg::MapVisualizer::RenderStopName(Document& doc, const std::string& stopName, const Point& stopPoint) const
+{
+    static const Color textColor("black");
+    Text substrate;
+    substrate.SetPrecision(Precision);
+    substrate.SetPoint(stopPoint)
+        .SetOffset(_renderSettings.stopLabelOffset)
+        .SetFontSize(_renderSettings.stopLabelFontSize)
+        .SetFontFamily(DefaultFontFamily)
+        .SetData(stopName)
+        .SetFillColor(_renderSettings.substrateUnderlayerColor)
+        .SetStrokeColor(_renderSettings.substrateUnderlayerColor)
+        .SetStrokeWidth(_renderSettings.underlayerWidth)
+        .SetStrokeLineCap(DefaultStrokeLineCap)
+        .SetStrokeLineJoin(DefaultStrokeLineJoin);
+    doc.Add(substrate);
+
+    Text stopNameText;
+    stopNameText.SetPrecision(Precision);
+    stopNameText.SetPoint(stopPoint)
+        .SetOffset(_renderSettings.stopLabelOffset)
+        .SetFontSize(_renderSettings.stopLabelFontSize)
+        .SetFontFamily(DefaultFontFamily)
+        .SetData(stopName)
+        .SetFillColor(textColor);
+    doc.Add(stopNameText);
 }
 
 void Svg::MapVisualizer::CalculateBusColors()

@@ -55,9 +55,13 @@ namespace Svg
         void RenderTranslucentRect(Document& doc) const;
         void RenderRouteBusesLines(Document& doc, const Route& route) const;
         void RenderRouteBusesNames(Document& doc, const Route& route) const;
+        void RenderRouteStopPoints(Document& doc, const Route& route) const;
+        void RenderRouteStopNames(Document& doc, const Route& route) const;
 
 
         void RenderBusName(Document& doc, const std::string& busName, const std::string& stopName, const Color& busColor) const;
+        void RenderStopPoint(Document& doc, const Point& pos) const;
+        void RenderStopName(Document& doc, const std::string& stopName, const Point& stopPoint) const;
 
 
         void CalculateBusColors();
