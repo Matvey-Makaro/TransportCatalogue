@@ -21,6 +21,8 @@ public:
     void Add(Object obj);
     void Render(std::ostream& out);
 
+    bool Empty() const;
+
 private:
     void RenderHead(std::ostream& out);
     void RenderObjects(std::ostream& out);

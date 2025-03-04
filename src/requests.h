@@ -7,32 +7,56 @@
 #include <variant>
 
 
+namespace Svg
+{
+  class MapVisualizer;
+}
+
 namespace Requests {
-  struct Stop {
-    std::string name;
-
+  class Stop {
+  public:
+    Stop(std::string stopName);
     Json::Dict Process(const TransportCatalog& db) const;
+
+  private:
+    std::string _name;
   };
 
-  struct Bus {
-    std::string name;
+  class Bus {
+  public:
+    Bus(std::string busName);
 
     Json::Dict Process(const TransportCatalog& db) const;
+  private:
+    std::string _name;
   };
 
-  struct Route {
-    std::string stop_from;
-    std::string stop_to;
+  class Route {
+  public:
+    Route(std::string stopFrom,
+      std::string stopTo,
+      const Svg::MapVisualizer* mapVisualizer);
 
     Json::Dict Process(const TransportCatalog& db) const;
+  private:
+    std::string _stopFrom;
+    std::string _stopTo;
+    const Svg::MapVisualizer* _mapVisualizer;
   };
 
-  struct Map
+  class Map
   {
-      Json::Dict Process(const TransportCatalog& db) const;
+  public:
+    Map(const Svg::MapVisualizer* mapVisualizer);
+    Json::Dict Process(const TransportCatalog& db) const;
+
+  private:
+    const Svg::MapVisualizer* _mapVisualizer;
   };
 
-  std::variant<Stop, Bus, Route, Map> Read(const Json::Dict& attrs);
+  std::variant<Stop, Bus, Route, Map> Read(const Svg::MapVisualizer& mapVisualizer, const Json::Dict& attrs);
 
-  std::vector<Json::Node> ProcessAll(const TransportCatalog& db, const std::vector<Json::Node>& requests);
+  std::vector<Json::Node> ProcessAll(const TransportCatalog& db,
+    const Svg::MapVisualizer& mapVisualizer,
+    const std::vector<Json::Node>& requests);
 }

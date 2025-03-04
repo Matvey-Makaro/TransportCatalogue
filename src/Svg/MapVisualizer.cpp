@@ -6,7 +6,9 @@
 
 using namespace Svg;
 
-const std::string MapVisualizer::DefaultFontFamily = "Verdana";
+const std::string MapVisualizer::DefaultFontFamily("Verdana");
+const std::string MapVisualizer::DefaultStrokeLineCap("round");
+const std::string MapVisualizer::DefaultStrokeLineJoin("round");
 
 namespace
 {
@@ -37,56 +39,29 @@ MapVisualizer::MapVisualizer(
 
 void MapVisualizer::Render(std::ostream& out) const
 {
-    for (const auto& layer : _renderSettings.layers)
-    {
-        out << std::setprecision(Precision);
-        auto renderFunc = GetRenderFuncByLayerName(layer);
-        renderFunc(*this);
-    }
+    RenderWholeMapIfNeeded();
     _mapDoc.Render(out);
 }
 
-void Svg::MapVisualizer::RenderRoute(std::ostream& out, const TransportRouter::RouteInfo& routeInfo)
+void Svg::MapVisualizer::RenderRoute(std::ostream& out, const TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const
 {
-    // TODO: Построить всю карту, если необходимо
-    // TODO: Скопировать всю карту в Document для конкретного маршрута
-    // TODO: Вывод покрывающего карту прямоугольника
+    RenderWholeMapIfNeeded();
+    // TODO: Сделать Render согласно очередности слоев в settings
+    Document routeDoc = _mapDoc;
+    RenderTranslucentRect(routeDoc);
+    RenderRouteBusesLines(routeDoc, routeInfo, finishStopName);
 
-    // RenderRouteBusesLines
+    routeDoc.Render(out);
+}
+
+void Svg::MapVisualizer::RenderWholeMapIfNeeded() const
+{
+    if (!_mapDoc.Empty())
+        return;
+    for (const auto& layer : _renderSettings.layers)
     {
-        for (const auto& item : routeInfo.items)
-        {
-            std::string firstStopName;
-            std::visit([this, &firstStopName](auto&& item)
-                {
-                    using T = std::decay_t<decltype(item)>;
-                    if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::WaitItem>)
-                    {
-                        const TransportRouter::RouteInfo::WaitItem& waitItem = item;
-                        if (firstStopName.empty())
-                        {
-                            firstStopName = waitItem.stop_name;
-                        }
-                    }
-                    else if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::BusItem>)
-                    {
-                        const TransportRouter::RouteInfo::BusItem& busItem = item;
-                        const auto* bus = _buses[busItem.bus_name];
-
-                    }
-                    else
-                    {
-                        static_assert(false, "non-exhaustive visitor!");
-                    }
-                }, item);
-        }
-        // Беру каждый item из routeInfo
-        // Если это waitItem:
-            // Запоминаю стартовую остановку
-        // Если это busItem:
-            // Нахожу маршурт с заданным именем 
-            // Рисую маршрут от стартовой остановки и определенное количество остановок
-            // последнюю остановку маршрута запоминаю как стартовую
+        auto renderFunc = GetRenderFuncByLayerName(layer);
+        renderFunc(*this);
     }
 }
 
@@ -102,12 +77,10 @@ MapVisualizer::RenderFunc MapVisualizer::GetRenderFuncByLayerName(const std::str
 
 void MapVisualizer::RenderAllBusesLines() const
 {
-    const std::string defaultStrokeLineCap("round");
-    const std::string defaultStrokeLineJoin("round");
     for (auto it = cbegin(_buses); it != cend(_buses); it++)
     {
         const auto* bus = it->second;
-        RenderBusLine(_mapDoc, bus, bus->stops.front(), bus->stops.size());
+        RenderBusLine(_mapDoc, bus, cbegin(bus->stops), cend(bus->stops));
     }
 }
 
@@ -117,9 +90,9 @@ void MapVisualizer::RenderAllBusesNames() const
     {
         const auto* bus = it->second;
         auto [firstStop, lastStop] = bus->GetTerminals();
-        RenderBusName(bus->name, firstStop, GetBusColor(bus->name));
+        RenderBusName(bus->name, firstStop, GetBusColor(bus));
         if (firstStop != lastStop)
-            RenderBusName(bus->name, lastStop, GetBusColor(bus->name));
+            RenderBusName(bus->name, lastStop, GetBusColor(bus));
     }
 }
 
@@ -139,8 +112,6 @@ void MapVisualizer::RenderAllStopPoints() const
 
 void MapVisualizer::RenderAllStopNames() const
 {
-    const std::string defaultStrokeLineCap("round");
-    const std::string defaultStrokeLineJoin("round");
     const Color textColor("black");
     for (const auto& [stopName, stopPoint] : _stops)
     {
@@ -154,8 +125,8 @@ void MapVisualizer::RenderAllStopNames() const
             .SetFillColor(_renderSettings.substrateUnderlayerColor)
             .SetStrokeColor(_renderSettings.substrateUnderlayerColor)
             .SetStrokeWidth(_renderSettings.underlayerWidth)
-            .SetStrokeLineCap(defaultStrokeLineCap)
-            .SetStrokeLineJoin(defaultStrokeLineJoin);
+            .SetStrokeLineCap(DefaultStrokeLineCap)
+            .SetStrokeLineJoin(DefaultStrokeLineJoin);
         _mapDoc.Add(substrate);
 
         Text stopNameText;
@@ -170,14 +141,63 @@ void MapVisualizer::RenderAllStopNames() const
     }
 }
 
+void Svg::MapVisualizer::RenderRouteBusesLines(Document& doc, 
+    const TransportRouter::RouteInfo& routeInfo, 
+    const std::string& finishStopName) const
+{
+    std::string_view firstStopName;
+        const TransportRouter::RouteInfo::BusItem* busItem;
+        for (const auto& item : routeInfo.items)
+        {
+            std::visit([this, &firstStopName, &doc, &busItem](auto&& item)
+                {
+                    using T = std::decay_t<decltype(item)>;
+                    if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::WaitItem>)
+                    {
+                        const TransportRouter::RouteInfo::WaitItem& waitItem = item;
+                        if (!firstStopName.empty())
+                        {
+                            std::string_view lastStopName = waitItem.stop_name;
+                            RenderBusLine(doc, busItem, firstStopName, lastStopName);
+                            firstStopName = lastStopName;
+                        }
+                        else
+                        {
+                            firstStopName = waitItem.stop_name;
+                        }
+                    }
+                    else if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::BusItem>)
+                    {
+                        busItem = &item;
+                    }
+                    else
+                    {
+                        static_assert(false, "non-exhaustive visitor!");
+                    }
+                }, item);
+        }
+
+        RenderBusLine(doc, busItem, firstStopName, finishStopName);
+}
+
+void Svg::MapVisualizer::RenderTranslucentRect(Document& doc) const
+{
+    Svg::Rect rect;
+    rect.SetLeftTop(Point{ .x = -_renderSettings.outerMargin, .y = -_renderSettings.outerMargin });
+    rect.SetWidth(_renderSettings.maxMapWidth + 2 * _renderSettings.outerMargin);
+    rect.SetHeight(_renderSettings.maxMapHeight + 2 * _renderSettings.outerMargin);
+    rect.SetFillColor(_renderSettings.substrateUnderlayerColor);
+    rect.SetStrokeColor(_renderSettings.substrateUnderlayerColor);
+    rect.SetStrokeWidth(_renderSettings.underlayerWidth);
+    doc.Add(rect);
+}
+
 void MapVisualizer::RenderBusName(const std::string& busName, const std::string& stopName, const Color& busColor) const
 {
     auto stopIt = _stops.find(stopName);
     if (stopIt == cend(_stops))
         return;
     const auto& coord = stopIt->second;
-    const std::string defaultStrokeLineCap("round");
-    const std::string defaultStrokeLineJoin("round");
     Text substrate;
     substrate.SetPrecision(Precision);
     substrate.SetPoint(coord)
@@ -189,8 +209,8 @@ void MapVisualizer::RenderBusName(const std::string& busName, const std::string&
         .SetFillColor(_renderSettings.substrateUnderlayerColor)
         .SetStrokeColor(_renderSettings.substrateUnderlayerColor)
         .SetStrokeWidth(_renderSettings.underlayerWidth)
-        .SetStrokeLineCap(defaultStrokeLineCap)
-        .SetStrokeLineJoin(defaultStrokeLineJoin);
+        .SetStrokeLineCap(DefaultStrokeLineCap)
+        .SetStrokeLineJoin(DefaultStrokeLineJoin);
     _mapDoc.Add(substrate);
 
     Text busText;
@@ -205,31 +225,6 @@ void MapVisualizer::RenderBusName(const std::string& busName, const std::string&
     _mapDoc.Add(busText);
 }
 
-void Svg::MapVisualizer::RenderBusLine(Document& doc,
-    const Descriptions::Bus* bus,
-    std::string_view startStop,
-    size_t stopsCount) const 
-{
-    static const std::string defaultStrokeLineCap("round");
-    static const std::string defaultStrokeLineJoin("round");
-    Polyline busPath;
-    busPath.SetPrecision(Precision);
-    auto startStopNameIt = std::find(cbegin(bus->stops), cend(bus->stops), startStop);
-    for(auto it = startStopNameIt; it != std::next(startStopNameIt, stopsCount); it++)
-    {
-        auto stopIt = _stops.find(*it);
-        if (stopIt == _stops.end())
-            continue;
-        const auto& position = stopIt->second;
-        busPath.AddPoint(position);
-    }
-    busPath.SetStrokeColor(GetBusColor(bus->name));
-    busPath.SetStrokeWidth(_renderSettings.busLineWidth);
-    busPath.SetStrokeLineCap(defaultStrokeLineCap);
-    busPath.SetStrokeLineJoin(defaultStrokeLineJoin);
-    doc.Add(busPath);
-}
-
 void Svg::MapVisualizer::CalculateBusColors()
 {
     size_t busIndex = 0;
@@ -240,7 +235,32 @@ void Svg::MapVisualizer::CalculateBusColors()
     }
 }
 
-const Color& MapVisualizer::GetBusColor(std::string_view busName) const
+const Color& MapVisualizer::GetBusColor(const Descriptions::Bus* bus) const
 {
-    return _busNameToColor.at(busName);
+
+    return _busNameToColor.at(bus->name);
+}
+
+void Svg::MapVisualizer::RenderBusLine(Document& doc,
+    const TransportRouter::RouteInfo::BusItem* busItem,
+    std::string_view firstStopName,
+    std::string_view lastStopName) const
+{
+    const auto* bus = _buses.at(busItem->bus_name);
+    auto firstStopIt = std::find(cbegin(bus->stops), cend(bus->stops), firstStopName);
+    while (true)
+    {
+        if (firstStopIt == cend(bus->stops))
+        {
+            break;
+        }
+        if (*std::next(firstStopIt, busItem->span_count) == lastStopName)
+        {
+            break;
+        }
+        firstStopIt = std::find(std::next(firstStopIt), cend(bus->stops), firstStopName);
+    }
+    assert(firstStopIt != cend(bus->stops));
+    auto lastStop = std::next(firstStopIt, busItem->span_count + 1);
+    RenderBusLine(doc, bus, firstStopIt, lastStop);
 }

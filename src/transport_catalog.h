@@ -6,6 +6,7 @@
 #include "RenderSettings.h"
 #include "utils.h"
 #include "descriptions.h"
+#include "Svg/MapVisualizer.h"
 
 #include <optional>
 #include <set>
@@ -34,8 +35,7 @@ private:
 
 public:
   TransportCatalog(std::vector<Descriptions::InputQuery> data,
-                     const Json::Dict& routing_settings_json,
-                     const RenderSettings& renderSettings);
+                     const Json::Dict& routing_settings_json);
 
   const Stop* GetStop(const std::string& name) const;
   const Bus* GetBus(const std::string& name) const;
@@ -43,9 +43,7 @@ public:
   std::vector<const Descriptions::Bus*> GetBusesDescriptions() const;
   std::vector<const Descriptions::Stop*> GetStopsDescriptions() const;
 
-  std::optional<TransportRouter::RouteInfo> FindRoute(const std::string& stop_from, const std::string& stop_to) const;
-
-  const RenderSettings& GetRenderSettings() const;
+  std::optional<TransportRouter::RouteInfo> FindRoute(const std::string& stopFrom, const std::string& stopTo) const;
 
   private:
   static int ComputeRoadRouteLength(
@@ -63,6 +61,4 @@ public:
   std::unordered_map<std::string, Stop> _stops;
   std::unordered_map<std::string, Bus> _buses;
   std::unique_ptr<TransportRouter> _router;
-  // TODO: Delete render settings
-  RenderSettings _renderSettings;
 };

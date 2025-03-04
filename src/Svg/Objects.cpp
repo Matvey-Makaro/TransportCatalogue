@@ -202,6 +202,13 @@ void Text::RenderCloseTag(std::ostream& out) const
     out << EscapeSpecialCharacters("</text>");
 }
 
+Svg::Rect::Rect() :
+    _leftTop{0., 0.},
+    _width(0.),
+    _height(0.)
+{
+}
+
 Rect& Svg::Rect::SetLeftTop(const Point& p)
 {
     _leftTop = p;

@@ -78,9 +78,9 @@ void TransportRouter::FillGraphWithBuses(const Descriptions::StopsDict& stops_di
   }
 }
 
-optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& stop_from, const string& stop_to) const {
-  const Graph::VertexId vertex_from = stops_vertex_ids_.at(stop_from).out;
-  const Graph::VertexId vertex_to = stops_vertex_ids_.at(stop_to).out;
+optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& stopFrom, const string& stopTo) const {
+  const Graph::VertexId vertex_from = stops_vertex_ids_.at(stopFrom).out;
+  const Graph::VertexId vertex_to = stops_vertex_ids_.at(stopTo).out;
   const auto route = router_->BuildRoute(vertex_from, vertex_to);
   if (!route) {
     return nullopt;

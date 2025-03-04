@@ -20,6 +20,11 @@ void Document::Render(std::ostream &out)
     RenderTail(out);
 }
 
+bool Svg::Document::Empty() const
+{
+    return _objects.empty();
+}
+
 void Document::RenderHead(std::ostream &out)
 {
     out << EscapeSpecialCharacters("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");

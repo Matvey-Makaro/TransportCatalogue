@@ -10,10 +10,15 @@ using namespace std;
 
 namespace Requests
 {
+  Stop::Stop(std::string stopName) :
+    _name(std::move(stopName))
+  {
+  }
+
 
   Json::Dict Stop::Process(const TransportCatalog& db) const
   {
-    const auto* stop = db.GetStop(name);
+    const auto* stop = db.GetStop(_name);
     Json::Dict dict;
 #ifndef OnlyMap
     if (!stop)
@@ -34,9 +39,14 @@ namespace Requests
     return dict;
   }
 
+  Bus::Bus(std::string busName) :
+    _name(std::move(busName))
+  {
+  }
+
   Json::Dict Bus::Process(const TransportCatalog& db) const
   {
-    const auto* bus = db.GetBus(name);
+    const auto* bus = db.GetBus(_name);
     Json::Dict dict;
 #ifndef OnlyMap
     if (!bus)
@@ -76,17 +86,27 @@ namespace Requests
     }
   };
 
+  Route::Route(std::string stopFrom, std::string stopTo, const Svg::MapVisualizer* mapVisualizer) :
+    _stopFrom(std::move(stopFrom)),
+    _stopTo(std::move(stopTo)),
+    _mapVisualizer(mapVisualizer)
+  {
+  }
+
   Json::Dict Route::Process(const TransportCatalog& db) const
   {
     Json::Dict dict;
-#ifndef OnlyMap
-    const auto route = db.FindRoute(stop_from, stop_to);
+
+    const auto route = db.FindRoute(_stopFrom, _stopTo);
     if (!route)
     {
+#ifndef OnlyMap
       dict["error_message"] = Json::Node("not found"s);
+#endif
     }
     else
     {
+#ifndef OnlyMap
       dict["total_time"] = Json::Node(route->total_time);
       vector<Json::Node> items;
       items.reserve(route->items.size());
@@ -96,24 +116,33 @@ namespace Requests
       }
 
       dict["items"] = std::move(items);
-    }
 #endif
+
+      std::stringstream mapSvg;
+      _mapVisualizer->RenderRoute(mapSvg, *route, _stopTo);
+      dict["map"] = mapSvg.str();
+    }
+
     return dict;
+  }
+
+  Map::Map(const Svg::MapVisualizer* mapVisualizer) :
+    _mapVisualizer(mapVisualizer)
+  {
   }
 
   Json::Dict Map::Process(const TransportCatalog& db) const
   {
-    Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),
-      db.GetBusesDescriptions(),
-      db.GetRenderSettings());
-    std::stringstream ss;
-    mapVisualizer.Render(ss);
     Json::Dict dict;
+#ifndef OnlyMap
+    std::stringstream ss;
+    _mapVisualizer->Render(ss);
     dict["map"] = ss.str();
+#endif
     return dict;
   }
 
-  variant<Stop, Bus, Route, Map> Read(const Json::Dict& attrs)
+  variant<Stop, Bus, Route, Map> Read(const Svg::MapVisualizer& mapVisualizer, const Json::Dict& attrs)
   {
     const string& type = attrs.at("type").AsString();
     if (type == "Bus")
@@ -126,20 +155,22 @@ namespace Requests
     }
     else if (type == "Route")
     {
-      return Route{ attrs.at("from").AsString(), attrs.at("to").AsString() };
+      return Route{ attrs.at("from").AsString(), attrs.at("to").AsString(), &mapVisualizer };
     }
     else if (type == "Map")
     {
-      return Map();
+      return Map(&mapVisualizer);
     }
     else
     {
       assert(false);
-      return Map();
+      return Map(&mapVisualizer);
     }
   }
 
-  vector<Json::Node> ProcessAll(const TransportCatalog& db, const vector<Json::Node>& requests)
+  vector<Json::Node> ProcessAll(const TransportCatalog& db,
+    const Svg::MapVisualizer& mapVisualizer,
+    const vector<Json::Node>& requests)
   {
     vector<Json::Node> responses;
     responses.reserve(requests.size());
@@ -149,7 +180,7 @@ namespace Requests
         {
           return request.Process(db);
         },
-        Requests::Read(request_node.AsMap()));
+        Requests::Read(mapVisualizer, request_node.AsMap()));
       dict["request_id"] = Json::Node(request_node.AsMap().at("id").AsInt());
       responses.push_back(Json::Node(dict));
     }

@@ -5,14 +5,12 @@
 using namespace std;
 
 TransportCatalog::TransportCatalog(vector<Descriptions::InputQuery> data,
-                                   const Json::Dict& routing_settings_json,
-                                   const RenderSettings& renderSettings) :
+                                   const Json::Dict& routing_settings_json) :
     _busesDescr(),
     _stopsDescr(),
     _stops(),
     _buses(),
-    _router(),
-    _renderSettings(renderSettings)
+    _router()
 {
     auto stops_end = partition(begin(data), end(data), [](const auto& item) {
         return holds_alternative<Descriptions::Stop>(item);
@@ -76,8 +74,8 @@ std::vector<const Descriptions::Stop*> TransportCatalog::GetStopsDescriptions() 
     return stops;
 }
 
-optional<TransportRouter::RouteInfo> TransportCatalog::FindRoute(const string& stop_from, const string& stop_to) const {
-    return _router->FindRoute(stop_from, stop_to);
+optional<TransportRouter::RouteInfo> TransportCatalog::FindRoute(const string& stopFrom, const string& stopTo) const {
+    return _router->FindRoute(stopFrom, stopTo);
 }
 
 int TransportCatalog::ComputeRoadRouteLength(
@@ -102,9 +100,4 @@ double TransportCatalog::ComputeGeoRouteDistance(
             );
     }
     return result;
-}
-
-const RenderSettings& TransportCatalog::GetRenderSettings() const
-{
-    return _renderSettings;
 }
