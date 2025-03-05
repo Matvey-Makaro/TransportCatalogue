@@ -1,7 +1,7 @@
 #pragma once
 
-#include "json.h"
-#include "sphere.h"
+#include "Json.h"
+#include "Sphere.h"
 
 #include <string>
 #include <unordered_map>

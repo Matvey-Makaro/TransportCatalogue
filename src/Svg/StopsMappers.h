@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include <unordered_set>
-#include "descriptions.h"
+#include "Descriptions.h"
 #include "Point.h"
 #include "RenderSettings.h"
 #include "CoordinateMapper.h"

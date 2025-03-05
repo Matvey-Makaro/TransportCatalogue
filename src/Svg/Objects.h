@@ -6,7 +6,7 @@
 #include <iomanip>
 #include "Color.h"
 #include "Point.h"
-#include "utils.h"
+#include "Utils.h"
 
 namespace Svg
 {

@@ -1,5 +1,5 @@
-#include "requests.h"
-#include "transport_router.h"
+#include "Requests.h"
+#include "TransportRouter.h"
 #include "Svg/MapVisualizer.h"
 
 #include <vector>

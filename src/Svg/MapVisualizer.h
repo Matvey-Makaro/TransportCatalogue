@@ -9,10 +9,10 @@
 #include <unordered_map>
 #include <optional>
 #include "StopsMappers.h"
-#include "descriptions.h"
+#include "Descriptions.h"
 #include "RenderSettings.h"
 #include "Document.h"
-#include "transport_router.h"
+#include "TransportRouter.h"
 
 namespace Descriptions
 {

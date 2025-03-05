@@ -1,11 +1,10 @@
 #pragma once
 
-#include "descriptions.h"
+#include "Descriptions.h"
 #include "json.h"
-#include "transport_router.h"
+#include "TransportRouter.h"
 #include "RenderSettings.h"
-#include "utils.h"
-#include "descriptions.h"
+#include "Utils.h"
 #include "Svg/MapVisualizer.h"
 
 #include <optional>

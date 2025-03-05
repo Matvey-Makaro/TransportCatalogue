@@ -1,9 +1,9 @@
 #pragma once
 
-#include "descriptions.h"
-#include "graph.h"
-#include "json.h"
-#include "router.h"
+#include "Descriptions.h"
+#include "Graph.h"
+#include "Json.h"
+#include "Router.h"
 
 #include <memory>
 #include <unordered_map>

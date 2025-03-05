@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Point.h"
-#include "sphere.h"
+#include "Sphere.h"
 
 namespace Svg
 {

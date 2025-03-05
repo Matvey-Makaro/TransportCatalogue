@@ -1,11 +1,11 @@
 #include <iomanip>
-#include "descriptions.h"
-#include "json.h"
-#include "requests.h"
-#include "sphere.h"
-#include "transport_catalog.h"
+#include "Descriptions.h"
+#include "Json.h"
+#include "Requests.h"
+#include "Sphere.h"
+#include "TransportCatalog.h"
 #include "RenderSettings.h"
-#include "utils.h"
+#include "Utils.h"
 #include "Program.h"
 #include "Svg/MapVisualizer.h"
 
