@@ -198,7 +198,7 @@ bool Svg::ZipWithGluingStopMapper::IsRouteNeighbors(const Descriptions::Stop *lh
             const auto &stopName = bus->stops[i];
             const auto &nextStopName = bus->stops[i + 1];
             if ((lhs->name == stopName && rhs->name == nextStopName) ||
-                lhs->name == nextStopName && rhs->name == stopName)
+                (lhs->name == nextStopName && rhs->name == stopName))
             {
                 return true;
             }

@@ -57,7 +57,7 @@ void Svg::MapVisualizer::RenderRoute(std::ostream& out, const TransportRouter::R
         {"stop_points", &MapVisualizer::RenderRouteStopPoints},
         {"stop_labels", &MapVisualizer::RenderRouteStopNames}
     };
-    for(const auto& layer: _renderSettings.layers)
+    for (const auto& layer : _renderSettings.layers)
     {
         RenderRouteLayerFunc renderFunc = layerNameToFunc.at(layer);
         (this->*renderFunc)(routeDoc, route);
@@ -156,11 +156,13 @@ MapVisualizer::Route Svg::MapVisualizer::MapRoute(const TransportRouter::RouteIn
                 }
                 else
                 {
-                    static_assert(false, "non-exhaustive visitor!");
+                    std::cerr << "Svg::MapVisualizer::MapRoute non-exhaustive visitor" << std::endl;
+                    // static_assert(false, "non-exhaustive visitor!");
                 }
             }, item);
     }
-    route.emplace_back(MapRouteItem(busItem, firstStopName, finishStopName));
+    if (!firstStopName.empty())
+        route.emplace_back(MapRouteItem(busItem, firstStopName, finishStopName));
     return route;
 }
 
@@ -194,8 +196,6 @@ void Svg::MapVisualizer::RenderTranslucentRect(Document& doc) const
     rect.SetWidth(_renderSettings.maxMapWidth + 2 * _renderSettings.outerMargin);
     rect.SetHeight(_renderSettings.maxMapHeight + 2 * _renderSettings.outerMargin);
     rect.SetFillColor(_renderSettings.substrateUnderlayerColor);
-    rect.SetStrokeColor(_renderSettings.substrateUnderlayerColor);
-    rect.SetStrokeWidth(_renderSettings.underlayerWidth);
     doc.Add(rect);
 }
 
@@ -236,12 +236,14 @@ void Svg::MapVisualizer::RenderRouteStopPoints(Document& doc, const Route& route
 
 void Svg::MapVisualizer::RenderRouteStopNames(Document& doc, const Route& route) const
 {
-    for(const auto& routeItem : route)
+    if(route.empty())
+        return;
+    for (const auto& routeItem : route)
     {
         const auto& stopName = routeItem.stopNames.front();
         RenderStopName(doc, stopName, _stops.at(stopName));
     }
-    if(route.back().stopNames.size() > 1)
+    if (route.back().stopNames.size() > 1)
     {
         const auto& lastStop = route.back().stopNames.back();
         RenderStopName(doc, lastStop, _stops.at(lastStop));

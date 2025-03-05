@@ -176,7 +176,7 @@ namespace Requests
     responses.reserve(requests.size());
     for (const Json::Node& request_node : requests)
     {
-      Json::Dict dict = visit([&db](const auto& request)
+      Json::Dict dict = visit([&db](auto&& request)
         {
           return request.Process(db);
         },
