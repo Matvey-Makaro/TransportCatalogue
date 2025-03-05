@@ -1,10 +1,10 @@
-#include "TransportCatalog.h"
+#include "TransportDatabase.h"
 
 #include <sstream>
 
 using namespace std;
 
-TransportCatalog::TransportCatalog(vector<Descriptions::InputQuery> data,
+TransportDatabase::TransportDatabase(vector<Descriptions::InputQuery> data,
                                    const Json::Dict& routing_settings_json) :
     _busesDescr(),
     _stopsDescr(),
@@ -48,15 +48,15 @@ TransportCatalog::TransportCatalog(vector<Descriptions::InputQuery> data,
     _router = make_unique<TransportRouter>(stops_dict, buses_dict, routing_settings_json);
 }
 
-const TransportCatalog::Stop* TransportCatalog::GetStop(const string& name) const {
+const TransportDatabase::Stop* TransportDatabase::GetStop(const string& name) const {
     return GetValuePointer(_stops, name);
 }
 
-const TransportCatalog::Bus* TransportCatalog::GetBus(const string& name) const {
+const TransportDatabase::Bus* TransportDatabase::GetBus(const string& name) const {
     return GetValuePointer(_buses, name);
 }
 
-std::vector<const Descriptions::Bus*> TransportCatalog::GetBusesDescriptions() const
+std::vector<const Descriptions::Bus*> TransportDatabase::GetBusesDescriptions() const
 {
     std::vector<const Descriptions::Bus*> buses;
     buses.reserve(_busesDescr.size());
@@ -65,7 +65,7 @@ std::vector<const Descriptions::Bus*> TransportCatalog::GetBusesDescriptions() c
     return buses;
 }
 
-std::vector<const Descriptions::Stop*> TransportCatalog::GetStopsDescriptions() const
+std::vector<const Descriptions::Stop*> TransportDatabase::GetStopsDescriptions() const
 {
     std::vector<const Descriptions::Stop*> stops;
     stops.reserve(_stops.size());
@@ -74,11 +74,11 @@ std::vector<const Descriptions::Stop*> TransportCatalog::GetStopsDescriptions() 
     return stops;
 }
 
-optional<TransportRouter::RouteInfo> TransportCatalog::FindRoute(const string& stopFrom, const string& stopTo) const {
+optional<TransportRouter::RouteInfo> TransportDatabase::FindRoute(const string& stopFrom, const string& stopTo) const {
     return _router->FindRoute(stopFrom, stopTo);
 }
 
-int TransportCatalog::ComputeRoadRouteLength(
+int TransportDatabase::ComputeRoadRouteLength(
     const vector<string>& stops,
     const Descriptions::StopsDict& stops_dict
     ) {
@@ -89,7 +89,7 @@ int TransportCatalog::ComputeRoadRouteLength(
     return result;
 }
 
-double TransportCatalog::ComputeGeoRouteDistance(
+double TransportDatabase::ComputeGeoRouteDistance(
     const vector<string>& stops,
     const Descriptions::StopsDict& stops_dict
     ) {

@@ -3,7 +3,7 @@
 #include "Json.h"
 #include "Requests.h"
 #include "Sphere.h"
-#include "TransportCatalog.h"
+#include "TransportDatabase.h"
 #include "RenderSettings.h"
 #include "Utils.h"
 #include "Program.h"
@@ -18,7 +18,7 @@ void Program::Run(std::istream& in, std::ostream& out)
     const auto input_doc = Json::Load(in);
     const auto& input_map = input_doc.GetRoot().AsMap();
 
-    const TransportCatalog db(
+    const TransportDatabase db(
         Descriptions::ReadDescriptions(input_map.at("base_requests").AsArray()),
         input_map.at("routing_settings").AsMap());
     const Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),

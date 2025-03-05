@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Descriptions.h"
-#include "json.h"
+#include "Json.h"
 #include "TransportRouter.h"
 #include "RenderSettings.h"
 #include "Utils.h"
@@ -27,13 +27,13 @@ namespace Responses {
   };
 }
 
-class TransportCatalog {
+class TransportDatabase {
 private:
   using Bus = Responses::Bus;
   using Stop = Responses::Stop;
 
 public:
-  TransportCatalog(std::vector<Descriptions::InputQuery> data,
+  TransportDatabase(std::vector<Descriptions::InputQuery> data,
                      const Json::Dict& routing_settings_json);
 
   const Stop* GetStop(const std::string& name) const;

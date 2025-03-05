@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package Serialization;
+
+message Point
+{
+    double latitude = 1;
+    double longitude = 2;
+}

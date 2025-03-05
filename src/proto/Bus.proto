@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package Serialization;
+
+message Bus
+{
+    string name = 1;
+    repeated string stops = 2;
+    bool isRoundtrip = 3;
+}

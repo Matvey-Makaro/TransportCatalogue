@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Json.h"
-#include "TransportCatalog.h"
+#include "TransportDatabase.h"
 
 #include <string>
 #include <variant>
@@ -16,7 +16,7 @@ namespace Requests {
   class Stop {
   public:
     Stop(std::string stopName);
-    Json::Dict Process(const TransportCatalog& db) const;
+    Json::Dict Process(const TransportDatabase& db) const;
 
   private:
     std::string _name;
@@ -26,7 +26,7 @@ namespace Requests {
   public:
     Bus(std::string busName);
 
-    Json::Dict Process(const TransportCatalog& db) const;
+    Json::Dict Process(const TransportDatabase& db) const;
   private:
     std::string _name;
   };
@@ -37,7 +37,7 @@ namespace Requests {
       std::string stopTo,
       const Svg::MapVisualizer* mapVisualizer);
 
-    Json::Dict Process(const TransportCatalog& db) const;
+    Json::Dict Process(const TransportDatabase& db) const;
   private:
     std::string _stopFrom;
     std::string _stopTo;
@@ -48,7 +48,7 @@ namespace Requests {
   {
   public:
     Map(const Svg::MapVisualizer* mapVisualizer);
-    Json::Dict Process(const TransportCatalog& db) const;
+    Json::Dict Process(const TransportDatabase& db) const;
 
   private:
     const Svg::MapVisualizer* _mapVisualizer;
@@ -56,7 +56,7 @@ namespace Requests {
 
   std::variant<Stop, Bus, Route, Map> Read(const Svg::MapVisualizer& mapVisualizer, const Json::Dict& attrs);
 
-  std::vector<Json::Node> ProcessAll(const TransportCatalog& db,
+  std::vector<Json::Node> ProcessAll(const TransportDatabase& db,
     const Svg::MapVisualizer& mapVisualizer,
     const std::vector<Json::Node>& requests);
 }

@@ -16,7 +16,7 @@ namespace Requests
   }
 
 
-  Json::Dict Stop::Process(const TransportCatalog& db) const
+  Json::Dict Stop::Process(const TransportDatabase& db) const
   {
     const auto* stop = db.GetStop(_name);
     Json::Dict dict;
@@ -44,7 +44,7 @@ namespace Requests
   {
   }
 
-  Json::Dict Bus::Process(const TransportCatalog& db) const
+  Json::Dict Bus::Process(const TransportDatabase& db) const
   {
     const auto* bus = db.GetBus(_name);
     Json::Dict dict;
@@ -93,7 +93,7 @@ namespace Requests
   {
   }
 
-  Json::Dict Route::Process(const TransportCatalog& db) const
+  Json::Dict Route::Process(const TransportDatabase& db) const
   {
     Json::Dict dict;
 
@@ -131,7 +131,7 @@ namespace Requests
   {
   }
 
-  Json::Dict Map::Process(const TransportCatalog& db) const
+  Json::Dict Map::Process(const TransportDatabase& db) const
   {
     Json::Dict dict;
 #ifndef OnlyMap
@@ -168,7 +168,7 @@ namespace Requests
     }
   }
 
-  vector<Json::Node> ProcessAll(const TransportCatalog& db,
+  vector<Json::Node> ProcessAll(const TransportDatabase& db,
     const Svg::MapVisualizer& mapVisualizer,
     const vector<Json::Node>& requests)
   {

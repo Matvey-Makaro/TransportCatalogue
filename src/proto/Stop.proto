@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package Serialization;
+
+import "Point.proto";
+
+message Stop
+{
+    message NameDistance
+    {
+        string name = 1;
+        int32 distance = 2;
+    }
+    string name = 1;
+    Point position = 2;
+    repeated NameDistance distances = 3;
+}

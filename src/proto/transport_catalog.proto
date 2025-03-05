@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "Bus.proto";
+import "Stop.proto";
+
+message TransportCatalog
+{
+  repeated Serialization.Stop stops = 1;
+  repeated Serialization.Bus buses = 2;
+}
