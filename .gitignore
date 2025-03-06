@@ -80,3 +80,4 @@ src/Svg/merge.py
 build/*
 .vscode/*
 .editorconfig
+TMP/*

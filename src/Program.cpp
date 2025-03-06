@@ -8,27 +8,60 @@
 #include "Utils.h"
 #include "Program.h"
 #include "Svg/MapVisualizer.h"
+#include "SerializationSettings.h"
+#include "proto/ProtoSerializer.h"
 
 using namespace std;
 
-Program::Program() {}
+Program::Program(std::string mode) :
+    _mode(std::move(mode))
+{
+}
 
 void Program::Run(std::istream& in, std::ostream& out)
 {
-    const auto input_doc = Json::Load(in);
-    const auto& input_map = input_doc.GetRoot().AsMap();
+    if (_mode == "make_base")
+    {
+        MakeBase(in);
+    }
+    else if (_mode == "process_requests")
+    {
+        ProcessRequests(in, out);
+    }
+}
+
+void Program::MakeBase(std::istream& in)
+{
+    const auto inputDoc = Json::Load(in);
+    const auto& inputMap = inputDoc.GetRoot().AsMap();
 
     const TransportDatabase db(
-        Descriptions::ReadDescriptions(input_map.at("base_requests").AsArray()),
-        input_map.at("routing_settings").AsMap());
+        Descriptions::ReadDescriptions(inputMap.at("base_requests").AsArray()),
+        inputMap.at("routing_settings").AsMap());
+
+    auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
+    Serialization::ProtoSerializer::Serialize(serializationSettings, db);
+}
+
+void Program::ProcessRequests(std::istream& in, std::ostream& out)
+{
+    const auto inputDoc = Json::Load(in);
+    const auto& inputMap = inputDoc.GetRoot().AsMap();
+    auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
+    auto db = Serialization::ProtoSerializer::Deserialize(serializationSettings);
+
+    // TODO: Пока что реализация без mapVisualizer
+    // const Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),
+    //     db.GetBusesDescriptions(),
+    //     RenderSettings::ParseFrom(input_map.at("render_settings").AsMap()));
+
     const Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),
         db.GetBusesDescriptions(),
-        RenderSettings::ParseFrom(input_map.at("render_settings").AsMap()));
-
+        RenderSettings{});
 
     out << std::fixed << std::setprecision(14);
     Json::PrintValue(
-        Requests::ProcessAll(db, mapVisualizer, input_map.at("stat_requests").AsArray()),
+        Requests::ProcessAll(db, mapVisualizer, inputMap.at("stat_requests").AsArray()),
         out
     );
     out << endl;

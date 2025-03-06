@@ -62,16 +62,14 @@ Bus Bus::ParseFrom(const Json::Dict& attrs) {
     };
 }
 
-vector<InputQuery> ReadDescriptions(const vector<Json::Node>& nodes) {
-    vector<InputQuery> result;
-    result.reserve(nodes.size());
-
+InputQueries ReadDescriptions(const vector<Json::Node>& nodes) {
+    InputQueries result;
     for (const Json::Node& node : nodes) {
         const auto& node_dict = node.AsMap();
         if (node_dict.at("type").AsString() == "Bus") {
-            result.push_back(Bus::ParseFrom(node_dict));
+            result.buses.push_back(Bus::ParseFrom(node_dict));
         } else {
-            result.push_back(Stop::ParseFrom(node_dict));
+            result.stops.push_back(Stop::ParseFrom(node_dict));
         }
     }
 

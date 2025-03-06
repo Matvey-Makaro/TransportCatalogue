@@ -33,7 +33,7 @@ private:
   using Stop = Responses::Stop;
 
 public:
-  TransportDatabase(std::vector<Descriptions::InputQuery> data,
+  TransportDatabase(Descriptions::InputQueries data,
                      const Json::Dict& routing_settings_json);
 
   const Stop* GetStop(const std::string& name) const;

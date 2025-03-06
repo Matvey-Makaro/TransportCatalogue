@@ -324,6 +324,10 @@ void Svg::MapVisualizer::RenderStopName(Document& doc, const std::string& stopNa
 
 void Svg::MapVisualizer::CalculateBusColors()
 {
+    if(_renderSettings.colorPalette.empty())
+    {
+        return;
+    }
     size_t busIndex = 0;
     for (auto it = cbegin(_buses); it != cend(_buses); it++, busIndex++)
     {

@@ -4,34 +4,22 @@
 
 using namespace std;
 
-TransportDatabase::TransportDatabase(vector<Descriptions::InputQuery> data,
-                                   const Json::Dict& routing_settings_json) :
-    _busesDescr(),
-    _stopsDescr(),
+TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
+    const Json::Dict& routing_settings_json) :
+    _busesDescr(std::move(data.buses)),
+    _stopsDescr(std::move(data.stops)),
     _stops(),
     _buses(),
     _router()
 {
-    auto stops_end = partition(begin(data), end(data), [](const auto& item) {
-        return holds_alternative<Descriptions::Stop>(item);
-    });
-
     Descriptions::StopsDict stops_dict;
-    Range stopsRange(begin(data), stops_end);
-    _stopsDescr.reserve(std::distance(stopsRange.begin(), stopsRange.end()));
-    for (const auto& item : stopsRange) {
-        const auto& stop = get<Descriptions::Stop>(item);
-        _stopsDescr.push_back(stop);
+    for (const auto& stop : _stopsDescr) {
         stops_dict[stop.name] = &stop;
-        _stops.insert({stop.name, {}});
+        _stops.insert({ stop.name, {} });
     }
 
     Descriptions::BusesDict buses_dict;
-    Range busesRange(stops_end, end(data));
-    _busesDescr.reserve(std::distance(busesRange.begin(), busesRange.end()));
-    for (const auto& item : busesRange) {
-        const auto& bus = get<Descriptions::Bus>(item);
-        _busesDescr.push_back(bus);
+    for (const auto& bus : _busesDescr) {
         buses_dict[bus.name] = &bus;
         _buses[bus.name] = Bus{
             bus.stops.size(),
@@ -60,7 +48,7 @@ std::vector<const Descriptions::Bus*> TransportDatabase::GetBusesDescriptions() 
 {
     std::vector<const Descriptions::Bus*> buses;
     buses.reserve(_busesDescr.size());
-    for(const auto& bus : _busesDescr)
+    for (const auto& bus : _busesDescr)
         buses.push_back(&bus);
     return buses;
 }
@@ -69,7 +57,7 @@ std::vector<const Descriptions::Stop*> TransportDatabase::GetStopsDescriptions()
 {
     std::vector<const Descriptions::Stop*> stops;
     stops.reserve(_stops.size());
-    for(const auto& stop : _stopsDescr)
+    for (const auto& stop : _stopsDescr)
         stops.push_back(&stop);
     return stops;
 }
@@ -81,7 +69,7 @@ optional<TransportRouter::RouteInfo> TransportDatabase::FindRoute(const string& 
 int TransportDatabase::ComputeRoadRouteLength(
     const vector<string>& stops,
     const Descriptions::StopsDict& stops_dict
-    ) {
+) {
     int result = 0;
     for (size_t i = 1; i < stops.size(); ++i) {
         result += Descriptions::ComputeStopsDistance(*stops_dict.at(stops[i - 1]), *stops_dict.at(stops[i]));
@@ -92,12 +80,12 @@ int TransportDatabase::ComputeRoadRouteLength(
 double TransportDatabase::ComputeGeoRouteDistance(
     const vector<string>& stops,
     const Descriptions::StopsDict& stops_dict
-    ) {
+) {
     double result = 0;
     for (size_t i = 1; i < stops.size(); ++i) {
         result += Sphere::Distance(
             stops_dict.at(stops[i - 1])->position, stops_dict.at(stops[i])->position
-            );
+        );
     }
     return result;
 }

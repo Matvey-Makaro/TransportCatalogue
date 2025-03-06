@@ -31,9 +31,13 @@ namespace Descriptions {
     static Bus ParseFrom(const Json::Dict& attrs);
   };
 
-  using InputQuery = std::variant<Stop, Bus>;
+  struct InputQueries
+  {
+    std::vector<Descriptions::Bus> buses;
+    std::vector<Descriptions::Stop> stops;
+  };
 
-  std::vector<InputQuery> ReadDescriptions(const std::vector<Json::Node>& nodes);
+  InputQueries ReadDescriptions(const std::vector<Json::Node>& nodes);
 
   template <typename Object>
   using Dict = std::unordered_map<std::string, const Object*>;
