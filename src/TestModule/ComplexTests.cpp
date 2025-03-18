@@ -11,7 +11,7 @@ void Example1()
 {
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmp7f2a431a"
+        "file": "/tmp/tmpw58tetx6"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -195,22 +195,29 @@ void Example1()
     makeBase.Run(makeBastIn, out);
 
     std::string processRequestsInput = R"({
-"serialization_settings": {
-    "file": "/tmp/tmp7f2a431a"
-},
-"stat_requests": [
-    {
-        "id": 1415477150,
-        "type": "Bus",
-        "name": "14"
+    "serialization_settings": {
+        "file": "/tmp/tmpw58tetx6"
     },
-    {
-        "id": 477534717,
-        "type": "Stop",
-        "name": "Электросети"
-    }
-]
-})";
+    "stat_requests": [
+        {
+            "id": 130627203,
+            "type": "Bus",
+            "name": "14"
+        },
+        {
+            "id": 1360715858,
+            "type": "Stop",
+            "name": "Электросети"
+        },
+        {
+            "id": 1641382366,
+            "type": "Route",
+            "from": "Морской вокзал",
+            "to": "Параллельная улица"
+        }
+    ]
+}
+)";
     std::stringstream processRequestsIn(processRequestsInput);
     Program processRequests("process_requests");
     processRequests.Run(processRequestsIn, out);
@@ -227,7 +234,7 @@ void Example2()
 {
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpu3xdy0el"
+        "file": "/tmp/tmpbuezwca9"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -678,7 +685,8 @@ void Example2()
             }
         }
     ]
-})";
+}
+)";
         std::stringstream makeBastIn(makeBaseInput);
         // std::stringstream out;
         std::fstream out;
@@ -689,21 +697,28 @@ void Example2()
     
         std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpu3xdy0el"
+        "file": "/tmp/tmpbuezwca9"
     },
     "stat_requests": [
         {
-            "id": 83401682,
+            "id": 517161241,
             "type": "Bus",
             "name": "13"
         },
         {
-            "id": 1425847267,
+            "id": 300166811,
             "type": "Stop",
-            "name": "Театральная"
+            "name": "Морской вокзал"
+        },
+        {
+            "id": 1231848878,
+            "type": "Route",
+            "from": "Пансионат Нева",
+            "to": "Мацестинская долина"
         }
     ]
-})";
+}
+)";
         std::stringstream processRequestsIn(processRequestsInput);
         Program processRequests("process_requests");
         processRequests.Run(processRequestsIn, out);

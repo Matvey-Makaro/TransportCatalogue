@@ -33,10 +33,10 @@ namespace Svg
     public:
         MapVisualizer(const std::vector<const Descriptions::Stop*>& stops,
             const std::vector<const Descriptions::Bus*>& buses,
-            const RenderSettings& renderSettins);
+            const Visualization::RenderSettings& renderSettins);
 
         void Render(std::ostream& out) const;
-        void RenderRoute(std::ostream& out, const TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const;
+        void RenderRoute(std::ostream& out, const Router::TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const;
 
     private:
         void RenderWholeMapIfNeeded() const;
@@ -47,8 +47,8 @@ namespace Svg
         void RenderAllStopPoints() const;
         void RenderAllStopNames() const;
 
-        Route MapRoute(const TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const;
-        RouteItem MapRouteItem(const TransportRouter::RouteInfo::BusItem* busItem,
+        Route MapRoute(const Router::TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const;
+        RouteItem MapRouteItem(const Router::TransportRouter::RouteInfo::BusItem* busItem,
             std::string_view firstStopName,
             std::string_view lastStopName) const;
 
@@ -98,9 +98,8 @@ namespace Svg
 
         IStopsMapperUnp _stopsMapper;
         std::map<std::string, Point> _stops;
-        // TODO: Переделать на string_view из самих buses
         std::map<std::string, const Descriptions::Bus*> _buses;
-        RenderSettings _renderSettings;
+        Visualization::RenderSettings _renderSettings;
         mutable Document _mapDoc;
         std::unordered_map<std::string_view, Color> _busNameToColor;
     };

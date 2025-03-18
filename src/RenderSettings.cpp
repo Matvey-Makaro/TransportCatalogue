@@ -2,6 +2,7 @@
 #include "RenderSettings.h"
 
 using namespace Svg;
+using namespace Visualization;
 
 namespace
 {

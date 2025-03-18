@@ -10,6 +10,7 @@
 #include "Svg/MapVisualizer.h"
 #include "SerializationSettings.h"
 #include "proto/ProtoSerializer.h"
+#include "TransportRouter.h"
 
 using namespace std;
 
@@ -37,7 +38,7 @@ void Program::MakeBase(std::istream& in)
 
     const TransportDatabase db(
         Descriptions::ReadDescriptions(inputMap.at("base_requests").AsArray()),
-        inputMap.at("routing_settings").AsMap());
+        Router::RoutingSettings::FromJson(inputMap.at("routing_settings").AsMap()));
 
     auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
     Serialization::ProtoSerializer::Serialize(serializationSettings, db);
@@ -57,7 +58,7 @@ void Program::ProcessRequests(std::istream& in, std::ostream& out)
 
     const Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),
         db.GetBusesDescriptions(),
-        RenderSettings{});
+        Visualization::RenderSettings{});
 
     out << std::fixed << std::setprecision(14);
     Json::PrintValue(

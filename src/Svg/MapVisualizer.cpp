@@ -5,6 +5,8 @@
 #include "Objects.h"
 
 using namespace Svg;
+using namespace Router;
+using namespace Visualization;
 
 const std::string MapVisualizer::DefaultFontFamily("Verdana");
 const std::string MapVisualizer::DefaultStrokeLineCap("round");

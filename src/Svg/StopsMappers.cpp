@@ -4,6 +4,8 @@
 #include "StopsMappers.h"
 
 using namespace Svg;
+using namespace Visualization;
+
 
 Svg::GeoStopMapper::GeoStopMapper(const RenderSettings &renderSettings) : _renderSettings(renderSettings),
                                                                           _coordMapper()

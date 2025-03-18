@@ -4,9 +4,11 @@ package Serialization;
 
 import "Bus.proto";
 import "Stop.proto";
+import "RoutingSettings.proto";
 
 message TransportCatalog
 {
   repeated Stop stops = 1;
   repeated Bus buses = 2;
+  RoutingSettings routing_settings = 3;
 }

@@ -18,6 +18,7 @@ TransportCatalog Serialization::ProtoMapper::Map(const TransportDatabase& db)
     {
         *catalog.add_stops() = std::move(pbStop);
     }
+    *catalog.mutable_routing_settings() = Map(db.GetRoutingSettings());
     return catalog;
 }
 
@@ -36,14 +37,9 @@ TransportDatabase Serialization::ProtoMapper::Map(const TransportCatalog& catalo
         stops.emplace_back(Map(pbStop));
     }
 
-    // TODO: Временное решение, дальше будет исправлено
-    Json::Dict tmpDefaultRoutingSettingsJson;
-    tmpDefaultRoutingSettingsJson["bus_wait_time"] = 5;
-    tmpDefaultRoutingSettingsJson["bus_velocity"] = 30.5;
-
     return TransportDatabase(
         Descriptions::InputQueries{ .buses = std::move(buses), .stops = std::move(stops) },
-        tmpDefaultRoutingSettingsJson
+        Map(catalog.routing_settings())
     );
 }
 
@@ -160,4 +156,20 @@ Sphere::Point Serialization::ProtoMapper::Map(const Serialization::Point& pbPoin
 {
     return Sphere::Point{ .latitude = pbPoint.latitude(),
                             .longitude = pbPoint.longitude() };
+}
+
+Serialization::RoutingSettings Serialization::ProtoMapper::Map(const Router::RoutingSettings& settings)
+{
+    Serialization::RoutingSettings pbSettings;
+    pbSettings.set_bus_wait_time(settings.bus_wait_time);
+    pbSettings.set_bus_velocity(settings.bus_velocity);
+    return pbSettings;
+}
+
+Router::RoutingSettings Serialization::ProtoMapper::Map(const Serialization::RoutingSettings& pbSettings)
+{
+    return Router::RoutingSettings {
+        .bus_wait_time = pbSettings.bus_wait_time(),
+        .bus_velocity = pbSettings.bus_velocity()
+    };
 }

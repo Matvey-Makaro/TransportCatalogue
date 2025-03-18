@@ -34,7 +34,7 @@ private:
 
 public:
   TransportDatabase(Descriptions::InputQueries data,
-                     const Json::Dict& routing_settings_json);
+                     const Router::RoutingSettings& routingSettings);
 
   const Stop* GetStop(const std::string& name) const;
   const Bus* GetBus(const std::string& name) const;
@@ -42,7 +42,8 @@ public:
   std::vector<const Descriptions::Bus*> GetBusesDescriptions() const;
   std::vector<const Descriptions::Stop*> GetStopsDescriptions() const;
 
-  std::optional<TransportRouter::RouteInfo> FindRoute(const std::string& stopFrom, const std::string& stopTo) const;
+  std::optional<Router::TransportRouter::RouteInfo> FindRoute(const std::string& stopFrom, const std::string& stopTo) const;
+  Router::RoutingSettings GetRoutingSettings() const;
 
   private:
   static int ComputeRoadRouteLength(
@@ -59,5 +60,6 @@ public:
   std::vector<Descriptions::Stop> _stopsDescr;
   std::unordered_map<std::string, Stop> _stops;
   std::unordered_map<std::string, Bus> _buses;
-  std::unique_ptr<TransportRouter> _router;
+  Router::RoutingSettings _routingSettings;
+  std::unique_ptr<Router::TransportRouter> _router;
 };

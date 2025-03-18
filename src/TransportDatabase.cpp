@@ -3,13 +3,15 @@
 #include <sstream>
 
 using namespace std;
+using namespace Router;
 
 TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
-    const Json::Dict& routing_settings_json) :
+    const Router::RoutingSettings& routingSettings) :
     _busesDescr(std::move(data.buses)),
     _stopsDescr(std::move(data.stops)),
     _stops(),
     _buses(),
+    _routingSettings(routingSettings),
     _router()
 {
     Descriptions::StopsDict stops_dict;
@@ -33,7 +35,7 @@ TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
         }
     }
 
-    _router = make_unique<TransportRouter>(stops_dict, buses_dict, routing_settings_json);
+    _router = make_unique<Router::TransportRouter>(stops_dict, buses_dict, _routingSettings);
 }
 
 const TransportDatabase::Stop* TransportDatabase::GetStop(const string& name) const {
@@ -88,4 +90,9 @@ double TransportDatabase::ComputeGeoRouteDistance(
         );
     }
     return result;
+}
+
+Router::RoutingSettings TransportDatabase::GetRoutingSettings() const
+{
+    return _routingSettings;
 }

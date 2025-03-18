@@ -6,7 +6,7 @@
 #include <sstream>
 
 using namespace std;
-
+using namespace Router;
 
 namespace Requests
 {
@@ -118,9 +118,10 @@ namespace Requests
       dict["items"] = std::move(items);
 #endif
 
-      std::stringstream mapSvg;
-      _mapVisualizer->RenderRoute(mapSvg, *route, _stopTo);
-      dict["map"] = mapSvg.str();
+      // TODO: Uncomment later
+      // std::stringstream mapSvg;
+      // _mapVisualizer->RenderRoute(mapSvg, *route, _stopTo);
+      // dict["map"] = mapSvg.str();
     }
 
     return dict;

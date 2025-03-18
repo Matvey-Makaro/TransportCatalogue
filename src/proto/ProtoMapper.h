@@ -3,8 +3,10 @@
 #include <vector>
 #include "transport_catalog.pb.h"
 #include "Point.pb.h"
+#include "TransportRouter.h"
 
 class TransportDatabase;
+struct RoutingSettings;
 namespace Descriptions
 {
     struct Bus;
@@ -36,6 +38,9 @@ namespace Serialization
         static std::vector<Descriptions::Stop> Map(const std::vector<Serialization::Stop>& pbStops);
     
         static Serialization::Point Map(const Sphere::Point& point);
-        static Sphere::Point Map(const Serialization::Point& pbPoint);  
+        static Sphere::Point Map(const Serialization::Point& pbPoint);
+
+        static Serialization::RoutingSettings Map(const Router::RoutingSettings& settings);
+        static Router::RoutingSettings Map(const Serialization::RoutingSettings& pbSettings);
     };
 }
