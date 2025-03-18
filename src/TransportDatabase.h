@@ -34,7 +34,12 @@ private:
 
 public:
   TransportDatabase(Descriptions::InputQueries data,
-                     const Json::Dict& routing_settings_json);
+    const Json::Dict& routing_settings_json);
+
+  TransportDatabase(std::unordered_map<std::string, Stop> stops,
+    std::unordered_map<std::string, Bus> buses,
+    const Json::Dict& routing_settings_json);
+
 
   const Stop* GetStop(const std::string& name) const;
   const Bus* GetBus(const std::string& name) const;
@@ -42,17 +47,20 @@ public:
   std::vector<const Descriptions::Bus*> GetBusesDescriptions() const;
   std::vector<const Descriptions::Stop*> GetStopsDescriptions() const;
 
+  const std::unordered_map<std::string, Bus>& GetBusesResponses() const;
+  const std::unordered_map<std::string, Stop>& GetStopsResponses() const;
+
   std::optional<TransportRouter::RouteInfo> FindRoute(const std::string& stopFrom, const std::string& stopTo) const;
 
-  private:
+private:
   static int ComputeRoadRouteLength(
-      const std::vector<std::string>& stops,
-      const Descriptions::StopsDict& stops_dict
+    const std::vector<std::string>& stops,
+    const Descriptions::StopsDict& stops_dict
   );
 
   static double ComputeGeoRouteDistance(
-      const std::vector<std::string>& stops,
-      const Descriptions::StopsDict& stops_dict
+    const std::vector<std::string>& stops,
+    const Descriptions::StopsDict& stops_dict
   );
 
   std::vector<Descriptions::Bus> _busesDescr;

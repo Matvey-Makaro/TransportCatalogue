@@ -36,6 +36,17 @@ TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
     _router = make_unique<TransportRouter>(stops_dict, buses_dict, routing_settings_json);
 }
 
+TransportDatabase::TransportDatabase(std::unordered_map<std::string, Stop> stops, 
+    std::unordered_map<std::string, Bus> buses, 
+    const Json::Dict& routing_settings_json) :
+    _busesDescr(),
+    _stopsDescr(),
+    _stops(std::move(stops)),
+    _buses(std::move(buses)),
+    _router()
+{
+}
+
 const TransportDatabase::Stop* TransportDatabase::GetStop(const string& name) const {
     return GetValuePointer(_stops, name);
 }
@@ -88,4 +99,14 @@ double TransportDatabase::ComputeGeoRouteDistance(
         );
     }
     return result;
+}
+
+const std::unordered_map<std::string, TransportDatabase::Bus>& TransportDatabase::GetBusesResponses() const
+{
+    return _buses;
+}
+
+const std::unordered_map<std::string, TransportDatabase::Stop>& TransportDatabase::GetStopsResponses() const
+{
+    return _stops;
 }
