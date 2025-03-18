@@ -7,30 +7,33 @@ using namespace Serialization;
 
 TransportCatalog Serialization::ProtoMapper::Map(const TransportDatabase& db)
 {
+    auto pbBuses = Map(db.GetBusesDescriptions());
+    auto pbStops = Map(db.GetStopsDescriptions());
     TransportCatalog catalog;
-    for(const auto& [busName, bus] : db.GetBusesResponses())
+    for(auto&& pbBus : pbBuses)
     {
-        *catalog.add_buses() = Map(busName, bus);
+        *catalog.add_buses() = std::move(pbBus);
     }
-    for(const auto& [stopName, stop] : db.GetStopsResponses())
+    for(auto&& pbStop : pbStops)
     {
-        *catalog.add_stops() = Map(stopName, stop);
+        *catalog.add_stops() = std::move(pbStop);
     }
     return catalog;
 }
 
 TransportDatabase Serialization::ProtoMapper::Map(const TransportCatalog& catalog)
 {
-    std::unordered_map<std::string, Responses::Bus> buses;
+    std::vector<Descriptions::Bus> buses;
+    buses.reserve(catalog.buses_size());
     for (const auto& pbBus : catalog.buses())
     {
-        buses.insert(Map(pbBus));
+        buses.emplace_back(Map(pbBus));
     }
-
-    std::unordered_map<std::string, Responses::Stop> stops;
+    std::vector<Descriptions::Stop> stops;
+    stops.reserve(catalog.stops_size());
     for (const auto& pbStop : catalog.stops())
     {
-        stops.insert(Map(pbStop));
+        stops.emplace_back(Map(pbStop));
     }
 
     // TODO: Временное решение, дальше будет исправлено
@@ -39,53 +42,110 @@ TransportDatabase Serialization::ProtoMapper::Map(const TransportCatalog& catalo
     tmpDefaultRoutingSettingsJson["bus_velocity"] = 30.5;
 
     return TransportDatabase(
-        std::move(stops),
-        std::move(buses),
+        Descriptions::InputQueries{ .buses = std::move(buses), .stops = std::move(stops) },
         tmpDefaultRoutingSettingsJson
     );
 }
 
-Serialization::ResponseBus ProtoMapper::Map(std::string_view busName, const Responses::Bus& bus)
+Serialization::Bus Serialization::ProtoMapper::Map(const Descriptions::Bus& bus)
 {
-    ResponseBus pbBus;
-    pbBus.set_name(std::string(busName));
-    pbBus.set_stop_count(bus.stop_count);
-    pbBus.set_unique_stop_count(bus.unique_stop_count);
-    pbBus.set_road_route_length(bus.road_route_length);
-    pbBus.set_geo_route_length(bus.geo_route_length);
+    Serialization::Bus pbBus;
+    pbBus.set_name(bus.name);
+    pbBus.set_isroundtrip(bus.isRoundtrip);
+    for (const auto& stopNames : bus.stops)
+    {
+        pbBus.add_stops(stopNames);
+    };
     return pbBus;
 }
 
-std::pair<ProtoMapper::Name, Responses::Bus> ProtoMapper::Map(const Serialization::ResponseBus& pbBus)
+Descriptions::Bus Serialization::ProtoMapper::Map(const Serialization::Bus& pbBus)
 {
-    Responses::Bus bus {
-        .stop_count = pbBus.stop_count(),
-        .unique_stop_count = pbBus.unique_stop_count(),
-        .road_route_length = pbBus.road_route_length(),
-        .geo_route_length = pbBus.geo_route_length()
+    std::vector<std::string> stopNames;
+    stopNames.reserve(pbBus.stops_size());
+    for (const auto& stopName : pbBus.stops())
+    {
+        stopNames.emplace_back(stopName);
+    }
+    return Descriptions::Bus{
+        .name = pbBus.name(),
+        .stops = std::move(stopNames),
+        .isRoundtrip = pbBus.isroundtrip()
     };
-    return std::make_pair(pbBus.name(), std::move(bus));
 }
 
-Serialization::ResponseStop ProtoMapper::Map(std::string_view stopName, const Responses::Stop& stop)
+std::vector<Serialization::Bus> Serialization::ProtoMapper::Map(const std::vector<const Descriptions::Bus*>& buses)
 {
-    ResponseStop pbStop;
-    pbStop.set_name(std::string(stopName));
-    for(const auto& busName : stop.bus_names)
+    std::vector<Serialization::Bus> pbBuses;
+    pbBuses.reserve(buses.size());
+    for (const auto* bus : buses)
     {
-        pbStop.add_bus_names(busName);
+        pbBuses.emplace_back(Map(*bus));
+    }
+    return pbBuses;
+}
+
+std::vector<Descriptions::Bus> Serialization::ProtoMapper::Map(const std::vector<Serialization::Bus>& pbBuses)
+{
+    std::vector<Descriptions::Bus> buses;
+    buses.reserve(pbBuses.size());
+    for (const auto& pbBus : pbBuses)
+    {
+        buses.emplace_back(Map(pbBus));
+    }
+    return buses;
+}
+
+Serialization::Stop Serialization::ProtoMapper::Map(const Descriptions::Stop& stop)
+{
+    Serialization::Stop pbStop;
+    pbStop.set_name(stop.name);
+    *pbStop.mutable_position() = Map(stop.position);
+    for (const auto& [stopName, distance] : stop.distances)
+    {
+        Serialization::Stop::NameDistance nameDistance;
+        nameDistance.set_name(stopName);
+        nameDistance.set_distance(distance);
+        *pbStop.add_distances() = std::move(nameDistance);
     }
     return pbStop;
 }
 
-std::pair<ProtoMapper::Name, Responses::Stop> ProtoMapper::Map(const Serialization::ResponseStop& pbStop)
+Descriptions::Stop Serialization::ProtoMapper::Map(const Serialization::Stop& pbStop)
 {
-    Responses::Stop stop;
-    for(const auto& busName : pbStop.bus_names())
+    std::unordered_map<std::string, int> distances;
+    distances.reserve(pbStop.distances_size());
+    for (const auto& dist : pbStop.distances())
     {
-        stop.bus_names.insert(busName);
+        distances.insert({ dist.name(), dist.distance() });
     }
-    return std::make_pair(pbStop.name(), std::move(stop));
+    return Descriptions::Stop{
+        .name = pbStop.name(),
+        .position = Map(pbStop.position()),
+        .distances = std::move(distances)
+    };
+}
+
+std::vector<Serialization::Stop> Serialization::ProtoMapper::Map(const std::vector<const Descriptions::Stop*>& stops)
+{
+    std::vector<Serialization::Stop> pbStops;
+    pbStops.reserve(stops.size());
+    for (const auto* s : stops)
+    {
+        pbStops.emplace_back(Map(*s));
+    }
+    return pbStops;
+}
+
+std::vector<Descriptions::Stop> Serialization::ProtoMapper::Map(const std::vector<Serialization::Stop>& pbStops)
+{
+    std::vector<Descriptions::Stop> stops;
+    stops.reserve(pbStops.size());
+    for (const auto& pbStop : pbStops)
+    {
+        stops.emplace_back(Map(pbStop));
+    }
+    return stops;
 }
 
 Serialization::Point Serialization::ProtoMapper::Map(const Sphere::Point& point)

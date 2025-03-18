@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package Serialization;
 
-import "ResponseBus.proto";
-import "ResponseStop.proto";
+import "Bus.proto";
+import "Stop.proto";
 
 message TransportCatalog
 {
-  repeated ResponseStop stops = 1;
-  repeated ResponseBus buses = 2;
+  repeated Stop stops = 1;
+  repeated Bus buses = 2;
 }

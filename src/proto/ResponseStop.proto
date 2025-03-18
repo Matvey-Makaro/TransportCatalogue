@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package Serialization;
-
-message ResponseStop
-{
-    string Name = 1;
-    repeated string bus_names = 2;
-}

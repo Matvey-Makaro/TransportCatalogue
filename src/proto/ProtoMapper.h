@@ -2,17 +2,10 @@
 
 #include <vector>
 #include "transport_catalog.pb.h"
-#include "Bus.pb.h"
-#include "Stop.pb.h"
 #include "Point.pb.h"
 
 class TransportDatabase;
 namespace Descriptions
-{
-    struct Bus;
-    struct Stop;
-}
-namespace Responses
 {
     struct Bus;
     struct Stop;
@@ -32,12 +25,15 @@ namespace Serialization
         static TransportCatalog Map(const TransportDatabase& db);
         static TransportDatabase Map(const TransportCatalog& catalog);
     
-        using Name = std::string;
-        static Serialization::ResponseBus Map(std::string_view busName, const Responses::Bus& bus);
-        static std::pair<Name, Responses::Bus> Map(const Serialization::ResponseBus& pbBus);
+        static Serialization::Bus Map(const Descriptions::Bus& bus);
+        static Descriptions::Bus Map(const Serialization::Bus& pbBus);
+        static std::vector<Serialization::Bus> Map(const std::vector<const Descriptions::Bus*>& buses);
+        static std::vector<Descriptions::Bus> Map(const std::vector<Serialization::Bus>& pbBuses);
     
-        static Serialization::ResponseStop Map(std::string_view stopName, const Responses::Stop& stop);
-        static std::pair<Name, Responses::Stop> Map(const Serialization::ResponseStop& pbStop);
+        static Serialization::Stop Map(const Descriptions::Stop& stop);
+        static Descriptions::Stop Map(const Serialization::Stop& pbStop);
+        static std::vector<Serialization::Stop> Map(const std::vector<const Descriptions::Stop*>& stops);
+        static std::vector<Descriptions::Stop> Map(const std::vector<Serialization::Stop>& pbStops);
     
         static Serialization::Point Map(const Sphere::Point& point);
         static Sphere::Point Map(const Serialization::Point& pbPoint);  
