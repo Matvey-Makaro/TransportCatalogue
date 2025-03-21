@@ -1,18 +1,20 @@
 #include "TransportDatabase.h"
-
+#include "RenderSettings.h"
 #include <sstream>
 
 using namespace std;
 using namespace Router;
 
 TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
-    const Router::RoutingSettings& routingSettings) :
+    const Router::RoutingSettings& routingSettings,
+    const Visualization::RenderSettings& renderSettings) :
     _busesDescr(std::move(data.buses)),
     _stopsDescr(std::move(data.stops)),
     _stops(),
     _buses(),
     _routingSettings(routingSettings),
-    _router()
+    _router(),
+    _renderSettings(renderSettings)
 {
     Descriptions::StopsDict stops_dict;
     for (const auto& stop : _stopsDescr) {
@@ -92,7 +94,12 @@ double TransportDatabase::ComputeGeoRouteDistance(
     return result;
 }
 
-Router::RoutingSettings TransportDatabase::GetRoutingSettings() const
+const Router::RoutingSettings& TransportDatabase::GetRoutingSettings() const
 {
     return _routingSettings;
+}
+
+const Visualization::RenderSettings& TransportDatabase::GetRenderSettings() const
+{
+    return _renderSettings;
 }

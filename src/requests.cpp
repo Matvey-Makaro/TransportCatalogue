@@ -117,11 +117,9 @@ namespace Requests
 
       dict["items"] = std::move(items);
 #endif
-
-      // TODO: Uncomment later
-      // std::stringstream mapSvg;
-      // _mapVisualizer->RenderRoute(mapSvg, *route, _stopTo);
-      // dict["map"] = mapSvg.str();
+      std::stringstream mapSvg;
+      _mapVisualizer->RenderRoute(mapSvg, *route, _stopTo);
+      dict["map"] = mapSvg.str();
     }
 
     return dict;

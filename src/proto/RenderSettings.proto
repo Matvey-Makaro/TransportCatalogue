@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package Serialization;
+
+message SvgPoint
+{
+    double x = 1;
+    double y = 2;
+}
+
+message Rgb
+{
+    uint32 red = 1;
+    uint32 green = 2;
+    uint32 blue = 3;
+}
+
+message Rgba
+{
+    uint32 red = 1;
+    uint32 green = 2;
+    uint32 blue = 3;
+    double alpha = 4;
+}
+
+message SvgColor
+{
+    oneof color 
+    {
+        string color_name = 1;
+        Rgb rgb = 2;
+        Rgba rgba = 3;
+    }
+}
+
+
+message RenderSettings
+{
+    double max_map_width = 1;
+    double max_map_height = 2;
+    double padding = 3;
+    double stop_radius = 4;
+    double bus_line_width = 5;
+    uint32 stop_label_font_size = 6;
+    SvgPoint stop_label_offset = 7;
+    SvgColor substrate_underlayer_color = 8;
+    double underlayer_width = 9;
+    repeated SvgColor color_palette = 10;
+    uint32 bus_label_font_size = 11;
+    SvgPoint bus_label_offset = 12;
+    repeated string layers = 13;
+    double outer_margin = 14;
+}

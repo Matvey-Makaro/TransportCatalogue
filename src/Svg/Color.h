@@ -12,6 +12,11 @@ namespace Svg
 class Color
 {
 public:
+using ColorType = std::variant<std::monostate,
+                                   std::string,
+                                   Rgb,
+                                   Rgba>;
+
     Color();
     Color(std::string colorName);
     Color(std::string_view colorName);
@@ -26,12 +31,9 @@ public:
     Color& operator=(const Color& other) = default;
     Color& operator=(Color&& other) = default;
 
-private:
-    using ColorType = std::variant<std::monostate,
-                                   std::string,
-                                   Rgb,
-                                   Rgba>;
+    const ColorType& GetColor() const;
 
+private:
     ColorType _color;
 
     friend std::ostream& operator<<(std::ostream& out, const Svg::Color& color)

@@ -27,6 +27,11 @@ namespace Responses {
   };
 }
 
+namespace Visualization
+{
+    struct RenderSettings;
+}
+
 class TransportDatabase {
 private:
   using Bus = Responses::Bus;
@@ -34,7 +39,8 @@ private:
 
 public:
   TransportDatabase(Descriptions::InputQueries data,
-                     const Router::RoutingSettings& routingSettings);
+                     const Router::RoutingSettings& routingSettings,
+                     const Visualization::RenderSettings& renderSettings);
 
   const Stop* GetStop(const std::string& name) const;
   const Bus* GetBus(const std::string& name) const;
@@ -43,7 +49,8 @@ public:
   std::vector<const Descriptions::Stop*> GetStopsDescriptions() const;
 
   std::optional<Router::TransportRouter::RouteInfo> FindRoute(const std::string& stopFrom, const std::string& stopTo) const;
-  Router::RoutingSettings GetRoutingSettings() const;
+  const Router::RoutingSettings& GetRoutingSettings() const;
+  const Visualization::RenderSettings& GetRenderSettings() const;
 
   private:
   static int ComputeRoadRouteLength(
@@ -62,4 +69,5 @@ public:
   std::unordered_map<std::string, Bus> _buses;
   Router::RoutingSettings _routingSettings;
   std::unique_ptr<Router::TransportRouter> _router;
+  Visualization::RenderSettings _renderSettings;
 };

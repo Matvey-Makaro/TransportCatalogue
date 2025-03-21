@@ -29,3 +29,7 @@ Color::Color(const Rgba &rgba) :
     _color(rgba)
 {}
 
+const Svg::Color::ColorType& Svg::Color::GetColor() const
+{
+    return _color;
+}

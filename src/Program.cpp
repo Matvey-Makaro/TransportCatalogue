@@ -38,7 +38,8 @@ void Program::MakeBase(std::istream& in)
 
     const TransportDatabase db(
         Descriptions::ReadDescriptions(inputMap.at("base_requests").AsArray()),
-        Router::RoutingSettings::FromJson(inputMap.at("routing_settings").AsMap()));
+        Router::RoutingSettings::FromJson(inputMap.at("routing_settings").AsMap()),
+        Visualization::RenderSettings::ParseFrom(inputMap.at("render_settings").AsMap()));
 
     auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
     Serialization::ProtoSerializer::Serialize(serializationSettings, db);
@@ -51,14 +52,9 @@ void Program::ProcessRequests(std::istream& in, std::ostream& out)
     auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
     auto db = Serialization::ProtoSerializer::Deserialize(serializationSettings);
 
-    // TODO: Пока что реализация без mapVisualizer
-    // const Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),
-    //     db.GetBusesDescriptions(),
-    //     RenderSettings::ParseFrom(input_map.at("render_settings").AsMap()));
-
     const Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),
         db.GetBusesDescriptions(),
-        Visualization::RenderSettings{});
+        db.GetRenderSettings());
 
     out << std::fixed << std::setprecision(14);
     Json::PrintValue(

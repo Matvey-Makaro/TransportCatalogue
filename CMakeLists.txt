@@ -25,6 +25,7 @@ set(ProtoFiles
     src/proto/Stop.proto
     src/proto/Bus.proto
     src/proto/RoutingSettings.proto
+    src/proto/RenderSettings.proto
     src/proto/transport_catalog.proto
 )
 

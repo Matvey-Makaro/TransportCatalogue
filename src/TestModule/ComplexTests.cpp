@@ -11,7 +11,7 @@ void Example1()
 {
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpw58tetx6"
+        "file": "/tmp/tmpzb6s9k4m"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -196,24 +196,28 @@ void Example1()
 
     std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpw58tetx6"
+        "file": "/tmp/tmpzb6s9k4m"
     },
     "stat_requests": [
         {
-            "id": 130627203,
+            "id": 218563507,
             "type": "Bus",
             "name": "14"
         },
         {
-            "id": 1360715858,
+            "id": 508658276,
             "type": "Stop",
             "name": "Электросети"
         },
         {
-            "id": 1641382366,
+            "id": 1964680131,
             "type": "Route",
             "from": "Морской вокзал",
             "to": "Параллельная улица"
+        },
+        {
+            "id": 1359372752,
+            "type": "Map"
         }
     ]
 }
@@ -234,7 +238,7 @@ void Example2()
 {
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpbuezwca9"
+        "file": "/tmp/tmpynyc5yoi"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -697,24 +701,28 @@ void Example2()
     
         std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpbuezwca9"
+        "file": "/tmp/tmpynyc5yoi"
     },
     "stat_requests": [
         {
-            "id": 517161241,
+            "id": 80146768,
             "type": "Bus",
             "name": "13"
         },
         {
-            "id": 300166811,
+            "id": 1571442892,
             "type": "Stop",
             "name": "Морской вокзал"
         },
         {
-            "id": 1231848878,
+            "id": 1490699931,
             "type": "Route",
             "from": "Пансионат Нева",
-            "to": "Мацестинская долина"
+            "to": "Улица Лысая Гора"
+        },
+        {
+            "id": 684758285,
+            "type": "Map"
         }
     ]
 }

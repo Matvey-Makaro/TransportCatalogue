@@ -2,6 +2,9 @@
 #include "TransportDatabase.h"
 #include "Descriptions.h"
 #include "Sphere.h"
+#include "RenderSettings.h"
+#include "Svg/Rgb.h"
+#include "Svg/Rgba.h"
 
 using namespace Serialization;
 
@@ -10,15 +13,16 @@ TransportCatalog Serialization::ProtoMapper::Map(const TransportDatabase& db)
     auto pbBuses = Map(db.GetBusesDescriptions());
     auto pbStops = Map(db.GetStopsDescriptions());
     TransportCatalog catalog;
-    for(auto&& pbBus : pbBuses)
+    for (auto&& pbBus : pbBuses)
     {
         *catalog.add_buses() = std::move(pbBus);
     }
-    for(auto&& pbStop : pbStops)
+    for (auto&& pbStop : pbStops)
     {
         *catalog.add_stops() = std::move(pbStop);
     }
     *catalog.mutable_routing_settings() = Map(db.GetRoutingSettings());
+    *catalog.mutable_render_settings() = Map(db.GetRenderSettings());
     return catalog;
 }
 
@@ -36,10 +40,10 @@ TransportDatabase Serialization::ProtoMapper::Map(const TransportCatalog& catalo
     {
         stops.emplace_back(Map(pbStop));
     }
-
     return TransportDatabase(
         Descriptions::InputQueries{ .buses = std::move(buses), .stops = std::move(stops) },
-        Map(catalog.routing_settings())
+        Map(catalog.routing_settings()),
+        Map(catalog.render_settings())
     );
 }
 
@@ -168,8 +172,162 @@ Serialization::RoutingSettings Serialization::ProtoMapper::Map(const Router::Rou
 
 Router::RoutingSettings Serialization::ProtoMapper::Map(const Serialization::RoutingSettings& pbSettings)
 {
-    return Router::RoutingSettings {
+    return Router::RoutingSettings{
         .bus_wait_time = pbSettings.bus_wait_time(),
         .bus_velocity = pbSettings.bus_velocity()
+    };
+}
+
+Serialization::RenderSettings Serialization::ProtoMapper::Map(const Visualization::RenderSettings& settings)
+{
+    Serialization::RenderSettings pbSettings;
+    pbSettings.set_max_map_width(settings.maxMapWidth);
+    pbSettings.set_max_map_height(settings.maxMapHeight);
+    pbSettings.set_padding(settings.padding);
+    pbSettings.set_stop_radius(settings.stopRadius);
+    pbSettings.set_bus_line_width(settings.busLineWidth);
+    pbSettings.set_stop_label_font_size(settings.stopLabelFontSize);
+    *pbSettings.mutable_stop_label_offset() = Map(settings.stopLabelOffset);
+    *pbSettings.mutable_substrate_underlayer_color() = Map(settings.substrateUnderlayerColor);
+    pbSettings.set_underlayer_width(settings.underlayerWidth);
+    for (const auto& color : settings.colorPalette)
+    {
+        *pbSettings.add_color_palette() = Map(color);
+    }
+    pbSettings.set_bus_label_font_size(settings.busLabelFontSize);
+    *pbSettings.mutable_bus_label_offset() = Map(settings.busLabelOffset);
+    for (const auto& l : settings.layers)
+    {
+        pbSettings.add_layers(l);
+    }
+    pbSettings.set_outer_margin(settings.outerMargin);
+    return pbSettings;
+}
+
+Visualization::RenderSettings Serialization::ProtoMapper::Map(const Serialization::RenderSettings& pbSettings)
+{
+    Visualization::RenderSettings settings;
+    settings.maxMapWidth = pbSettings.max_map_width();
+    settings.maxMapHeight = pbSettings.max_map_height();
+    settings.padding = pbSettings.padding();
+    settings.stopRadius = pbSettings.stop_radius();
+    settings.busLineWidth = pbSettings.bus_line_width();
+    settings.stopLabelFontSize = pbSettings.stop_label_font_size();
+    settings.stopLabelOffset = Map(pbSettings.stop_label_offset());
+    settings.substrateUnderlayerColor = Map(pbSettings.substrate_underlayer_color());
+    settings.underlayerWidth = pbSettings.underlayer_width();
+    settings.colorPalette.reserve(pbSettings.color_palette_size());
+    for (const auto& color : pbSettings.color_palette())
+    {
+        settings.colorPalette.emplace_back(Map(color));
+    }
+    settings.busLabelFontSize = pbSettings.bus_label_font_size();
+    settings.busLabelOffset = Map(pbSettings.bus_label_offset());
+    settings.layers.reserve(pbSettings.layers_size());
+    for (const auto& l : pbSettings.layers())
+    {
+        settings.layers.emplace_back(l);
+    }
+    settings.outerMargin = pbSettings.outer_margin();
+    return settings;
+}
+
+Serialization::SvgPoint Serialization::ProtoMapper::Map(const Svg::Point& point)
+{
+    Serialization::SvgPoint pbPoint;
+    pbPoint.set_x(point.x);
+    pbPoint.set_y(point.y);
+    return pbPoint;
+}
+
+Svg::Point Serialization::ProtoMapper::Map(const Serialization::SvgPoint& pbPoint)
+{
+    return Svg::Point{
+        .x = pbPoint.x(),
+        .y = pbPoint.y()
+    };
+}
+
+Serialization::SvgColor Serialization::ProtoMapper::Map(const Svg::Color& color)
+{
+    struct ColorMapper
+    {
+        Serialization::SvgColor pbColor;
+        void Map(std::monostate)
+        {
+            // No actions
+        }
+
+        void Map(const std::string& c)
+        {
+            pbColor.set_color_name(c);
+        }
+        void Map(const Svg::Rgb& c)
+        {
+            *pbColor.mutable_rgb() = ProtoMapper::Map(c);
+        }
+        void Map(const Svg::Rgba& c)
+        {
+            *pbColor.mutable_rgba() = ProtoMapper::Map(c);
+        }
+
+    };
+    ColorMapper mapper;
+    std::visit([&mapper](auto&& c)
+        {
+            mapper.Map(c);
+        }, color.GetColor());
+    return mapper.pbColor;
+}
+
+Svg::Color Serialization::ProtoMapper::Map(const Serialization::SvgColor& pbColor)
+{
+    switch (pbColor.color_case())
+    {
+    case SvgColor::ColorCase::kColorName:
+        return Svg::Color(pbColor.color_name());
+    case SvgColor::ColorCase::kRgb:
+        return Svg::Color(Map(pbColor.rgb()));
+    case SvgColor::ColorCase::kRgba:
+        return Svg::Color(Map(pbColor.rgba()));
+    }
+    return Svg::NoneColor;
+}
+
+Serialization::Rgb Serialization::ProtoMapper::Map(const Svg::Rgb& rgb)
+{
+    Serialization::Rgb pbRgb;
+    pbRgb.set_red(rgb.red);
+    pbRgb.set_green(rgb.green);
+    pbRgb.set_blue(rgb.blue);
+    return pbRgb;
+}
+
+Svg::Rgb Serialization::ProtoMapper::Map(const Serialization::Rgb& pbRgb)
+{
+    return Svg::Rgb{
+        .red = static_cast<uint8_t>(pbRgb.red()),
+        .green = static_cast<uint8_t>(pbRgb.green()),
+        .blue = static_cast<uint8_t>(pbRgb.blue())
+    };
+}
+
+Serialization::Rgba Serialization::ProtoMapper::Map(const Svg::Rgba& rgba)
+{
+    Serialization::Rgba pbRgba;
+    pbRgba.set_red(rgba.red);
+    pbRgba.set_green(rgba.green);
+    pbRgba.set_blue(rgba.blue);
+    pbRgba.set_alpha(rgba.alpha);
+    return pbRgba;
+}
+
+Svg::Rgba Serialization::ProtoMapper::Map(const Serialization::Rgba& pbRgba)
+{
+    return Svg::Rgba{
+        .red = static_cast<uint8_t>(pbRgba.red()),
+        .green = static_cast<uint8_t>(pbRgba.green()),
+        .blue = static_cast<uint8_t>(pbRgba.blue()),
+        .alpha = pbRgba.alpha()
     };
 }

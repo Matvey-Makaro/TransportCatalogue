@@ -17,6 +17,18 @@ namespace Sphere
     struct Point;
 }
 
+namespace Visualization
+{
+    struct RenderSettings;
+}
+namespace Svg
+{
+    class Color;
+    struct Rgb;
+    struct Rgba;
+    struct Point;
+}
+
 namespace Serialization
 {
     class ProtoMapper
@@ -42,5 +54,20 @@ namespace Serialization
 
         static Serialization::RoutingSettings Map(const Router::RoutingSettings& settings);
         static Router::RoutingSettings Map(const Serialization::RoutingSettings& pbSettings);
+
+        static Serialization::RenderSettings Map(const Visualization::RenderSettings& settings);
+        static Visualization::RenderSettings Map(const Serialization::RenderSettings& pbSettings);
+
+        static Serialization::SvgPoint Map(const Svg::Point& point);
+        static Svg::Point Map(const Serialization::SvgPoint& pbPoint);
+
+        static Serialization::SvgColor Map(const Svg::Color& color);
+        static Svg::Color Map(const Serialization::SvgColor& pbColor);
+
+        static Serialization::Rgb Map(const Svg::Rgb& rgb);
+        static Svg::Rgb Map(const Serialization::Rgb& pbRgb);
+        
+        static Serialization::Rgba Map(const Svg::Rgba& rgba);
+        static Svg::Rgba Map(const Serialization::Rgba& pbRgba);
     };
 }
