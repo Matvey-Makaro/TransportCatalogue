@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package YellowPages;
+
+import "address.proto";
+import "name.proto";
+import "phone.proto";
+import "working_time.proto";
+import "url.proto";
+
+message NearbyStop {
+  string name = 1;
+  uint32 meters = 2;
+}
+
+message Company {
+  Address address = 1;
+  repeated Name names = 2;
+  repeated Phone phones = 3;
+  repeated Url urls = 4;
+  repeated uint64 rubrics = 5;
+  WorkingTime working_time = 6;
+  repeated NearbyStop nearby_stops = 7;
+}

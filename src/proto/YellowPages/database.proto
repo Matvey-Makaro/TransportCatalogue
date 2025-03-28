@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package YellowPages;
+
+import "company.proto";
+import "rubric.proto";
+
+message Database {
+  repeated Company companies = 1;
+  map<uint64, Rubric> rubrics = 2;
+}

@@ -27,7 +27,16 @@ set(ProtoFiles
     src/proto/TransportCatalog/RoutingSettings.proto
     src/proto/TransportCatalog/RenderSettings.proto
     src/proto/TransportCatalog/transport_catalog.proto
-)
+    src/proto/YellowPages/sphere.proto
+    src/proto/YellowPages/url.proto
+    src/proto/YellowPages/working_time.proto
+    src/proto/YellowPages/rubric.proto
+    src/proto/YellowPages/phone.proto
+    src/proto/YellowPages/name.proto
+    src/proto/YellowPages/address.proto
+    src/proto/YellowPages/company.proto
+    src/proto/YellowPages/database.proto
+    )
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${ProtoFiles})
 

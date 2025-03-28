@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package SphereProto;
+
+message Coords {
+  double lat = 1;
+  double lon = 2;
+}
