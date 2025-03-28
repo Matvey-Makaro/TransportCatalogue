@@ -3,14 +3,14 @@
 #include "ProtoSerializer.h"
 #include "SerializationSettings.h"
 #include "TransportDatabase.h"
-#include "ProtoMapper.h"
+#include "TransportCatalogProtoMapper.h"
 
 using namespace Serialization;
 
 void Serialization::ProtoSerializer::Serialize(const SerializationSettings& settings, const TransportDatabase& db)
 {
     std::ofstream out(settings.file, std::ios::out | std::ios::binary);
-    auto catalog = ProtoMapper::Map(db);
+    auto catalog = TransportCatalogProtoMapper::Map(db);
     bool isSuccess = catalog.SerializeToOstream(&out);
     if(!isSuccess)
     {
@@ -27,5 +27,5 @@ TransportDatabase Serialization::ProtoSerializer::Deserialize(const Serializatio
     {
         std::cerr << "ProtoSerializer::Deserialize() catalog.ParseFromIstream failed!" << std::endl;
     }
-    return ProtoMapper::Map(catalog);
+    return TransportCatalogProtoMapper::Map(catalog);
 }
