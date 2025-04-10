@@ -60,7 +60,7 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByUrls(std::vector<const Compa
         {
             for (const auto& url : company->urls)
             {
-                if (companyRestrictions.urls.count(url.value));
+                if (companyRestrictions.urls.count(url.value))
                 {
                     return false;
                 }
@@ -87,7 +87,7 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByRubrics(std::vector<const Co
                 const auto& rubric = rubricIt->second;
                 for (const auto& rubricName : rubric.keywords)
                 {
-                    if (companyRestrictions.rubrics.count(rubricName));
+                    if (companyRestrictions.rubrics.count(rubricName))
                     {
                         return false;
                     }

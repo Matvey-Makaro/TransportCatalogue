@@ -61,11 +61,11 @@ Point CoordinateMapper::Map(const Sphere::Point &geoPoint) const
 double CoordinateMapper::CalculateZoomCoef() const
 {
     std::optional<double> widthZoomCoef = std::nullopt;
-    if(!IsEqual(_maxLon - _minLon, 0.0))
+    if(!IsEqualAbs(_maxLon - _minLon, 0.0))
         widthZoomCoef = (_maxWidth - 2 * _padding) / (_maxLon - _minLon);
 
     std::optional<double> heightZoomCoef = std::nullopt;
-    if(!IsEqual(_maxLat - _minLat, 0.0))
+    if(!IsEqualAbs(_maxLat - _minLat, 0.0))
         heightZoomCoef = (_maxHeight - 2 * _padding) / (_maxLat - _minLat);
 
     double zoomCoef = 0.0;

@@ -17,11 +17,19 @@ string_view Strip(string_view line)
     }
     return line;
 }
-bool IsEqual(double lhs, double rhs, double eps)
+bool IsEqualAbs(double lhs, double rhs, double eps)
 {
     return std::fabs(lhs - rhs) < eps;
 }
 
+bool IsEqualRel(double lhs, double rhs, double eps)
+{
+    double diff = fabs(lhs - rhs);
+    lhs = fabs(lhs);
+    rhs = fabs(rhs);
+    double largest = std::max(lhs, rhs);
+    return diff <= largest * eps;
+}
 
 std::string EscapeSpecialCharacters(const std::string &input)
 {

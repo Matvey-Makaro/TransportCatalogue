@@ -7,76 +7,13 @@
 #include <cstdint>
 #include <optional>
 
+#include "Rubric.h"
+#include "Company.h"
+
 namespace YellowPages
 {
     namespace BLL
     {
-        struct Rubric
-        {
-            using IdType = uint64_t;
-            std::string name;
-            std::vector<std::string> keywords;
-        };
-
-        struct Address
-        {
-            // TODO:
-        };
-
-        struct Name
-        {
-            enum Type
-            {
-                Main,
-                Synonym,
-                Short
-            };
-            std::string value;
-            Type type;
-        };
-
-        struct Phone
-        {
-            enum Type
-            {
-                PhoneNum,
-                Fax
-            };
-            std::string formatted;
-            Type type;
-            std::string countryCode;
-            std::string localCode;
-            std::string number;
-            std::string extension;
-            std::string description;
-        };
-
-        struct Url
-        {
-            std::string value;
-        };
-
-        struct WorkingTime
-        {
-
-        };
-
-        struct NearbyStop
-        {
-
-        };
-
-        struct Company
-        {
-            Address address;
-            std::vector<Name> names;
-            std::vector<Phone> phones;
-            std::vector<Url> urls;
-            std::vector<Rubric::IdType> rubrics;
-            WorkingTime workingTime;
-            std::vector<NearbyStop> nearbyStops;
-        };
-
         struct PhoneTemplate
         {
             std::optional<Phone::Type> type;
