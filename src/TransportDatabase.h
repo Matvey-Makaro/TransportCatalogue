@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
-
+#include <memory>
 namespace Responses {
   struct Stop {
     std::set<std::string> bus_names;
@@ -41,6 +41,11 @@ public:
   TransportDatabase(Descriptions::InputQueries data,
                      const Router::RoutingSettings& routingSettings,
                      const Visualization::RenderSettings& renderSettings);
+
+  TransportDatabase(const TransportDatabase& other) = delete;
+  TransportDatabase& operator=(const TransportDatabase& other) = delete;
+  TransportDatabase(TransportDatabase&& other) noexcept = default;
+  TransportDatabase& operator=(TransportDatabase&& other) noexcept = default;
 
   const Stop* GetStop(const std::string& name) const;
   const Bus* GetBus(const std::string& name) const;
@@ -71,3 +76,5 @@ public:
   std::unique_ptr<Router::TransportRouter> _router;
   Visualization::RenderSettings _renderSettings;
 };
+using TransportDatabaseShp = std::shared_ptr<TransportDatabase>;
+using TransportDatabaseUnp = std::unique_ptr<TransportDatabase>;

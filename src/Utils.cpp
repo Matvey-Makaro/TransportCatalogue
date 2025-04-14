@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <cmath>
+#include "Json.h"
 
 using namespace std;
 
@@ -57,4 +58,14 @@ std::string EscapeSpecialCharacters(const std::string &input)
 #else
     return input;
 #endif
+}
+
+const Json::Node* GetNodeByName(const Json::Dict &dict, const std::string &name)
+{
+    auto it = dict.find(name);
+    if (it == cend(dict))
+    {
+        return nullptr;
+    }
+    return &it->second;
 }

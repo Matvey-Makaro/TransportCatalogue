@@ -5,6 +5,7 @@
 #include "Json.h"
 #include "Rubric.h"
 #include "Company.h"
+#include "YellowPagesDatabase.h"
 
 namespace YellowPages
 {
@@ -13,6 +14,8 @@ namespace YellowPages
         class JsonParser
         {
         public:
+            static YellowPagesDatabase ParseYellowPages(const Json::Dict &yellowPages);
+
             using RubricMap = std::unordered_map<Rubric::IdType, Rubric>;
             static RubricMap ParseRubrics(const Json::Dict &yellowPages);
             static std::vector<Company> ParseCompanies(const Json::Dict &yellowPages);

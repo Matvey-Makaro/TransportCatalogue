@@ -1,17 +1,17 @@
+#include <gtest/gtest.h>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include "Program.h"
-#include "ComplexTests.h"
 
-namespace
+TEST(ComplexManualTest, Test1)
 {
+    // TODO: #if for skip
+    // GTEST_SKIP();
 
-void Example1()
-{
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpzb6s9k4m"
+        "file": "/tmp/tmpjyqkrtm8"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -183,62 +183,134 @@ void Example1()
             "longitude": 39.715498,
             "road_distances": {}
         }
-    ]
+    ],
+    "yellow_pages": {
+        "rubrics": {
+            "1": {
+                "name": "Сквер"
+            },
+            "2": {
+                "name": "Вокзал"
+            }
+        },
+        "companies": [
+            {
+                "names": [
+                    {
+                        "value": "Комсомольский"
+                    }
+                ],
+                "rubrics": [
+                    1
+                ]
+            },
+            {
+                "names": [
+                    {
+                        "value": "Кооперативный"
+                    }
+                ],
+                "rubrics": [
+                    1
+                ]
+            }
+        ]
+    }
 }
 )";
     std::stringstream makeBastIn(makeBaseInput);
-    // std::stringstream out;
-    std::fstream out;
-    out.open("Example1.svg", std::ios_base::out);
-
-    Program makeBase("make_base");
-    makeBase.Run(makeBastIn, out);
-
-    std::string processRequestsInput = R"({
+        // std::stringstream out;
+        std::fstream out;
+        out.open("Example2.svg", std::ios_base::out);
+    
+        Program makeBase("make_base");
+        makeBase.Run(makeBastIn, out);
+    
+        std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpzb6s9k4m"
+        "file": "/tmp/tmpjyqkrtm8"
     },
     "stat_requests": [
         {
-            "id": 218563507,
-            "type": "Bus",
-            "name": "14"
+            "id": 379575119,
+            "type": "FindCompanies",
+            "rubrics": [
+                "Сквер"
+            ]
         },
         {
-            "id": 508658276,
-            "type": "Stop",
-            "name": "Электросети"
+            "id": 702762979,
+            "type": "FindCompanies",
+            "rubrics": [
+                "Вокзал"
+            ]
         },
         {
-            "id": 1964680131,
-            "type": "Route",
-            "from": "Морской вокзал",
-            "to": "Параллельная улица"
+            "id": 7543138,
+            "type": "FindCompanies",
+            "names": [
+                "Комсомольский"
+            ]
         },
         {
-            "id": 1359372752,
-            "type": "Map"
+            "id": 162389115,
+            "type": "FindCompanies",
+            "names": [
+                "Комсомольский"
+            ],
+            "rubrics": [
+                "Вокзал"
+            ]
+        },
+        {
+            "id": 279616443,
+            "type": "FindCompanies",
+            "names": [
+                "Комсомольский"
+            ],
+            "rubrics": [
+                "Сквер"
+            ]
+        },
+        {
+            "id": 675139528,
+            "type": "FindCompanies",
+            "names": [
+                "Комсомольский",
+                "Кооперативный"
+            ],
+            "rubrics": [
+                "Сквер"
+            ]
+        },
+        {
+            "id": 1374027080,
+            "type": "FindCompanies",
+            "names": [
+                "Комсомольский",
+                "Кооперативный"
+            ],
+            "rubrics": [
+                "Сквер",
+                "Вокзал"
+            ]
         }
     ]
 }
 )";
-    std::stringstream processRequestsIn(processRequestsInput);
-    Program processRequests("process_requests");
-    processRequests.Run(processRequestsIn, out);
-
-//     std::string result = out.str();
-//     std::string expectedResult = R"([{"request_id": 826874078, "stop_count": 8, "unique_stop_count": 7, "route_length": 11230, "curvature": 1.6048112037594995}, {"request_id": 1086967114, "total_time": 15.959999999999997, "items": [{"type": "Wait", "stop_name": "Морской вокзал", "time": 2}, {"type": "Bus", "bus": "114", "time": 1.7, "span_count": 1}, {"type": "Wait", "stop_name": "Ривьерский мост", "time": 2}, {"type": "Bus", "bus": "14", "time": 6.06, "span_count": 4}, {"type": "Wait", "stop_name": "Улица Докучаева", "time": 2}, {"type": "Bus", "bus": "24", "time": 2.2, "span_count": 1}]}, {"request_id": 1218663236, "map": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><polyline points=\"202.7046433700865,725.1651507897237 99.25163555140999,520.6462422211027 202.7046433700865,725.1651507897237\" fill=\"none\" stroke=\"green\" stroke-width=\"14\" stroke-linecap=\"round\" stroke-linejoin=\"round\" /><polyline points=\"1150.0,432.1126535822507 580.955800223462,137.79639380890507 99.25163555140999,520.6462422211027 491.26376256587264,861.7217169297415 592.7509175043582,846.6267751715245 690.4467847454753,819.3856709748779 695.2561033988173,598.1921174405119 1150.0,432.1126535822507\" fill=\"none\" stroke=\"rgb(255,160,0)\" stroke-width=\"14\" stroke-linecap=\"round\" stroke-linejoin=\"round\" /><polyline points=\"695.2561033988173,598.1921174405119 660.3973192915555,441.8014999201921 580.955800223462,137.79639380890507 50.0,50.0 580.955800223462,137.79639380890507 660.3973192915555,441.8014999201921 695.2561033988173,598.1921174405119\" fill=\"none\" stroke=\"red\" stroke-width=\"14\" stroke-linecap=\"round\" stroke-linejoin=\"round\" /><circle cx=\"491.26376256587264\" cy=\"861.7217169297415\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"592.7509175043582\" cy=\"846.6267751715245\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"202.7046433700865\" cy=\"725.1651507897237\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"660.3973192915555\" cy=\"441.8014999201921\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"690.4467847454753\" cy=\"819.3856709748779\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"99.25163555140999\" cy=\"520.6462422211027\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"50.0\" cy=\"50.0\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"695.2561033988173\" cy=\"598.1921174405119\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"1150.0\" cy=\"432.1126535822507\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><circle cx=\"580.955800223462\" cy=\"137.79639380890507\" r=\"5\" fill=\"white\" stroke=\"none\" stroke-width=\"1\" /><text x=\"491.26376256587264\" y=\"861.7217169297415\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Гостиница Сочи</text><text x=\"491.26376256587264\" y=\"861.7217169297415\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Гостиница Сочи</text><text x=\"592.7509175043582\" y=\"846.6267751715245\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Кубанская улица</text><text x=\"592.7509175043582\" y=\"846.6267751715245\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Кубанская улица</text><text x=\"202.7046433700865\" y=\"725.1651507897237\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Морской вокзал</text><text x=\"202.7046433700865\" y=\"725.1651507897237\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Морской вокзал</text><text x=\"660.3973192915555\" y=\"441.8014999201921\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Параллельная улица</text><text x=\"660.3973192915555\" y=\"441.8014999201921\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Параллельная улица</text><text x=\"690.4467847454753\" y=\"819.3856709748779\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >По требованию</text><text x=\"690.4467847454753\" y=\"819.3856709748779\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >По требованию</text><text x=\"99.25163555140999\" y=\"520.6462422211027\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Ривьерский мост</text><text x=\"99.25163555140999\" y=\"520.6462422211027\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Ривьерский мост</text><text x=\"50.0\" y=\"50.0\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Санаторий Родина</text><text x=\"50.0\" y=\"50.0\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Санаторий Родина</text><text x=\"695.2561033988173\" y=\"598.1921174405119\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Улица Докучаева</text><text x=\"695.2561033988173\" y=\"598.1921174405119\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Улица Докучаева</text><text x=\"1150.0\" y=\"432.1126535822507\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Улица Лизы Чайкиной</text><text x=\"1150.0\" y=\"432.1126535822507\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Улица Лизы Чайкиной</text><text x=\"580.955800223462\" y=\"137.79639380890507\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"rgba(255,255,255,0.85)\" stroke=\"rgba(255,255,255,0.85)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" >Электросети</text><text x=\"580.955800223462\" y=\"137.79639380890507\" dx=\"7\" dy=\"-3\" font-size=\"20\" font-family=\"Verdana\" fill=\"black\" stroke=\"none\" stroke-width=\"1\" >Электросети</text></svg>"}]
-// )";
-//     ASSERT_EQUAL(result, expectedResult);
+        std::stringstream processRequestsIn(processRequestsInput);
+        Program processRequests("process_requests");
+        processRequests.Run(processRequestsIn, out);
 }
 
-}
-
-void Example2()
+TEST(ComplexManualTest, Test2)
 {
+    // TODO: #if for skip
+    // GTEST_SKIP();
+
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpynyc5yoi"
+        "file": "/tmp/tmptxbmhtnl"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -688,55 +760,154 @@ void Example2()
                 "Пансионат Светлана": 390
             }
         }
-    ]
+    ],
+    "yellow_pages": {
+        "rubrics": {
+            "1": {
+                "name": "Парк"
+            }
+        },
+        "companies": [
+            {
+                "names": [
+                    {
+                        "value": "Дендрарий"
+                    }
+                ],
+                "urls": [
+                    {
+                        "value": "http://dendrarium.ru"
+                    }
+                ],
+                "rubrics": [
+                    1
+                ],
+                "address": {
+                    "coords": {
+                        "lat": 43.573226,
+                        "lon": 39.742947
+                    }
+                },
+                "nearby_stops": [
+                    {
+                        "name": "Цирк",
+                        "meters": 180
+                    }
+                ],
+                "phones": [
+                    {
+                        "type": "PHONE",
+                        "country_code": "7",
+                        "local_code": "862",
+                        "number": "2671646"
+                    },
+                    {
+                        "type": "PHONE",
+                        "country_code": "7",
+                        "local_code": "862",
+                        "number": "2671842"
+                    }
+                ]
+            },
+            {
+                "names": [
+                    {
+                        "value": "им. Фрунзе"
+                    }
+                ],
+                "rubrics": [
+                    1
+                ],
+                "address": {
+                    "coords": {
+                        "lat": 43.567998,
+                        "lon": 39.734131
+                    }
+                },
+                "nearby_stops": [
+                    {
+                        "name": "Пансионат Светлана",
+                        "meters": 580
+                    },
+                    {
+                        "name": "Цирк",
+                        "meters": 700
+                    },
+                    {
+                        "name": "Театральная",
+                        "meters": 1000
+                    }
+                ]
+            }
+        ]
+    }
 }
 )";
-        std::stringstream makeBastIn(makeBaseInput);
-        // std::stringstream out;
-        std::fstream out;
-        out.open("Example2.svg", std::ios_base::out);
-    
-        Program makeBase("make_base");
-        makeBase.Run(makeBastIn, out);
-    
-        std::string processRequestsInput = R"({
+    std::stringstream makeBastIn(makeBaseInput);
+    // std::stringstream out;
+    std::fstream out;
+    out.open("Example2.svg", std::ios_base::out);
+
+    Program makeBase("make_base");
+    makeBase.Run(makeBastIn, out);
+
+    std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpynyc5yoi"
+        "file": "/tmp/tmptxbmhtnl"
     },
     "stat_requests": [
         {
-            "id": 80146768,
+            "id": 1297727706,
             "type": "Bus",
             "name": "13"
         },
         {
-            "id": 1571442892,
+            "id": 749458699,
             "type": "Stop",
             "name": "Морской вокзал"
         },
         {
-            "id": 1490699931,
-            "type": "Route",
-            "from": "Пансионат Нева",
-            "to": "Улица Лысая Гора"
+            "id": 2053647165,
+            "type": "FindCompanies",
+            "rubrics": [
+                "Парк"
+            ]
         },
         {
-            "id": 684758285,
-            "type": "Map"
+            "id": 866281987,
+            "type": "FindCompanies",
+            "rubrics": [
+                "Парк"
+            ],
+            "phones": [
+                {
+                    "number": "2671646"
+                }
+            ]
+        },
+        {
+            "id": 1306125210,
+            "type": "FindCompanies",
+            "phones": [
+                {
+                    "type": "PHONE",
+                    "number": "2671646"
+                }
+            ]
+        },
+        {
+            "id": 589984419,
+            "type": "FindCompanies",
+            "phones": [
+                {
+                    "type": "PHONE"
+                }
+            ]
         }
     ]
 }
 )";
-        std::stringstream processRequestsIn(processRequestsInput);
-        Program processRequests("process_requests");
-        processRequests.Run(processRequestsIn, out);
+    std::stringstream processRequestsIn(processRequestsInput);
+    Program processRequests("process_requests");
+    processRequests.Run(processRequestsIn, out);
 }
-
-void RunComplexTests(const TestRunner& tr)
-{
-    RUN_TEST(tr, Example1);
-    RUN_TEST(tr, Example2);
-}
-
-
-

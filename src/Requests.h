@@ -1,62 +1,93 @@
 #pragma once
 
-#include "Json.h"
-#include "TransportDatabase.h"
-
 #include <string>
 #include <variant>
+#include <memory>
 
+#include "Json.h"
+#include "YellowPages/YellowPagesDatabase.h"
+
+class TransportDatabase;
+using TransportDatabaseShp = std::shared_ptr<TransportDatabase>;
 
 namespace Svg
 {
   class MapVisualizer;
+  using MapVisualizerShp = std::shared_ptr<MapVisualizer>;
 }
 
-namespace Requests {
-  class Stop {
+namespace Requests
+{
+  struct Context
+  {
+    TransportDatabaseShp transportDb;
+    YellowPages::BLL::YellowPagesDatabaseShp yellowPagesDb;
+    Svg::MapVisualizerShp mapVisualizer;
+  };
+  using ContextShp = std::shared_ptr<Context>;
+
+  class Stop
+  {
   public:
-    Stop(std::string stopName);
-    Json::Dict Process(const TransportDatabase& db) const;
+    Stop(std::string stopName, TransportDatabaseShp transportDb);
+    Json::Dict Process() const;
 
   private:
     std::string _name;
+    TransportDatabaseShp _transportDb;
   };
 
-  class Bus {
+  class Bus
+  {
   public:
-    Bus(std::string busName);
+    Bus(std::string busName, TransportDatabaseShp transportDb);
+    Json::Dict Process() const;
 
-    Json::Dict Process(const TransportDatabase& db) const;
   private:
     std::string _name;
+    TransportDatabaseShp _transportDb;
   };
 
-  class Route {
+  class Route
+  {
   public:
     Route(std::string stopFrom,
-      std::string stopTo,
-      const Svg::MapVisualizer* mapVisualizer);
+          std::string stopTo,
+          ContextShp context);
 
-    Json::Dict Process(const TransportDatabase& db) const;
+    Json::Dict Process() const;
+
   private:
     std::string _stopFrom;
     std::string _stopTo;
-    const Svg::MapVisualizer* _mapVisualizer;
+    ContextShp _context;
   };
 
   class Map
   {
   public:
-    Map(const Svg::MapVisualizer* mapVisualizer);
-    Json::Dict Process(const TransportDatabase& db) const;
+    Map(Svg::MapVisualizerShp mapVisualizer);
+    Json::Dict Process() const;
 
   private:
-    const Svg::MapVisualizer* _mapVisualizer;
+    Svg::MapVisualizerShp _mapVisualizer;
   };
 
-  std::variant<Stop, Bus, Route, Map> Read(const Svg::MapVisualizer& mapVisualizer, const Json::Dict& attrs);
+  class FindCompanies
+  {
+  public:
+    FindCompanies(YellowPages::BLL::YellowPagesDatabaseShp yellowPagesDb,
+                  YellowPages::BLL::CompanyRestrictions companyRestrictions);
+    Json::Dict Process() const;
 
-  std::vector<Json::Node> ProcessAll(const TransportDatabase& db,
-    const Svg::MapVisualizer& mapVisualizer,
-    const std::vector<Json::Node>& requests);
+  private:
+    YellowPages::BLL::YellowPagesDatabaseShp _yellowPagesDb;
+    YellowPages::BLL::CompanyRestrictions _companyRestrictions;
+  };
+
+  using Request = std::variant<Stop, Bus, Route, Map, FindCompanies>;
+  Request Read(const ContextShp &context, const Json::Dict &attrs);
+
+  std::vector<Json::Node> ProcessAll(const ContextShp &context,
+                                     const std::vector<Json::Node> &requests);
 }

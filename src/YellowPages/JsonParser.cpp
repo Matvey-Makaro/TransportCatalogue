@@ -3,20 +3,16 @@
 #include <optional>
 #include <string_view>
 #include "JsonParser.h"
+#include "Utils.h"
 
 using namespace YellowPages::BLL;
 
-namespace
+
+YellowPagesDatabase YellowPages::BLL::JsonParser::ParseYellowPages(const Json::Dict &yellowPages)
 {
-    const Json::Node *GetNodeByName(const Json::Dict &dict, const std::string &name)
-    {
-        auto it = dict.find(name);
-        if (it == cend(dict))
-        {
-            return nullptr;
-        }
-        return &it->second;
-    }
+    auto companies = ParseCompanies(yellowPages);
+    auto rubrics = ParseRubrics(yellowPages);
+    return YellowPagesDatabase(companies, rubrics);
 }
 
 JsonParser::RubricMap JsonParser::ParseRubrics(const Json::Dict &yellowPages)

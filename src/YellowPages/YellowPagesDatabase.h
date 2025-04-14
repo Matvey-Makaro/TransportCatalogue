@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <cstdint>
 #include <optional>
+#include <memory>
 
 #include "Rubric.h"
 #include "Company.h"
@@ -39,7 +40,11 @@ namespace YellowPages
                 std::unordered_map<Rubric::IdType, Rubric> rubrics);
             ~YellowPagesDatabase() = default;
 
-            
+            YellowPagesDatabase(const YellowPagesDatabase& other) = default; 
+            YellowPagesDatabase& operator=(const YellowPagesDatabase& other) = default;
+            YellowPagesDatabase(YellowPagesDatabase&& other) noexcept = default;
+            YellowPagesDatabase& operator=(YellowPagesDatabase&& other) noexcept = default;
+
             const std::vector<Company>& GetCompanies() const;
             const std::unordered_map<Rubric::IdType, Rubric>& GetRubrics() const;
 
@@ -57,7 +62,8 @@ namespace YellowPages
             std::vector<Company> _companies;
             std::unordered_map<Rubric::IdType, Rubric> _rubrics;
         };
-
+        using YellowPagesDatabaseShp = std::shared_ptr<YellowPagesDatabase>;
+        using YellowPagesDatabaseUnp = std::unique_ptr<YellowPagesDatabase>;
     }
 
 }
