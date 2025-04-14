@@ -41,7 +41,6 @@ set(ProtoFiles
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${ProtoFiles})
 
 set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
-# TODO: В Sources, а следовательно и в TransportCatalogueCore попадают не нужные файлы из src/tests/*
 file(GLOB_RECURSE Sources "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.h")
 list(FILTER Sources EXCLUDE REGEX ".*main\.cpp$")
 set(MainCPP src/main.cpp)
@@ -67,7 +66,7 @@ FetchContent_MakeAvailable(googletest)
 file(GLOB_RECURSE TestFiles "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h")
 add_executable(TransportCatalogueTests ${TestFiles})
 target_include_directories(TransportCatalogueTests PRIVATE ${gtest_SOURCE_DIR}/include ${gtest_BINARY_DIR} ${gmock_SOURCE_DIR}/include)
-target_link_libraries(TransportCatalogueTests TransportCatalogueCore GTest::gtest_main gmock)
+target_link_libraries(TransportCatalogueTests TransportCatalogueCore ${Protobuf_LIBRARIES} GTest::gtest_main gmock)
 
 message(${gmock_SOURCE_DIR}/include)
 

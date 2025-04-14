@@ -3,7 +3,7 @@
 #include "ProtoSerializer.h"
 #include "SerializationSettings.h"
 #include "TransportDatabase.h"
-#include "TransportCatalogProtoMapper.h"
+#include "TransportCatalog/TransportCatalogProtoMapper.h"
 
 using namespace Serialization;
 

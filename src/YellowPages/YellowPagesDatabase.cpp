@@ -10,8 +10,18 @@ YellowPages::BLL::YellowPagesDatabase::YellowPagesDatabase(std::vector<Company> 
     _rubrics(std::move(rubrics))
 {}
 
-std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::FindCompanies(
-    const CompanyRestrictions& companyRestrictions) const
+const std::vector<Company> &YellowPages::BLL::YellowPagesDatabase::GetCompanies() const
+{
+    return _companies;
+}
+
+const std::unordered_map<Rubric::IdType, Rubric> &YellowPages::BLL::YellowPagesDatabase::GetRubrics() const
+{
+    return _rubrics;
+}
+
+std::vector<const Company *> YellowPages::BLL::YellowPagesDatabase::FindCompanies(
+    const CompanyRestrictions &companyRestrictions) const
 {
     std::vector<const Company*> foundCompanies(_companies.size(), nullptr);
     for (size_t i = 0; i < _companies.size(); i++)

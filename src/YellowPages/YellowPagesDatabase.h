@@ -39,7 +39,10 @@ namespace YellowPages
                 std::unordered_map<Rubric::IdType, Rubric> rubrics);
             ~YellowPagesDatabase() = default;
 
-            // TODO: Change to list?
+            
+            const std::vector<Company>& GetCompanies() const;
+            const std::unordered_map<Rubric::IdType, Rubric>& GetRubrics() const;
+
             std::vector<const Company*> FindCompanies(const CompanyRestrictions& companyRestrictions) const;
 
         private:
