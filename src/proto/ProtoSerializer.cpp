@@ -6,7 +6,6 @@
 #include "TransportCatalog/TransportCatalogProtoMapper.h"
 #include "YellowPages/ProtoMapper.h"
 #include "YellowPages/YellowPagesDatabase.h"
-#include "database.pb.h"
 
 using namespace Serialization;
 
@@ -15,22 +14,12 @@ void Serialization::ProtoSerializer::Serialize(const SerializationSettings &sett
                                                const YellowPages::BLL::YellowPagesDatabase &yellowPagesDb)
 {
     std::ofstream out(settings.file, std::ios::out | std::ios::binary);
-
+    auto transportCatalog = TransportCatalogProtoMapper::Map(transportDb);
+    transportCatalog.mutable_yellow_pages_database()->CopyFrom(YellowPages::ProtoMapper::Map(yellowPagesDb));
+    bool isSuccess = transportCatalog.SerializeToOstream(&out);
+    if (!isSuccess)
     {
-        auto catalog = TransportCatalogProtoMapper::Map(transportDb);
-        bool isSuccess = catalog.SerializeToOstream(&out);
-        if (!isSuccess)
-        {
-            std::cerr << "ProtoSerializer::Serialize() catalog.SerializeToOstream failed!" << std::endl;
-        }
-    }
-    {
-        auto yellowPages = YellowPages::ProtoMapper::Map(yellowPagesDb);
-        bool isSuccess = yellowPages.SerializeToOstream(&out);
-        if (!isSuccess)
-        {
-            std::cerr << "ProtoSerializer::Serialize() yellowPages.SerializeToOstream failed!" << std::endl;
-        }
+        std::cerr << "ProtoSerializer::Serialize() transportCatalog.SerializeToOstream failed!" << std::endl;
     }
 }
 
@@ -38,24 +27,15 @@ std::pair<TransportDatabaseUnp, YellowPages::BLL::YellowPagesDatabaseUnp> Serial
     const SerializationSettings &settings)
 {
     std::ifstream in(settings.file, std::ios::in | std::ios::binary);
-    TransportCatalog catalog;
+    TransportCatalog transportCatalog;
     {
-        bool isSuccess = catalog.ParseFromIstream(&in);
+        bool isSuccess = transportCatalog.ParseFromIstream(&in);
         if (!isSuccess)
         {
-            std::cerr << "ProtoSerializer::Deserialize() catalog.ParseFromIstream failed!" << std::endl;
+            std::cerr << "ProtoSerializer::Deserialize() transportCatalog.ParseFromIstream failed!" << std::endl;
         }
     }
-
-    YellowPages::Database yellowPagesDb;
-    {
-        bool isSuccess = yellowPagesDb.ParseFromIstream(&in);
-        if (!isSuccess)
-        {
-            std::cerr << "ProtoSerializer::Deserialize() yellowPagesDb.ParseFromIstream failed!" << std::endl;
-        }
-    }
-
-    return std::make_pair(std::make_unique<TransportDatabase>(TransportCatalogProtoMapper::Map(catalog)),
-                          std::make_unique<YellowPages::BLL::YellowPagesDatabase>(YellowPages::ProtoMapper::Map(yellowPagesDb)));
+   
+    return std::make_pair(std::make_unique<TransportDatabase>(TransportCatalogProtoMapper::Map(transportCatalog)),
+                          std::make_unique<YellowPages::BLL::YellowPagesDatabase>(YellowPages::ProtoMapper::Map(transportCatalog.yellow_pages_database())));
 }

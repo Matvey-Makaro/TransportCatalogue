@@ -133,8 +133,8 @@ TEST(YellowPagesJsonParserTest, ParseCompanies1)
                 ],
                 "address": {
                     "coords": {
-                        "lat": 43.573226,
-                        "lon": 39.742947
+                        "lat": "43.573226",
+                        "lon": "39.742947"
                     }
                 },
                 "nearby_stops": [
@@ -222,8 +222,8 @@ TEST(YellowPagesJsonParserTest, ParseCompanies2)
             ],
             "address": {
                 "coords": {
-                    "lat": 43.573226,
-                    "lon": 39.742947
+                    "lat": "43.573226",
+                    "lon": "39.742947"
                 }
             },
             "nearby_stops": [
@@ -258,8 +258,8 @@ TEST(YellowPagesJsonParserTest, ParseCompanies2)
             ],
             "address": {
                 "coords": {
-                    "lat": 43.567998,
-                    "lon": 39.734131
+                    "lat": "43.567998",
+                    "lon": "39.734131"
                 }
             },
             "nearby_stops": [
@@ -396,8 +396,8 @@ TEST(JsonParserTests, ParseCompaniesAllFields)
             address["components"] = components;
             
             Json::Dict coords;
-            coords["lat"] = 55.75;
-            coords["lon"] = 37.62;
+            coords["lat"] = "55.75";
+            coords["lon"] = "37.62";
             address["coords"] = coords;
             
             address["comment"] = "Address comment";

@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(TestMode "Enable test mode" OFF)
-set(TestMode ON)
+# set(TestMode ON)
 if(TestMode)
     add_definitions(-DRunTests)
     add_definitions(-DOnlyMap)
@@ -26,7 +26,6 @@ set(ProtoFiles
     src/proto/TransportCatalog/Bus.proto
     src/proto/TransportCatalog/RoutingSettings.proto
     src/proto/TransportCatalog/RenderSettings.proto
-    src/proto/TransportCatalog/transport_catalog.proto
     src/proto/YellowPages/sphere.proto
     src/proto/YellowPages/url.proto
     src/proto/YellowPages/working_time.proto
@@ -36,6 +35,7 @@ set(ProtoFiles
     src/proto/YellowPages/address.proto
     src/proto/YellowPages/company.proto
     src/proto/YellowPages/database.proto
+    src/proto/TransportCatalog/transport_catalog.proto
     )
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${ProtoFiles})

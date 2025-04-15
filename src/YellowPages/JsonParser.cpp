@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <optional>
+#include <variant>
 #include <string_view>
 #include "JsonParser.h"
 #include "Utils.h"
@@ -340,8 +341,10 @@ NearbyStop YellowPages::BLL::JsonParser::ParseNearbyStop(const Json::Dict &json)
 
 Sphere::Point YellowPages::BLL::JsonParser::ParseCoords(const Json::Dict &json)
 {
+    auto latStr = json.at("lat").AsString();
+    auto lonStr = json.at("lon").AsString();
     return Sphere::Point {
-        .latitude = json.at("lat").AsDouble(),
-        .longitude = json.at("lon").AsDouble()
+        .latitude = std::stod(latStr),
+        .longitude = std::stod(lonStr)
     };
 }

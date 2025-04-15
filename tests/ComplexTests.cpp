@@ -11,7 +11,7 @@ TEST(ComplexManualTest, Test1)
 
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpjyqkrtm8"
+        "file": "serialization_settings.bin"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -219,16 +219,16 @@ TEST(ComplexManualTest, Test1)
 }
 )";
     std::stringstream makeBastIn(makeBaseInput);
-        // std::stringstream out;
-        std::fstream out;
-        out.open("Example2.svg", std::ios_base::out);
-    
-        Program makeBase("make_base");
-        makeBase.Run(makeBastIn, out);
-    
-        std::string processRequestsInput = R"({
+    // std::stringstream out;
+    std::fstream out;
+    out.open("Example1.svg", std::ios_base::out);
+
+    Program makeBase("make_base");
+    makeBase.Run(makeBastIn, out);
+
+    std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmpjyqkrtm8"
+        "file": "serialization_settings.bin"
     },
     "stat_requests": [
         {
@@ -298,9 +298,9 @@ TEST(ComplexManualTest, Test1)
     ]
 }
 )";
-        std::stringstream processRequestsIn(processRequestsInput);
-        Program processRequests("process_requests");
-        processRequests.Run(processRequestsIn, out);
+    std::stringstream processRequestsIn(processRequestsInput);
+    Program processRequests("process_requests");
+    processRequests.Run(processRequestsIn, out);
 }
 
 TEST(ComplexManualTest, Test2)
@@ -310,7 +310,7 @@ TEST(ComplexManualTest, Test2)
 
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmptxbmhtnl"
+        "file": "serialization_settings.bin"
     },
     "routing_settings": {
         "bus_wait_time": 2,
@@ -784,8 +784,8 @@ TEST(ComplexManualTest, Test2)
                 ],
                 "address": {
                     "coords": {
-                        "lat": 43.573226,
-                        "lon": 39.742947
+                        "lat": "43.573226",
+                        "lon": "39.742947"
                     }
                 },
                 "nearby_stops": [
@@ -820,8 +820,8 @@ TEST(ComplexManualTest, Test2)
                 ],
                 "address": {
                     "coords": {
-                        "lat": 43.567998,
-                        "lon": 39.734131
+                        "lat": "43.567998",
+                        "lon": "39.734131"
                     }
                 },
                 "nearby_stops": [
@@ -853,7 +853,7 @@ TEST(ComplexManualTest, Test2)
 
     std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "/tmp/tmptxbmhtnl"
+        "file": "serialization_settings.bin"
     },
     "stat_requests": [
         {
@@ -910,4 +910,274 @@ TEST(ComplexManualTest, Test2)
     std::stringstream processRequestsIn(processRequestsInput);
     Program processRequests("process_requests");
     processRequests.Run(processRequestsIn, out);
+}
+
+TEST(ComplexManualTest, Test3)
+{
+    // TODO: #if for skip
+    // GTEST_SKIP();
+
+    std::string makeBaseInput = R"({
+    "serialization_settings": {
+        "file": "serialization_settings.bin"
+    },
+    "routing_settings": {
+        "bus_wait_time": 2,
+        "bus_velocity": 30
+    },
+    "render_settings": {
+        "width": 1200,
+        "height": 500,
+        "padding": 50,
+        "outer_margin": 150,
+        "stop_radius": 5,
+        "line_width": 14,
+        "bus_label_font_size": 20,
+        "bus_label_offset": [
+            7,
+            15
+        ],
+        "stop_label_font_size": 18,
+        "stop_label_offset": [
+            7,
+            -3
+        ],
+        "underlayer_color": [
+            255,
+            255,
+            255,
+            0.85
+        ],
+        "underlayer_width": 3,
+        "color_palette": [
+            "green",
+            [
+                255,
+                160,
+                0
+            ],
+            "red"
+        ],
+        "layers": [
+            "bus_lines",
+            "bus_labels",
+            "stop_points",
+            "stop_labels"
+        ]
+    },
+    "base_requests": [
+        {
+            "type": "Bus",
+            "name": "14",
+            "stops": [
+                "Улица Лизы Чайкиной",
+                "Электросети",
+                "Ривьерский мост",
+                "Гостиница Сочи",
+                "Кубанская улица",
+                "По требованию",
+                "Улица Докучаева",
+                "Улица Лизы Чайкиной"
+            ],
+            "is_roundtrip": true
+        },
+        {
+            "type": "Bus",
+            "name": "24",
+            "stops": [
+                "Улица Докучаева",
+                "Параллельная улица",
+                "Электросети",
+                "Санаторий Родина"
+            ],
+            "is_roundtrip": false
+        },
+        {
+            "type": "Bus",
+            "name": "114",
+            "stops": [
+                "Морской вокзал",
+                "Ривьерский мост"
+            ],
+            "is_roundtrip": false
+        },
+        {
+            "type": "Stop",
+            "name": "Улица Лизы Чайкиной",
+            "latitude": 43.590317,
+            "longitude": 39.746833,
+            "road_distances": {
+                "Электросети": 4300,
+                "Улица Докучаева": 2000
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "Морской вокзал",
+            "latitude": 43.581969,
+            "longitude": 39.719848,
+            "road_distances": {
+                "Ривьерский мост": 850
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "Электросети",
+            "latitude": 43.598701,
+            "longitude": 39.730623,
+            "road_distances": {
+                "Санаторий Родина": 4500,
+                "Параллельная улица": 1200,
+                "Ривьерский мост": 1900
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "Ривьерский мост",
+            "latitude": 43.587795,
+            "longitude": 39.716901,
+            "road_distances": {
+                "Морской вокзал": 850,
+                "Гостиница Сочи": 1740
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "Гостиница Сочи",
+            "latitude": 43.578079,
+            "longitude": 39.728068,
+            "road_distances": {
+                "Кубанская улица": 320
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "Кубанская улица",
+            "latitude": 43.578509,
+            "longitude": 39.730959,
+            "road_distances": {
+                "По требованию": 370
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "По требованию",
+            "latitude": 43.579285,
+            "longitude": 39.733742,
+            "road_distances": {
+                "Улица Докучаева": 600
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "Улица Докучаева",
+            "latitude": 43.585586,
+            "longitude": 39.733879,
+            "road_distances": {
+                "Параллельная улица": 1100
+            }
+        },
+        {
+            "type": "Stop",
+            "name": "Параллельная улица",
+            "latitude": 43.590041,
+            "longitude": 39.732886,
+            "road_distances": {}
+        },
+        {
+            "type": "Stop",
+            "name": "Санаторий Родина",
+            "latitude": 43.601202,
+            "longitude": 39.715498,
+            "road_distances": {}
+        }
+    ],
+    "yellow_pages": {
+        "rubrics": {
+            "1": {
+                "name": "Park"
+            }
+        },
+        "companies": [
+            {
+                "names": [
+                    {
+                        "value": "Dendrariy"
+                    }
+                ],
+                "urls": [
+                    {
+                        "value": "http://dendrarium.ru"
+                    }
+                ],
+                "rubrics": [
+                    1
+                ],
+                "address": {
+                    "coords": {
+                        "lat": "43.573226",
+                        "lon": "39.742947"
+                    }
+                },
+                "nearby_stops": [
+                    {
+                        "name": "Tsirk",
+                        "meters": 180
+                    }
+                ],
+                "phones": [
+                    {
+                        "type": "PHONE",
+                        "country_code": "7",
+                        "local_code": "862",
+                        "number": "2671646"
+                    },
+                    {
+                        "type": "PHONE",
+                        "country_code": "7",
+                        "local_code": "862",
+                        "number": "2671842"
+                    }
+                ]
+            },
+            {
+                "names": [
+                    {
+                        "value": "im. Frunze"
+                    }
+                ],
+                "rubrics": [
+                    1
+                ],
+                "address": {
+                    "coords": {
+                        "lat": "43.567998",
+                        "lon": "39.734131"
+                    }
+                },
+                "nearby_stops": [
+                    {
+                        "name": "Pansionat Svetlana",
+                        "meters": 580
+                    },
+                    {
+                        "name": "Tsirk",
+                        "meters": 700
+                    },
+                    {
+                        "name": "Teatral'naya",
+                        "meters": 1000
+                    }
+                ]
+            }
+        ]
+    }
+}
+)";
+    std::stringstream makeBastIn(makeBaseInput);
+    std::fstream out;
+    out.open("Example3.svg", std::ios_base::out);
+
+    Program makeBase("make_base");
+    makeBase.Run(makeBastIn, out);
 }

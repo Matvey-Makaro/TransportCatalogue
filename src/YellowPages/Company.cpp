@@ -4,10 +4,10 @@
 #include "Company.h"
 #include "Utils.h"
 
-using namespace YellowPages::BLL;
 
-Name::Type Name::NameToType(std::string_view name)
+YellowPages::BLL::Name::Type YellowPages::BLL::Name::NameToType(std::string_view name)
 {
+    using namespace YellowPages::BLL;
     if (name == "MAIN")
     {
         return Type::Main;
@@ -28,8 +28,9 @@ Name::Type Name::NameToType(std::string_view name)
     return Name::Type();
 }
 
-Phone::Type Phone::NameToType(std::string_view name)
+YellowPages::BLL::Phone::Type YellowPages::BLL::Phone::NameToType(std::string_view name)
 {
+    using namespace YellowPages::BLL;
     if (name == "PHONE")
     {
         return Type::PhoneNum;
@@ -46,8 +47,9 @@ Phone::Type Phone::NameToType(std::string_view name)
     return Type();
 }
 
-AddressComponent::Type AddressComponent::NameToType(std::string_view name)
+YellowPages::BLL::AddressComponent::Type YellowPages::BLL::AddressComponent::NameToType(std::string_view name)
 {
+    using namespace YellowPages::BLL;
     if (name == "COUNTRY")
     {
         return Type::Country;
@@ -76,8 +78,9 @@ AddressComponent::Type AddressComponent::NameToType(std::string_view name)
     return Type();
 }
 
-WorkingTimeInterval::Day WorkingTimeInterval::NameToDay(std::string_view name)
+YellowPages::BLL::WorkingTimeInterval::Day YellowPages::BLL::WorkingTimeInterval::NameToDay(std::string_view name)
 {
+    using namespace YellowPages::BLL;
     if (name == "EVERYDAY")
     {
         return Day::Everyday;

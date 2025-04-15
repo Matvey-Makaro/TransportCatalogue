@@ -95,6 +95,10 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByRubrics(std::vector<const Co
                 auto rubricIt = _rubrics.find(rubricId);
                 assert(rubricIt != end(_rubrics));
                 const auto& rubric = rubricIt->second;
+                if(companyRestrictions.rubrics.count(rubric.name))
+                {
+                    return false;
+                }
                 for (const auto& rubricName : rubric.keywords)
                 {
                     if (companyRestrictions.rubrics.count(rubricName))
