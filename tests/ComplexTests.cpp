@@ -6,8 +6,9 @@
 
 TEST(ComplexManualTest, Test1)
 {
-    // TODO: #if for skip
-    // GTEST_SKIP();
+#ifndef RunManualTests
+    GTEST_SKIP();
+#endif
 
     std::string makeBaseInput = R"({
     "serialization_settings": {
@@ -305,8 +306,9 @@ TEST(ComplexManualTest, Test1)
 
 TEST(ComplexManualTest, Test2)
 {
-    // TODO: #if for skip
-    // GTEST_SKIP();
+#ifndef RunManualTests
+    GTEST_SKIP();
+#endif
 
     std::string makeBaseInput = R"({
     "serialization_settings": {
@@ -914,8 +916,9 @@ TEST(ComplexManualTest, Test2)
 
 TEST(ComplexManualTest, Test3)
 {
-    // TODO: #if for skip
-    // GTEST_SKIP();
+#ifndef RunManualTests
+    GTEST_SKIP();
+#endif
 
     std::string makeBaseInput = R"({
     "serialization_settings": {

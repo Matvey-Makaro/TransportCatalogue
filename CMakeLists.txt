@@ -6,12 +6,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(TestMode "Enable test mode" OFF)
+option(ManualTests "Enable manual tests" OFF)
 # set(TestMode ON)
 if(TestMode)
-    add_definitions(-DRunTests)
     add_definitions(-DOnlyMap)
     add_definitions(-DNoEscapeNeeded)    
 endif()
+
+if(ManualTests)
+    add_definitions(-DRunManualTests)
+endif()
+
 
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/")
 include_directories(${SOURCE_DIR})

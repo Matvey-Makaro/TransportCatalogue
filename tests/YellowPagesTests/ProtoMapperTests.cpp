@@ -49,10 +49,13 @@ TEST(YellowPagesProtoMapperTests, MapAddress) {
     EXPECT_EQ(pbAddress.formatted(), address.formatted);
     ASSERT_EQ(pbAddress.components_size(), 3);
     EXPECT_EQ(pbAddress.components(0).value(), "Test Street");
+    // TODO: Is needed?
     // EXPECT_EQ(pbAddress.components(0).type(), AddressComponent_Type::AddressComponent_Type_STREET);
     EXPECT_EQ(pbAddress.components(1).value(), "123");
+    // TODO: Is needed?
     // EXPECT_EQ(pbAddress.components(1).type(), AddressComponent_Type::AddressComponent_Type_HOUSE);
     EXPECT_EQ(pbAddress.components(2).value(), "Moscow");
+    // TODO: Is needed?
     // EXPECT_EQ(pbAddress.components(2).type(), AddressComponent_Type::AddressComponent_Type_CITY);
     EXPECT_DOUBLE_EQ(pbAddress.coords().lat(), address.coords.latitude);
     EXPECT_DOUBLE_EQ(pbAddress.coords().lon(), address.coords.longitude);
