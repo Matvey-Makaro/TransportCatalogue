@@ -1,46 +1,55 @@
 #pragma once
 
-#include "Descriptions.h"
-#include "Json.h"
-#include "TransportRouter.h"
-#include "RenderSettings.h"
-#include "Utils.h"
-#include "Svg/MapVisualizer.h"
-
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
-#include <memory>
-namespace Responses {
-  struct Stop {
-    std::set<std::string> bus_names;
+
+#include "Descriptions.h"
+#include "Json.h"
+#include "RenderSettings.h"
+#include "Svg/MapVisualizer.h"
+#include "TransportRouter.h"
+#include "Utils.h"
+namespace Responses
+{
+  struct Stop
+  {
+    std::set<std::string> busNames;
   };
 
-  struct Bus {
-    size_t stop_count = 0;
-    size_t unique_stop_count = 0;
-    int road_route_length = 0;
-    double geo_route_length = 0.0;
+  struct Bus
+  {
+    size_t stopCount = 0;
+    size_t uniqueStopCount = 0;
+    int roadRouteLength = 0;
+    double geoRouteLength = 0.0;
   };
-}
+} // namespace Responses
 
 namespace Visualization
 {
-    struct RenderSettings;
+  struct RenderSettings;
 }
 
-class TransportDatabase {
+namespace YellowPages::BLL
+{
+  struct Company;
+}
+
+class TransportDatabase
+{
 private:
   using Bus = Responses::Bus;
   using Stop = Responses::Stop;
 
 public:
   TransportDatabase(Descriptions::InputQueries data,
-                     const Router::RoutingSettings& routingSettings,
-                     const Visualization::RenderSettings& renderSettings);
+    const Router::RoutingSettings& routingSettings,
+    const Visualization::RenderSettings& renderSettings);
 
   TransportDatabase(const TransportDatabase& other) = delete;
   TransportDatabase& operator=(const TransportDatabase& other) = delete;
@@ -54,19 +63,19 @@ public:
   std::vector<const Descriptions::Stop*> GetStopsDescriptions() const;
 
   std::optional<Router::TransportRouter::RouteInfo> FindRoute(const std::string& stopFrom, const std::string& stopTo) const;
+  std::optional<Router::TransportRouter::RouteInfo> FindRouteToCompany(const std::string& stopFrom,
+    const std::vector<const YellowPages::BLL::Company*>& companies) const;
+    
   const Router::RoutingSettings& GetRoutingSettings() const;
   const Visualization::RenderSettings& GetRenderSettings() const;
 
-  private:
-  static int ComputeRoadRouteLength(
-      const std::vector<std::string>& stops,
-      const Descriptions::StopsDict& stops_dict
-  );
+private:
+  static int ComputeRoadRouteLength(const std::vector<std::string>& stops,
+    const Descriptions::StopsDict& stops_dict);
 
   static double ComputeGeoRouteDistance(
-      const std::vector<std::string>& stops,
-      const Descriptions::StopsDict& stops_dict
-  );
+    const std::vector<std::string>& stops,
+    const Descriptions::StopsDict& stops_dict);
 
   std::vector<Descriptions::Bus> _busesDescr;
   std::vector<Descriptions::Stop> _stopsDescr;

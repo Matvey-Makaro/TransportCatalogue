@@ -11,63 +11,78 @@
 
 namespace Router
 {
-  struct RoutingSettings {
-    int bus_wait_time;  // in minutes
-    double bus_velocity;  // km/h
-  
+  struct RoutingSettings 
+  {
+    int busWaitTime;  // in minutes
+    double busVelocity;  // km/h
+    double pedestrianVelocity;  // km/h
+
     static RoutingSettings FromJson(const Json::Dict& json);
   };
 
-  class TransportRouter {
+  class TransportRouter 
+  {
   private:
     using BusGraph = Graph::DirectedWeightedGraph<double>;
     using Router = Graph::Router<double>;
-  
+
   public:
     TransportRouter(const Descriptions::StopsDict& stops_dict,
-                    const Descriptions::BusesDict& buses_dict,
-                    const RoutingSettings& routingSettings);
-  
-    struct RouteInfo {
+      const Descriptions::BusesDict& buses_dict,
+      const RoutingSettings& routingSettings);
+
+    struct RouteInfo 
+    {
       double total_time;
-  
-      struct BusItem {
+
+      struct RideBusItem 
+      {
         std::string bus_name;
         double time;
         size_t span_count;
       };
-      struct WaitItem {
+      struct WaitBusItem 
+      {
         std::string stop_name;
         double time;
       };
-  
-      using Item = std::variant<BusItem, WaitItem>;
+      struct WalkToCompany
+      {
+        double time;
+        std::string stop_name;
+        std::string company_name;
+      };
+
+      using Item = std::variant<RideBusItem, WaitBusItem, WalkToCompany>;
       std::vector<Item> items;
     };
-  
+
     std::optional<RouteInfo> FindRoute(const std::string& stopFrom, const std::string& stopTo) const;
-  
+
   private:
     void FillGraphWithStops(const Descriptions::StopsDict& stops_dict);
-  
+
     void FillGraphWithBuses(const Descriptions::StopsDict& stops_dict,
-                            const Descriptions::BusesDict& buses_dict);
-  
-    struct StopVertexIds {
+      const Descriptions::BusesDict& buses_dict);
+
+    struct StopVertexIds 
+    {
       Graph::VertexId in;
       Graph::VertexId out;
     };
-    struct VertexInfo {
+    struct VertexInfo 
+    {
       std::string stop_name;
     };
-  
-    struct BusEdgeInfo {
+
+    struct BusEdgeInfo 
+    {
       std::string bus_name;
       size_t span_count;
     };
     struct WaitEdgeInfo {};
     using EdgeInfo = std::variant<BusEdgeInfo, WaitEdgeInfo>;
-  
+
     RoutingSettings routing_settings_;
     BusGraph graph_;
     std::unique_ptr<Router> router_;

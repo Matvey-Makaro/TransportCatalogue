@@ -126,6 +126,8 @@ namespace YellowPages
             std::vector<Rubric::IdType> rubrics;
             WorkingTime workingTime;
             std::vector<NearbyStop> nearbyStops;
+
+            const Name& GetMainName() const;
         };
         bool operator==(const Company& lhs, const Company& rhs);
     }

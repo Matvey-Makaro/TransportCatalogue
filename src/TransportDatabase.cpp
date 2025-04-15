@@ -1,5 +1,6 @@
 #include "TransportDatabase.h"
 #include "RenderSettings.h"
+#include "YellowPages/Company.h"
 #include <sstream>
 
 using namespace std;
@@ -33,7 +34,7 @@ TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
         };
 
         for (const string& stop_name : bus.stops) {
-            _stops.at(stop_name).bus_names.insert(bus.name);
+            _stops.at(stop_name).busNames.insert(bus.name);
         }
     }
 
@@ -102,4 +103,31 @@ const Router::RoutingSettings& TransportDatabase::GetRoutingSettings() const
 const Visualization::RenderSettings& TransportDatabase::GetRenderSettings() const
 {
     return _renderSettings;
+}
+
+std::optional<Router::TransportRouter::RouteInfo> TransportDatabase::FindRouteToCompany(const std::string& stopFrom,
+    const std::vector<const YellowPages::BLL::Company*>& companies) const
+{
+    std::optional<Router::TransportRouter::RouteInfo> bestRoute;
+    for(const auto* company : companies)
+    {
+        for(const auto& nearbyStop : company->nearbyStops)
+        {
+            double walkTime = nearbyStop.meters / ConvertToMetersPerMin(_routingSettings.pedestrianVelocity); // m / (m/min) = min  
+            if(auto route = FindRoute(stopFrom, nearbyStop.name))
+            {
+                if(!bestRoute || bestRoute->total_time > route->total_time + walkTime)
+                {
+                    bestRoute = route;
+                    bestRoute->items.emplace_back(TransportRouter::RouteInfo::WalkToCompany{
+                        .time = walkTime,
+                        .stop_name = nearbyStop.name,
+                        .company_name = company->GetMainName().value
+                    });
+                    bestRoute->total_time += walkTime;
+                }
+            }
+        }
+    }
+    return bestRoute;
 }

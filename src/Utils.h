@@ -55,3 +55,4 @@ bool IsEqualRel(double lhs, double rhs, double eps = std::numeric_limits<double>
 std::string EscapeSpecialCharacters(const std::string& input);
 const Json::Node* GetNodeByName(const Json::Dict &dict, const std::string &name);
 
+double ConvertToMetersPerMin(double velocityKmH);

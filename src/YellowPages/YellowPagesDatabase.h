@@ -10,6 +10,7 @@
 
 #include "Rubric.h"
 #include "Company.h"
+#include "Json.h"
 
 namespace YellowPages
 {
@@ -22,6 +23,8 @@ namespace YellowPages
             std::string localCode;
             std::string number;
             std::string extension;
+
+            static PhoneTemplate FromJson(const Json::Dict& attrs);
         };
 
         struct CompanyRestrictions
@@ -31,6 +34,7 @@ namespace YellowPages
             std::unordered_set<std::string> rubrics;
             std::vector<PhoneTemplate> phoneTemplates;
 
+            static CompanyRestrictions FromJson(const Json::Dict& attrs);
         };
 
         class YellowPagesDatabase

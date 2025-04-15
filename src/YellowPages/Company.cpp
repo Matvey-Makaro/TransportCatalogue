@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cassert>
-
+#include <algorithm>
 #include "Company.h"
 #include "Utils.h"
 
@@ -184,4 +184,14 @@ bool YellowPages::BLL::operator==(const Company &lhs, const Company &rhs)
     std::equal(cbegin(lhs.rubrics), cend(lhs.rubrics), cbegin(rhs.rubrics), cend(rhs.rubrics)) &&
     lhs.workingTime == rhs.workingTime &&
     std::equal(cbegin(lhs.nearbyStops), cend(lhs.nearbyStops), cbegin(rhs.nearbyStops), cend(rhs.nearbyStops));
+}
+
+const YellowPages::BLL::Name& YellowPages::BLL::Company::GetMainName() const
+{
+    using namespace YellowPages::BLL;
+    auto it = std::find_if(cbegin(names), cend(names), [](const Name& name){
+        return name.type == Name::Type::Main;
+    });
+    assert(it != cend(names));
+    return *it;
 }

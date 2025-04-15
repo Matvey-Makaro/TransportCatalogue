@@ -165,16 +165,16 @@ Sphere::Point Serialization::TransportCatalogProtoMapper::Map(const Serializatio
 Serialization::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(const Router::RoutingSettings& settings)
 {
     Serialization::RoutingSettings pbSettings;
-    pbSettings.set_bus_wait_time(settings.bus_wait_time);
-    pbSettings.set_bus_velocity(settings.bus_velocity);
+    pbSettings.set_bus_wait_time(settings.busWaitTime);
+    pbSettings.set_bus_velocity(settings.busVelocity);
     return pbSettings;
 }
 
 Router::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(const Serialization::RoutingSettings& pbSettings)
 {
     return Router::RoutingSettings{
-        .bus_wait_time = pbSettings.bus_wait_time(),
-        .bus_velocity = pbSettings.bus_velocity()
+        .busWaitTime = pbSettings.bus_wait_time(),
+        .busVelocity = pbSettings.bus_velocity()
     };
 }
 

@@ -85,7 +85,19 @@ namespace Requests
     YellowPages::BLL::CompanyRestrictions _companyRestrictions;
   };
 
-  using Request = std::variant<Stop, Bus, Route, Map, FindCompanies>;
+  class RouteToCompany
+  {
+  public:
+    RouteToCompany(ContextShp context, std::string stopFrom, YellowPages::BLL::CompanyRestrictions companyRestrictions);
+    Json::Dict Process() const;
+
+  private:
+    ContextShp _context;
+    std::string _stopFrom;
+    YellowPages::BLL::CompanyRestrictions _companyRestrictions;
+  };
+
+  using Request = std::variant<Stop, Bus, Route, Map, FindCompanies, RouteToCompany>;
   Request Read(const ContextShp &context, const Json::Dict &attrs);
 
   std::vector<Json::Node> ProcessAll(const ContextShp &context,

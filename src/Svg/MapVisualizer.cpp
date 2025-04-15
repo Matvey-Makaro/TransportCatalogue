@@ -132,15 +132,15 @@ MapVisualizer::Route Svg::MapVisualizer::MapRoute(const TransportRouter::RouteIn
     Route route;
     route.reserve(routeInfo.items.size() / 2);
     std::string_view firstStopName;
-    const TransportRouter::RouteInfo::BusItem* busItem;
+    const TransportRouter::RouteInfo::RideBusItem* busItem;
     for (const auto& item : routeInfo.items)
     {
         std::visit([this, &firstStopName, &busItem, &route](auto&& item)
             {
                 using T = std::decay_t<decltype(item)>;
-                if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::WaitItem>)
+                if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::WaitBusItem>)
                 {
-                    const TransportRouter::RouteInfo::WaitItem& waitItem = item;
+                    const TransportRouter::RouteInfo::WaitBusItem& waitItem = item;
                     if (!firstStopName.empty())
                     {
                         std::string_view lastStopName = waitItem.stop_name;
@@ -152,7 +152,7 @@ MapVisualizer::Route Svg::MapVisualizer::MapRoute(const TransportRouter::RouteIn
                         firstStopName = waitItem.stop_name;
                     }
                 }
-                else if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::BusItem>)
+                else if constexpr (std::is_same_v<T, TransportRouter::RouteInfo::RideBusItem>)
                 {
                     busItem = &item;
                 }
@@ -168,7 +168,7 @@ MapVisualizer::Route Svg::MapVisualizer::MapRoute(const TransportRouter::RouteIn
     return route;
 }
 
-MapVisualizer::RouteItem Svg::MapVisualizer::MapRouteItem(const TransportRouter::RouteInfo::BusItem* busItem,
+MapVisualizer::RouteItem Svg::MapVisualizer::MapRouteItem(const TransportRouter::RouteInfo::RideBusItem* busItem,
     std::string_view firstStopName,
     std::string_view lastStopName) const
 {

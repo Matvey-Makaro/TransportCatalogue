@@ -69,3 +69,8 @@ const Json::Node* GetNodeByName(const Json::Dict &dict, const std::string &name)
     }
     return &it->second;
 }
+
+double ConvertToMetersPerMin(double velocityKmH)
+{
+    return velocityKmH * 1000.0 / 60.0;
+}

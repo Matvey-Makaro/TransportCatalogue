@@ -8,6 +8,7 @@ RoutingSettings RoutingSettings::FromJson(const Json::Dict& json)
   return RoutingSettings{
     json.at("bus_wait_time").AsInt(),
     json.at("bus_velocity").AsDouble(),
+    json.at("pedestrian_velocity").AsDouble(),
   };
 }
 
@@ -40,7 +41,7 @@ void TransportRouter::FillGraphWithStops(const Descriptions::StopsDict& stops_di
     const Graph::EdgeId edge_id = graph_.AddEdge({
         vertex_ids.out,
         vertex_ids.in,
-        static_cast<double>(routing_settings_.bus_wait_time)
+        static_cast<double>(routing_settings_.busWaitTime)
       });
     assert(edge_id == edges_info_.size() - 1);
   }
@@ -71,7 +72,7 @@ void TransportRouter::FillGraphWithBuses(const Descriptions::StopsDict& stops_di
         const Graph::EdgeId edge_id = graph_.AddEdge({
             start_vertex,
             stops_vertex_ids_[bus.stops[finish_stop_idx]].out,
-            total_distance * 1.0 / (routing_settings_.bus_velocity * 1000.0 / 60)  // m / (km/h * 1000 / 60) = min
+            total_distance * 1.0 / ConvertToMetersPerMin(routing_settings_.busVelocity)  // m / (m/min) = min
           });
         assert(edge_id == edges_info_.size() - 1);
       }
@@ -95,7 +96,7 @@ optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& st
     const auto& edge_info = edges_info_[edge_id];
     if (holds_alternative<BusEdgeInfo>(edge_info)) {
       const BusEdgeInfo& bus_edge_info = get<BusEdgeInfo>(edge_info);
-      route_info.items.push_back(RouteInfo::BusItem{
+      route_info.items.push_back(RouteInfo::RideBusItem{
           .bus_name = bus_edge_info.bus_name,
           .time = edge.weight,
           .span_count = bus_edge_info.span_count,
@@ -103,7 +104,7 @@ optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& st
     }
     else {
       const Graph::VertexId vertex_id = edge.from;
-      route_info.items.push_back(RouteInfo::WaitItem{
+      route_info.items.push_back(RouteInfo::WaitBusItem{
           .stop_name = vertices_info_[vertex_id].stop_name,
           .time = edge.weight,
         });

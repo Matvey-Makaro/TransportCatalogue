@@ -48,7 +48,7 @@ namespace Svg
         void RenderAllStopNames() const;
 
         Route MapRoute(const Router::TransportRouter::RouteInfo& routeInfo, const std::string& finishStopName) const;
-        RouteItem MapRouteItem(const Router::TransportRouter::RouteInfo::BusItem* busItem,
+        RouteItem MapRouteItem(const Router::TransportRouter::RouteInfo::RideBusItem* busItem,
             std::string_view firstStopName,
             std::string_view lastStopName) const;
 

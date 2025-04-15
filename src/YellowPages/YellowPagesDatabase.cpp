@@ -1,27 +1,30 @@
 #include <algorithm>
 #include <cassert>
 #include "YellowPagesDatabase.h"
+#include "Utils.h"
+#include "Json.h"
 
 using namespace YellowPages::BLL;
 
-YellowPages::BLL::YellowPagesDatabase::YellowPagesDatabase(std::vector<Company> companies, 
+YellowPages::BLL::YellowPagesDatabase::YellowPagesDatabase(std::vector<Company> companies,
     std::unordered_map<Rubric::IdType, Rubric> rubrics) :
     _companies(std::move(companies)),
     _rubrics(std::move(rubrics))
-{}
+{
+}
 
-const std::vector<Company> &YellowPages::BLL::YellowPagesDatabase::GetCompanies() const
+const std::vector<Company>& YellowPages::BLL::YellowPagesDatabase::GetCompanies() const
 {
     return _companies;
 }
 
-const std::unordered_map<Rubric::IdType, Rubric> &YellowPages::BLL::YellowPagesDatabase::GetRubrics() const
+const std::unordered_map<Rubric::IdType, Rubric>& YellowPages::BLL::YellowPagesDatabase::GetRubrics() const
 {
     return _rubrics;
 }
 
-std::vector<const Company *> YellowPages::BLL::YellowPagesDatabase::FindCompanies(
-    const CompanyRestrictions &companyRestrictions) const
+std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::FindCompanies(
+    const CompanyRestrictions& companyRestrictions) const
 {
     std::vector<const Company*> foundCompanies(_companies.size(), nullptr);
     for (size_t i = 0; i < _companies.size(); i++)
@@ -95,7 +98,7 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByRubrics(std::vector<const Co
                 auto rubricIt = _rubrics.find(rubricId);
                 assert(rubricIt != end(_rubrics));
                 const auto& rubric = rubricIt->second;
-                if(companyRestrictions.rubrics.count(rubric.name))
+                if (companyRestrictions.rubrics.count(rubric.name))
                 {
                     return false;
                 }
@@ -125,9 +128,9 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByPhoneTemplates(std::vector<c
         {
             for (const auto& phone : company->phones)
             {
-                for(const auto& phoneTemplate : companyRestrictions.phoneTemplates)
+                for (const auto& phoneTemplate : companyRestrictions.phoneTemplates)
                 {
-                    if(IsPhoneMatch(phone, phoneTemplate))
+                    if (IsPhoneMatch(phone, phoneTemplate))
                     {
                         return false;
                     }
@@ -161,3 +164,74 @@ bool YellowPages::BLL::YellowPagesDatabase::IsPhoneMatch(const Phone& phone,
     }
     return phone.number == phoneTemplate.number;
 }
+
+PhoneTemplate YellowPages::BLL::PhoneTemplate::FromJson(const Json::Dict& attrs)
+{
+    using namespace YellowPages::BLL;
+    PhoneTemplate phoneTemplate;
+    const auto* typeNode = GetNodeByName(attrs, "type");
+    if (typeNode != nullptr)
+    {
+        phoneTemplate.type = Phone::NameToType(typeNode->AsString());
+    }
+    const auto* countryCodeNode = GetNodeByName(attrs, "country_code");
+    if (countryCodeNode != nullptr)
+    {
+        phoneTemplate.countryCode = countryCodeNode->AsString();
+    }
+    const auto* localCodeNode = GetNodeByName(attrs, "local_code");
+    if (localCodeNode != nullptr)
+    {
+        phoneTemplate.localCode = localCodeNode->AsString();
+    }
+    const auto* numberNode = GetNodeByName(attrs, "number");
+    if (numberNode != nullptr)
+    {
+        phoneTemplate.number = numberNode->AsString();
+    }
+    const auto* extensionNode = GetNodeByName(attrs, "extension");
+    if (extensionNode != nullptr)
+    {
+        phoneTemplate.extension = extensionNode->AsString();
+    }
+    return phoneTemplate;
+}
+
+CompanyRestrictions YellowPages::BLL::CompanyRestrictions::FromJson(const Json::Dict& attrs)
+{
+    YellowPages::BLL::CompanyRestrictions restrictions;
+    const auto* namesNode = GetNodeByName(attrs, "names");
+    if (namesNode != nullptr)
+    {
+        for (const auto& name : namesNode->AsArray())
+        {
+            restrictions.names.insert(name.AsString());
+        }
+    }
+    const auto* urlsNode = GetNodeByName(attrs, "urls");
+    if (urlsNode != nullptr)
+    {
+        for (const auto& url : urlsNode->AsArray())
+        {
+            restrictions.urls.insert(url.AsString());
+        }
+    }
+    const auto* rubricsNode = GetNodeByName(attrs, "rubrics");
+    if (rubricsNode != nullptr)
+    {
+        for (const auto& rubric : rubricsNode->AsArray())
+        {
+            restrictions.rubrics.insert(rubric.AsString());
+        }
+    }
+    const auto* phoneTemplatesNode = GetNodeByName(attrs, "phones");
+    if (phoneTemplatesNode != nullptr)
+    {
+        for (const auto& phoneTemplate : phoneTemplatesNode->AsArray())
+        {
+            restrictions.phoneTemplates.push_back(PhoneTemplate::FromJson(phoneTemplate.AsMap()));
+        }
+    }
+    return restrictions;
+}
+
