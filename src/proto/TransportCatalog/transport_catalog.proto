@@ -6,6 +6,7 @@ import "Bus.proto";
 import "Stop.proto";
 import "RoutingSettings.proto";
 import "RenderSettings.proto";
+import "database.proto";
 
 message TransportCatalog
 {
@@ -13,4 +14,5 @@ message TransportCatalog
   repeated Bus buses = 2;
   RoutingSettings routing_settings = 3;
   RenderSettings render_settings = 4;
+  YellowPages.Database yellow_pages_database = 5;
 }

@@ -13,4 +13,5 @@ namespace Sphere {
   };
 
   double Distance(Point lhs, Point rhs);
+  bool IsEqual(const Point& lhs, const Point& rhs, double eps = std::numeric_limits<double>::epsilon());
 }

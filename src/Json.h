@@ -11,13 +11,14 @@ namespace Json {
 
   class Node;
   using Dict = std::map<std::string, Node>;
+  using Arr = std::vector<Node>;
 
-  class Node : std::variant<std::vector<Node>, Dict, bool, int, double, std::string> {
+  class Node : std::variant<Arr, Dict, bool, int, double, std::string> {
   public:
     using variant::variant;
     const variant& GetBase() const { return *this; }
 
-    const auto& AsArray() const { return std::get<std::vector<Node>>(*this); }
+    const auto& AsArray() const { return std::get<Arr>(*this); }
     const auto& AsMap() const { return std::get<Dict>(*this); }
     bool AsBool() const { return std::get<bool>(*this); }
     int AsInt() const { return std::get<int>(*this); }
@@ -28,6 +29,7 @@ namespace Json {
 
     bool IsArray() const { return std::holds_alternative<std::vector<Node>>(*this); }
     bool IsString() const { return std::holds_alternative<std::string>(*this); }
+    bool IsDouble() const { return std::holds_alternative<double>(*this); }
   };
 
   class Document {

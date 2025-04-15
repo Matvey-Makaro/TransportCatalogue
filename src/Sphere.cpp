@@ -1,4 +1,5 @@
 #include "Sphere.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -25,5 +26,10 @@ namespace Sphere {
       sin(lhs.latitude) * sin(rhs.latitude)
       + cos(lhs.latitude) * cos(rhs.latitude) * cos(abs(lhs.longitude - rhs.longitude))
     ) * EARTH_RADIUS;
+  }
+  bool IsEqual(const Point &lhs, const Point &rhs, double eps)
+  {
+      return IsEqualRel(lhs.latitude, rhs.latitude, eps) &&
+        IsEqualRel(lhs.longitude, rhs.longitude, eps);
   }
 }

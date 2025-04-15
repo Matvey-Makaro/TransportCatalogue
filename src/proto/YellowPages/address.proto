@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "sphere.proto";
+
+package YellowPages;
+
+message AddressComponent {
+  string value = 1;
+  enum Type {
+    COUNTRY = 0;
+    REGION = 1;
+    CITY = 2;
+    STREET = 3;
+    HOUSE = 4;
+  }
+}
+
+message Address {
+  string formatted = 1;
+  repeated AddressComponent components = 2;
+  SphereProto.Coords coords = 3;
+  string comment = 4;
+}

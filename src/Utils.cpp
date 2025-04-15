@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <cmath>
+#include "Json.h"
 
 using namespace std;
 
@@ -17,11 +18,19 @@ string_view Strip(string_view line)
     }
     return line;
 }
-bool IsEqual(double lhs, double rhs, double eps)
+bool IsEqualAbs(double lhs, double rhs, double eps)
 {
     return std::fabs(lhs - rhs) < eps;
 }
 
+bool IsEqualRel(double lhs, double rhs, double eps)
+{
+    double diff = fabs(lhs - rhs);
+    lhs = fabs(lhs);
+    rhs = fabs(rhs);
+    double largest = std::max(lhs, rhs);
+    return diff <= largest * eps;
+}
 
 std::string EscapeSpecialCharacters(const std::string &input)
 {
@@ -49,4 +58,14 @@ std::string EscapeSpecialCharacters(const std::string &input)
 #else
     return input;
 #endif
+}
+
+const Json::Node* GetNodeByName(const Json::Dict &dict, const std::string &name)
+{
+    auto it = dict.find(name);
+    if (it == cend(dict))
+    {
+        return nullptr;
+    }
+    return &it->second;
 }

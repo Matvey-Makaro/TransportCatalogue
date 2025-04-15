@@ -11,6 +11,7 @@
 #include "SerializationSettings.h"
 #include "proto/ProtoSerializer.h"
 #include "TransportRouter.h"
+#include "YellowPages/JsonParser.h"
 
 using namespace std;
 
@@ -36,13 +37,16 @@ void Program::MakeBase(std::istream& in)
     const auto inputDoc = Json::Load(in);
     const auto& inputMap = inputDoc.GetRoot().AsMap();
 
-    const TransportDatabase db(
+    const TransportDatabase transportDb(
         Descriptions::ReadDescriptions(inputMap.at("base_requests").AsArray()),
         Router::RoutingSettings::FromJson(inputMap.at("routing_settings").AsMap()),
         Visualization::RenderSettings::ParseFrom(inputMap.at("render_settings").AsMap()));
 
+    const auto yellowPagesDb = YellowPages::BLL::JsonParser::ParseYellowPages(inputMap.at("yellow_pages").AsMap());
+
     auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
-    Serialization::ProtoSerializer::Serialize(serializationSettings, db);
+
+    Serialization::ProtoSerializer::Serialize(serializationSettings, transportDb, yellowPagesDb);
 }
 
 void Program::ProcessRequests(std::istream& in, std::ostream& out)
@@ -50,15 +54,22 @@ void Program::ProcessRequests(std::istream& in, std::ostream& out)
     const auto inputDoc = Json::Load(in);
     const auto& inputMap = inputDoc.GetRoot().AsMap();
     auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
-    auto db = Serialization::ProtoSerializer::Deserialize(serializationSettings);
 
-    const Svg::MapVisualizer mapVisualizer(db.GetStopsDescriptions(),
-        db.GetBusesDescriptions(),
-        db.GetRenderSettings());
+    auto [transportDb, yellowPagesDb] = Serialization::ProtoSerializer::Deserialize(serializationSettings);
+
+    const auto mapVisualizer = std::make_shared<Svg::MapVisualizer>(transportDb->GetStopsDescriptions(),
+        transportDb->GetBusesDescriptions(),
+        transportDb->GetRenderSettings());
+
+
+    auto context = std::make_shared<Requests::Context>(Requests::Context{
+        .transportDb = std::move(transportDb), 
+        .yellowPagesDb = std::move(yellowPagesDb), 
+        .mapVisualizer = mapVisualizer});
 
     out << std::fixed << std::setprecision(14);
     Json::PrintValue(
-        Requests::ProcessAll(db, mapVisualizer, inputMap.at("stat_requests").AsArray()),
+        Requests::ProcessAll(context,inputMap.at("stat_requests").AsArray()),
         out
     );
     out << endl;

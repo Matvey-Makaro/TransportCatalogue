@@ -31,10 +31,10 @@ namespace Svg
 
 namespace Serialization
 {
-    class ProtoMapper
+    class TransportCatalogProtoMapper
     {
     public:
-        ProtoMapper() = delete;
+        TransportCatalogProtoMapper() = delete;
     
         static TransportCatalog Map(const TransportDatabase& db);
         static TransportDatabase Map(const TransportCatalog& catalog);

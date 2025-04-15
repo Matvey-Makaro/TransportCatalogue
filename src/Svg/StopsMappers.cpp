@@ -4,11 +4,9 @@
 #include "StopsMappers.h"
 
 using namespace Svg;
-using namespace Visualization;
 
-
-Svg::GeoStopMapper::GeoStopMapper(const RenderSettings &renderSettings) : _renderSettings(renderSettings),
-                                                                          _coordMapper()
+Svg::GeoStopMapper::GeoStopMapper(const Visualization::RenderSettings &renderSettings) : _renderSettings(renderSettings),
+                                                                                         _coordMapper()
 {
 }
 
@@ -48,7 +46,7 @@ void Svg::GeoStopMapper::SetupCoordinateMapper(const std::vector<const Descripti
     _coordMapper.SetMinLat((*minLat)->position.latitude);
 }
 
-Svg::ZipStopMapper::ZipStopMapper(const RenderSettings &renderSettings) : _renderSettings(renderSettings)
+Svg::ZipStopMapper::ZipStopMapper(const Visualization::RenderSettings &renderSettings) : _renderSettings(renderSettings)
 {
 }
 
@@ -90,7 +88,7 @@ std::map<std::string, Point> Svg::ZipStopMapper::Map(const std::vector<const Des
     return stopsPositions;
 }
 
-Svg::ZipWithGluingStopMapper::ZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses) : _renderSettings(renderSettings),
+Svg::ZipWithGluingStopMapper::ZipWithGluingStopMapper(const Visualization::RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses) : _renderSettings(renderSettings),
                                                                                                                                                    _buses(buses),
                                                                                                                                                    _stopsPositions(),
                                                                                                                                                    _sortedStops()
@@ -223,7 +221,7 @@ void Svg::ZipWithGluingStopMapper::FillStopsPositions(const std::vector<const De
     }
 }
 
-Svg::InterpolationZipWithGluingStopMapper::InterpolationZipWithGluingStopMapper(const RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses) : _renderSettings(renderSettings), _buses(buses)
+Svg::InterpolationZipWithGluingStopMapper::InterpolationZipWithGluingStopMapper(const Visualization::RenderSettings &renderSettings, const std::vector<const Descriptions::Bus *> &buses) : _renderSettings(renderSettings), _buses(buses)
 {
 }
 
