@@ -90,4 +90,10 @@ namespace Router
     std::vector<VertexInfo> vertices_info_;
     std::vector<EdgeInfo> edges_info_;
   };
+
+  bool operator==(const TransportRouter::RouteInfo::RideBusItem& lhs, const TransportRouter::RouteInfo::RideBusItem& rhs);
+  bool operator==(const TransportRouter::RouteInfo::WaitBusItem& lhs, const TransportRouter::RouteInfo::WaitBusItem& rhs);
+  bool operator==(const TransportRouter::RouteInfo::WalkToCompany& lhs, const TransportRouter::RouteInfo::WalkToCompany& rhs);
+  bool operator==(const TransportRouter::RouteInfo::Item& lhs, const TransportRouter::RouteInfo::Item& rhs);
+  bool operator==(const TransportRouter::RouteInfo& lhs, const TransportRouter::RouteInfo& rhs);
 }

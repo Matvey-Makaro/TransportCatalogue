@@ -1,4 +1,5 @@
 #include "TransportRouter.h"
+#include "Utils.h"
 
 using namespace std;
 using namespace Router;
@@ -117,4 +118,39 @@ optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& st
   return route_info;
 }
 
+bool Router::operator==(const TransportRouter::RouteInfo::RideBusItem& lhs, const TransportRouter::RouteInfo::RideBusItem& rhs)
+{
+  return lhs.bus_name == rhs.bus_name &&
+    IsEqualRel(lhs.time, rhs.time) &&
+    lhs.span_count == rhs.span_count;
+}
 
+bool Router::operator==(const TransportRouter::RouteInfo::WaitBusItem& lhs, const TransportRouter::RouteInfo::WaitBusItem& rhs)
+{
+  return lhs.stop_name == rhs.stop_name &&
+    IsEqualRel(lhs.time, rhs.time);
+}
+
+bool Router::operator==(const TransportRouter::RouteInfo::WalkToCompany& lhs, const TransportRouter::RouteInfo::WalkToCompany& rhs)
+{
+  return IsEqualRel(lhs.time, rhs.time) &&
+    lhs.stop_name == rhs.stop_name &&
+    lhs.company_name == rhs.company_name;
+}
+
+bool Router::operator==(const TransportRouter::RouteInfo::Item& lhs, const TransportRouter::RouteInfo::Item& rhs)
+{
+  if (lhs.index() != rhs.index())
+    return false;
+
+  return std::visit([](auto&& lhs_arg, auto&& rhs_arg)
+    {
+      return lhs_arg == rhs_arg;
+    }, lhs, rhs);
+}
+
+bool Router::operator==(const TransportRouter::RouteInfo& lhs, const TransportRouter::RouteInfo& rhs)
+{
+  return IsEqualRel(lhs.total_time, rhs.total_time) &&
+    std::equal(begin(lhs.items), end(lhs.items), begin(rhs.items), end(rhs.items));
+}
