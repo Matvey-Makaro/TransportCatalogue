@@ -25,6 +25,8 @@ namespace Visualization
         Svg::Point busLabelOffset;
         std::vector<std::string> layers;
         double outerMargin;
+        double companyRadius;
+        double companyLineWidth;
     
         static RenderSettings ParseFrom(const Json::Dict& attrs);
     };

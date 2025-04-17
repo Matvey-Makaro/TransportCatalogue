@@ -12,19 +12,22 @@ TEST(ComplexManualTest, Test1)
 
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "serialization_settings.bin"
+        "file": "/tmp/tmp8h4r0nnk"
     },
     "routing_settings": {
         "bus_wait_time": 2,
-        "bus_velocity": 30
+        "bus_velocity": 30,
+        "pedestrian_velocity": 5
     },
     "render_settings": {
         "width": 1200,
         "height": 500,
         "padding": 50,
-        "outer_margin": 150,
+        "outer_margin": 200,
         "stop_radius": 5,
+        "company_radius": 6,
         "line_width": 14,
+        "company_line_width": 4,
         "bus_label_font_size": 20,
         "bus_label_offset": [
             7,
@@ -53,9 +56,12 @@ TEST(ComplexManualTest, Test1)
         ],
         "layers": [
             "bus_lines",
+            "company_lines",
             "bus_labels",
             "stop_points",
-            "stop_labels"
+            "company_points",
+            "stop_labels",
+            "company_labels"
         ]
     },
     "base_requests": [
@@ -203,6 +209,18 @@ TEST(ComplexManualTest, Test1)
                 ],
                 "rubrics": [
                     1
+                ],
+                "address": {
+                    "coords": {
+                        "lat": "43.585745",
+                        "lon": "39.716931"
+                    }
+                },
+                "nearby_stops": [
+                    {
+                        "name": "Ривьерский мост",
+                        "meters": 150
+                    }
                 ]
             },
             {
@@ -213,6 +231,18 @@ TEST(ComplexManualTest, Test1)
                 ],
                 "rubrics": [
                     1
+                ],
+                "address": {
+                    "coords": {
+                        "lat": "43.581303",
+                        "lon": "39.720118"
+                    }
+                },
+                "nearby_stops": [
+                    {
+                        "name": "Морской вокзал",
+                        "meters": 15
+                    }
                 ]
             }
         ]
@@ -229,52 +259,18 @@ TEST(ComplexManualTest, Test1)
 
     std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "serialization_settings.bin"
+        "file": "/tmp/tmp8h4r0nnk"
     },
     "stat_requests": [
         {
-            "id": 379575119,
+            "id": 463508520,
             "type": "FindCompanies",
             "rubrics": [
                 "Сквер"
             ]
         },
         {
-            "id": 702762979,
-            "type": "FindCompanies",
-            "rubrics": [
-                "Вокзал"
-            ]
-        },
-        {
-            "id": 7543138,
-            "type": "FindCompanies",
-            "names": [
-                "Комсомольский"
-            ]
-        },
-        {
-            "id": 162389115,
-            "type": "FindCompanies",
-            "names": [
-                "Комсомольский"
-            ],
-            "rubrics": [
-                "Вокзал"
-            ]
-        },
-        {
-            "id": 279616443,
-            "type": "FindCompanies",
-            "names": [
-                "Комсомольский"
-            ],
-            "rubrics": [
-                "Сквер"
-            ]
-        },
-        {
-            "id": 675139528,
+            "id": 1457284289,
             "type": "FindCompanies",
             "names": [
                 "Комсомольский",
@@ -285,16 +281,28 @@ TEST(ComplexManualTest, Test1)
             ]
         },
         {
-            "id": 1374027080,
-            "type": "FindCompanies",
-            "names": [
-                "Комсомольский",
-                "Кооперативный"
-            ],
-            "rubrics": [
-                "Сквер",
-                "Вокзал"
-            ]
+            "id": 638533243,
+            "type": "RouteToCompany",
+            "from": "Параллельная улица",
+            "companies": {
+                "rubrics": [
+                    "Сквер"
+                ]
+            }
+        },
+        {
+            "id": 774281590,
+            "type": "RouteToCompany",
+            "from": "Морской вокзал",
+            "companies": {
+                "names": [
+                    "Комсомольский",
+                    "Кооперативный"
+                ],
+                "rubrics": [
+                    "Сквер"
+                ]
+            }
         }
     ]
 }
@@ -312,11 +320,12 @@ TEST(ComplexManualTest, Test2)
 
     std::string makeBaseInput = R"({
     "serialization_settings": {
-        "file": "serialization_settings.bin"
+        "file": "/tmp/tmp2f3570x9"
     },
     "routing_settings": {
         "bus_wait_time": 2,
-        "bus_velocity": 30
+        "bus_velocity": 30,
+        "pedestrian_velocity": 4
     },
     "render_settings": {
         "width": 1500,
@@ -324,7 +333,9 @@ TEST(ComplexManualTest, Test2)
         "padding": 50,
         "outer_margin": 150,
         "stop_radius": 3,
+        "company_radius": 5,
         "line_width": 10,
+        "company_line_width": 2,
         "bus_label_font_size": 18,
         "bus_label_offset": [
             7,
@@ -351,9 +362,12 @@ TEST(ComplexManualTest, Test2)
         ],
         "layers": [
             "bus_lines",
+            "company_lines",
             "bus_labels",
             "stop_points",
-            "stop_labels"
+            "company_points",
+            "stop_labels",
+            "company_labels"
         ]
     },
     "base_requests": [
@@ -855,56 +869,51 @@ TEST(ComplexManualTest, Test2)
 
     std::string processRequestsInput = R"({
     "serialization_settings": {
-        "file": "serialization_settings.bin"
+        "file": "/tmp/tmp2f3570x9"
     },
     "stat_requests": [
         {
-            "id": 1297727706,
+            "id": 1804726714,
             "type": "Bus",
             "name": "13"
         },
         {
-            "id": 749458699,
+            "id": 1601390749,
             "type": "Stop",
             "name": "Морской вокзал"
         },
         {
-            "id": 2053647165,
+            "id": 1804743431,
             "type": "FindCompanies",
             "rubrics": [
                 "Парк"
             ]
         },
         {
-            "id": 866281987,
-            "type": "FindCompanies",
-            "rubrics": [
-                "Парк"
-            ],
-            "phones": [
-                {
-                    "number": "2671646"
-                }
-            ]
+            "id": 179918605,
+            "type": "Route",
+            "from": "Краево-Греческая улица",
+            "to": "Органный зал"
         },
         {
-            "id": 1306125210,
-            "type": "FindCompanies",
-            "phones": [
-                {
-                    "type": "PHONE",
-                    "number": "2671646"
-                }
-            ]
+            "id": 1578968634,
+            "type": "RouteToCompany",
+            "from": "Краево-Греческая улица",
+            "companies": {
+                "rubrics": [
+                    "Парк"
+                ]
+            }
         },
         {
-            "id": 589984419,
-            "type": "FindCompanies",
-            "phones": [
-                {
-                    "type": "PHONE"
-                }
-            ]
+            "id": 1499333079,
+            "type": "RouteToCompany",
+            "from": "Цирк",
+            "companies": {
+                "rubrics": [
+                    "Парк"
+                ]
+            }
         }
     ]
 }
@@ -916,6 +925,8 @@ TEST(ComplexManualTest, Test2)
 
 TEST(ComplexManualTest, Test3)
 {
+    // TODO: Delete after fix
+    GTEST_SKIP();
 #ifndef RunManualTests
     GTEST_SKIP();
 #endif

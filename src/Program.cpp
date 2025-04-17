@@ -55,9 +55,13 @@ void Program::ProcessRequests(std::istream& in, std::ostream& out)
     const auto& inputMap = inputDoc.GetRoot().AsMap();
     auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());
 
-    auto [transportDb, yellowPagesDb] = Serialization::ProtoSerializer::Deserialize(serializationSettings);
+    auto [transportDbDTO, yellowPagesDbDTO] = Serialization::ProtoSerializer::Deserialize(serializationSettings);
+    auto transportDb = TransportDatabaseShp(std::move(transportDbDTO));
+    auto yellowPagesDb = YellowPages::BLL::YellowPagesDatabaseShp(std::move(yellowPagesDbDTO));
 
-    const auto mapVisualizer = std::make_shared<Svg::MapVisualizer>(transportDb->GetStopsDescriptions(),
+    const auto mapVisualizer = std::make_shared<Svg::MapVisualizer>(
+        yellowPagesDb,
+        transportDb->GetStopsDescriptions(),
         transportDb->GetBusesDescriptions(),
         transportDb->GetRenderSettings());
 

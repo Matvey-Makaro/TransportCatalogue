@@ -18,6 +18,16 @@ const std::vector<Company>& YellowPages::BLL::YellowPagesDatabase::GetCompanies(
     return _companies;
 }
 
+const std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::GetCompaniesPtr() const
+{
+    std::vector<const Company*> companiesPtr(_companies.size(), nullptr);
+    for (size_t i = 0; i < _companies.size(); i++)
+    {
+        companiesPtr[i] = &_companies[i];
+    }
+    return companiesPtr;
+}
+
 const std::unordered_map<Rubric::IdType, Rubric>& YellowPages::BLL::YellowPagesDatabase::GetRubrics() const
 {
     return _rubrics;
@@ -26,12 +36,7 @@ const std::unordered_map<Rubric::IdType, Rubric>& YellowPages::BLL::YellowPagesD
 std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::FindCompanies(
     const CompanyRestrictions& companyRestrictions) const
 {
-    std::vector<const Company*> foundCompanies(_companies.size(), nullptr);
-    for (size_t i = 0; i < _companies.size(); i++)
-    {
-        foundCompanies[i] = &_companies[i];
-    }
-
+    auto foundCompanies = GetCompaniesPtr();
     FilterByNames(foundCompanies, companyRestrictions);
     FilterByUrls(foundCompanies, companyRestrictions);
     FilterByRubrics(foundCompanies, companyRestrictions);
@@ -235,3 +240,25 @@ CompanyRestrictions YellowPages::BLL::CompanyRestrictions::FromJson(const Json::
     return restrictions;
 }
 
+const Company* YellowPages::BLL::YellowPagesDatabase::GetCompanyByMainName(std::string_view mainName) const
+{
+    auto it = std::find_if(begin(_companies), end(_companies), [mainName](const Company& company)
+        {
+            return company.GetMainName().value == mainName;
+        });
+    if (it == end(_companies))
+    {
+        return nullptr;
+    }
+    return &(*it);
+}
+
+const Rubric* YellowPages::BLL::YellowPagesDatabase::GetRubricById(Rubric::IdType id) const
+{
+    auto it = _rubrics.find(id);
+    if (it == _rubrics.end())
+    {
+        return nullptr;
+    }
+    return &it->second;
+}

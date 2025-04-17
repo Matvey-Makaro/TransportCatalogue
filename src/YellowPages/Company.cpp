@@ -195,3 +195,4 @@ const YellowPages::BLL::Name& YellowPages::BLL::Company::GetMainName() const
     assert(it != cend(names));
     return *it;
 }
+

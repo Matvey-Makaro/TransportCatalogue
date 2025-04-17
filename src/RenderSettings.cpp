@@ -90,7 +90,9 @@ RenderSettings RenderSettings::ParseFrom(const Json::Dict& attrs)
         .busLabelFontSize = static_cast<decltype(RenderSettings::busLabelFontSize)>(attrs.at("bus_label_font_size").AsInt()),
         .busLabelOffset = ParsePointFrom(attrs.at("bus_label_offset")),
         .layers = ParseStringVecFrom(attrs.at("layers")),
-        .outerMargin = attrs.at("outer_margin").AsDouble()
+        .outerMargin = attrs.at("outer_margin").AsDouble(),
+        .companyRadius = attrs.at("company_radius").AsDouble(),
+        .companyLineWidth = attrs.at("company_line_width").AsDouble()
     };
     return settings;
 }

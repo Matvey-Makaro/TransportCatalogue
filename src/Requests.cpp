@@ -142,7 +142,7 @@ namespace Requests
       std::stringstream mapSvg;
       if (_context->mapVisualizer != nullptr)
       {
-        _context->mapVisualizer->RenderRoute(mapSvg, *route, _stopTo);
+        _context->mapVisualizer->RenderRoute(mapSvg, *route);
         dict["map"] = mapSvg.str();
       }
     }
@@ -289,8 +289,7 @@ namespace Requests
       std::stringstream mapSvg;
       if (_context->mapVisualizer != nullptr)
       {
-        // TODO: Implement RenderRouteToCompany
-        // _context->mapVisualizer->RenderRoute(mapSvg, *route, _stopTo);
+        _context->mapVisualizer->RenderRoute(mapSvg, *route);
         dict["map"] = mapSvg.str();
       }
     }

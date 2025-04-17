@@ -11,7 +11,7 @@ namespace YellowPages
     {
         MATCHER_P(HasName, companyName, "")
         {
-            for (const auto &name : arg->names)
+            for (const auto& name : arg->names)
             {
                 if (name.value == companyName)
                 {
@@ -36,19 +36,19 @@ namespace YellowPages
                 std::unordered_map<Rubric::IdType, Rubric> _rubrics;
                 _rubrics[1] = Rubric{
                     .name = "1",
-                    .keywords = {"Вокзал", "ЖД", "Остановка"}};
+                    .keywords = {"Вокзал", "ЖД", "Остановка"} };
                 _rubrics[2] = Rubric{
                     .name = "2",
-                    .keywords = {"Парк"}};
+                    .keywords = {"Парк"} };
                 _rubrics[3] = Rubric{
                     .name = "3",
-                    .keywords = {"Кафе", "Ресторан"}};
+                    .keywords = {"Кафе", "Ресторан"} };
                 _rubrics[4] = Rubric{
                     .name = "4",
-                    .keywords = {"Спортзал"}};
+                    .keywords = {"Спортзал"} };
                 _rubrics[5] = Rubric{
                     .name = "5",
-                    .keywords = {"Площадь"}};
+                    .keywords = {"Площадь"} };
                 return _rubrics;
             }
 
@@ -59,9 +59,9 @@ namespace YellowPages
                 // Company 1
                 {
                     Company company;
-                    company.names = std::vector<Name>{Name{.value = "OAO Компания1", .type = Name::Main},
+                    company.names = std::vector<Name>{ Name{.value = "OAO Компания1", .type = Name::Main},
                                                       Name{.value = "Компания1", .type = Name::Short},
-                                                      Name{.value = "Синоним", .type = Name::Synonym}};
+                                                      Name{.value = "Синоним", .type = Name::Synonym} };
                     Phone phone1;
                     phone1.type = Phone::PhoneNum;
                     phone1.countryCode = "111";
@@ -78,18 +78,18 @@ namespace YellowPages
 
                     Phone phone3;
 
-                    company.phones = {phone1, phone2, phone3};
-                    company.urls = {Url{"C1Url1"}, Url{"C1Url2"}, Url{"C1Url3"}, Url{"CommonUrl1"}};
-                    company.rubrics = {1, 2};
+                    company.phones = { phone1, phone2, phone3 };
+                    company.urls = { Url{"C1Url1"}, Url{"C1Url2"}, Url{"C1Url3"}, Url{"CommonUrl1"} };
+                    company.rubrics = { 1, 2 };
 
                     companies.emplace_back(company);
                 }
                 // Company 2
                 {
                     Company company;
-                    company.names = std::vector<Name>{Name{.value = "OAO Компания2", .type = Name::Main},
+                    company.names = std::vector<Name>{ Name{.value = "OAO Компания2", .type = Name::Main},
                                                       Name{.value = "Компания2", .type = Name::Short},
-                                                      Name{.value = "Синоним", .type = Name::Synonym}};
+                                                      Name{.value = "Синоним", .type = Name::Synonym} };
                     Phone phone1;
                     phone1.type = Phone::PhoneNum;
                     phone1.countryCode = "111";
@@ -108,16 +108,16 @@ namespace YellowPages
                     phone3.type = Phone::PhoneNum;
                     phone3.number = "3333333";
 
-                    company.phones = {phone1, phone2, phone3};
-                    company.urls = {Url{"C2Url1"}, Url{"C2Url2"}, Url{"C2Url3"}, Url{"CommonUrl1"}};
-                    company.rubrics = {3, 4};
+                    company.phones = { phone1, phone2, phone3 };
+                    company.urls = { Url{"C2Url1"}, Url{"C2Url2"}, Url{"C2Url3"}, Url{"CommonUrl1"} };
+                    company.rubrics = { 3, 4 };
 
                     companies.emplace_back(company);
                 }
                 // Company 3
                 {
                     Company company;
-                    company.names = std::vector<Name>{Name{.value = "OAO Компания3", .type = Name::Main}};
+                    company.names = std::vector<Name>{ Name{.value = "OAO Компания3", .type = Name::Main} };
 
                     Phone phone1;
                     phone1.type = Phone::PhoneNum;
@@ -133,18 +133,18 @@ namespace YellowPages
                     phone2.number = "7654321";
                     phone2.extension = "321";
 
-                    company.phones = {phone1, phone2};
-                    company.urls = {Url{"C3Url1"}, Url{"C3Url2"}, Url{"C3Url3"}, Url{"CommonUrl1"}};
-                    company.rubrics = {5};
+                    company.phones = { phone1, phone2 };
+                    company.urls = { Url{"C3Url1"}, Url{"C3Url2"}, Url{"C3Url3"}, Url{"CommonUrl1"} };
+                    company.rubrics = { 5 };
 
                     companies.emplace_back(company);
                 }
                 // Company 4
                 {
                     Company company;
-                    company.names = std::vector<Name>{Name{.value = "OAO Компания4", .type = Name::Main},
+                    company.names = std::vector<Name>{ Name{.value = "OAO Компания4", .type = Name::Main},
                                                       Name{.value = "Компания4", .type = Name::Short},
-                                                      Name{.value = "4", .type = Name::Short}};
+                                                      Name{.value = "4", .type = Name::Short} };
                     Phone phone1;
                     phone1.type = Phone::PhoneNum;
                     phone1.countryCode = "444";
@@ -166,18 +166,18 @@ namespace YellowPages
                     phone3.number = "1234567";
                     phone3.extension = "123";
 
-                    company.phones = {phone1, phone2, phone3};
-                    company.urls = {Url{"C4Url1"}, Url{"C4Url2"}, Url{"C4Url3"}};
-                    company.rubrics = {1, 2, 3, 4};
+                    company.phones = { phone1, phone2, phone3 };
+                    company.urls = { Url{"C4Url1"}, Url{"C4Url2"}, Url{"C4Url3"} };
+                    company.rubrics = { 1, 2, 3, 4 };
 
                     companies.emplace_back(company);
                 }
                 // Company 5
                 {
                     Company company;
-                    company.names = std::vector<Name>{Name{.value = "OAO Компания5", .type = Name::Main},
+                    company.names = std::vector<Name>{ Name{.value = "OAO Компания5", .type = Name::Main},
                                                       Name{.value = "Компания5", .type = Name::Short},
-                                                      Name{.value = "Синоним", .type = Name::Synonym}};
+                                                      Name{.value = "Синоним", .type = Name::Synonym} };
                     Phone phone1;
                     phone1.type = Phone::PhoneNum;
                     phone1.countryCode = "555";
@@ -199,9 +199,9 @@ namespace YellowPages
                     phone3.number = "1234567";
                     phone3.extension = "";
 
-                    company.phones = {phone1, phone2, phone3};
-                    company.urls = {Url{"C5Url1"}, Url{"C5Url2"}, Url{"C5Url3"}};
-                    company.rubrics = {3};
+                    company.phones = { phone1, phone2, phone3 };
+                    company.urls = { Url{"C5Url1"}, Url{"C5Url2"}, Url{"C5Url3"} };
+                    company.rubrics = { 3 };
 
                     companies.emplace_back(company);
                 }
@@ -225,7 +225,7 @@ namespace YellowPages
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
             std::string companyName = "Компания1";
-            companyRestrictions.names = {companyName};
+            companyRestrictions.names = { companyName };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);
             EXPECT_THAT(foundCompanies, Each(HasName(companyName)));
@@ -235,7 +235,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.names = {"Компания1", "Компания2"};
+            companyRestrictions.names = { "Компания1", "Компания2" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 2);
         }
@@ -244,7 +244,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.names = {"Компания1", "Синоним"};
+            companyRestrictions.names = { "Компания1", "Синоним" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 3);
         }
@@ -253,7 +253,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.names = {"OAO Компания3"};
+            companyRestrictions.names = { "OAO Компания3" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);
         }
@@ -262,7 +262,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.names = {"Синоним"};
+            companyRestrictions.names = { "Синоним" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 3);
         }
@@ -271,7 +271,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.names = {"Non-existent name"};
+            companyRestrictions.names = { "Non-existent name" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 0);
         }
@@ -280,7 +280,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.urls = {"C2Url1"};
+            companyRestrictions.urls = { "C2Url1" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);
         }
@@ -289,7 +289,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.urls = {"CommonUrl1"};
+            companyRestrictions.urls = { "CommonUrl1" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 3);
         }
@@ -298,7 +298,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.urls = {"CommonUrl1", "C5Url1"};
+            companyRestrictions.urls = { "CommonUrl1", "C5Url1" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 4);
         }
@@ -307,7 +307,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.rubrics = {"Спортзал"};
+            companyRestrictions.rubrics = { "Спортзал" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 2);
         }
@@ -316,7 +316,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.rubrics = {"Вокзал", "ЖД", "Остановка"};
+            companyRestrictions.rubrics = { "Вокзал", "ЖД", "Остановка" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 2);
         }
@@ -325,7 +325,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.rubrics = {"Вокзал", "Парк", "Кафе"};
+            companyRestrictions.rubrics = { "Вокзал", "Парк", "Кафе" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 4);
         }
@@ -334,7 +334,7 @@ namespace YellowPages
         {
             using namespace YellowPages::BLL;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.rubrics = {"Площадь"};
+            companyRestrictions.rubrics = { "Площадь" };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);
         }
@@ -349,7 +349,7 @@ namespace YellowPages
             phoneTemplate1.number = "7654321";
             phoneTemplate1.extension = "321";
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.phoneTemplates = {phoneTemplate1};
+            companyRestrictions.phoneTemplates = { phoneTemplate1 };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);
         }
@@ -360,7 +360,7 @@ namespace YellowPages
             PhoneTemplate phoneTemplate1;
             phoneTemplate1.type = Phone::PhoneNum;
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.phoneTemplates = {phoneTemplate1};
+            companyRestrictions.phoneTemplates = { phoneTemplate1 };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);
         }
@@ -375,7 +375,7 @@ namespace YellowPages
             phoneTemplate1.number = "1234567";
             phoneTemplate1.extension = "";
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.phoneTemplates = {phoneTemplate1};
+            companyRestrictions.phoneTemplates = { phoneTemplate1 };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 3);
         }
@@ -390,11 +390,11 @@ namespace YellowPages
             phoneTemplate1.number = "1111111";
             phoneTemplate1.extension = "111";
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.phoneTemplates = {phoneTemplate1};
+            companyRestrictions.phoneTemplates = { phoneTemplate1 };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);
         }
-        
+
         TEST_F(FindCompaniesTest, FindOnlyByPhoneTemplate5)
         {
             using namespace YellowPages::BLL;
@@ -405,7 +405,7 @@ namespace YellowPages
             phoneTemplate1.number = "ivalidNumber";
             phoneTemplate1.extension = "";
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.phoneTemplates = {phoneTemplate1};
+            companyRestrictions.phoneTemplates = { phoneTemplate1 };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 0);
         }
@@ -415,16 +415,16 @@ namespace YellowPages
             using namespace YellowPages::BLL;
 
             CompanyRestrictions companyRestrictions;
-            companyRestrictions.names = {"Компания1", "Синоним", "OAO Компания3"};
-            companyRestrictions.urls = {"CommonUrl1"};
-            companyRestrictions.rubrics = {"Парк", "Спортзал"};
+            companyRestrictions.names = { "Компания1", "Синоним", "OAO Компания3" };
+            companyRestrictions.urls = { "CommonUrl1" };
+            companyRestrictions.rubrics = { "Парк", "Спортзал" };
             PhoneTemplate phoneTemplate1;
             phoneTemplate1.type = Phone::PhoneNum;
             phoneTemplate1.countryCode = "111";
             phoneTemplate1.localCode = "";
             phoneTemplate1.number = "1111111";
             phoneTemplate1.extension = "111";
-            companyRestrictions.phoneTemplates = {phoneTemplate1};
+            companyRestrictions.phoneTemplates = { phoneTemplate1 };
             auto foundCompanies = _db.FindCompanies(companyRestrictions);
             EXPECT_EQ(foundCompanies.size(), 1);    // company 2
         }

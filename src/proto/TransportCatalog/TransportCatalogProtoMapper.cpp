@@ -167,6 +167,7 @@ Serialization::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(c
     Serialization::RoutingSettings pbSettings;
     pbSettings.set_bus_wait_time(settings.busWaitTime);
     pbSettings.set_bus_velocity(settings.busVelocity);
+    pbSettings.set_pedestrian_velocity(settings.pedestrianVelocity);
     return pbSettings;
 }
 
@@ -174,7 +175,8 @@ Router::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(const Se
 {
     return Router::RoutingSettings{
         .busWaitTime = pbSettings.bus_wait_time(),
-        .busVelocity = pbSettings.bus_velocity()
+        .busVelocity = pbSettings.bus_velocity(),
+        .pedestrianVelocity = pbSettings.pedestrian_velocity()
     };
 }
 
@@ -201,6 +203,8 @@ Serialization::RenderSettings Serialization::TransportCatalogProtoMapper::Map(co
         pbSettings.add_layers(l);
     }
     pbSettings.set_outer_margin(settings.outerMargin);
+    pbSettings.set_company_radius(settings.companyRadius);
+    pbSettings.set_company_line_width(settings.companyLineWidth);
     return pbSettings;
 }
 
@@ -229,6 +233,8 @@ Visualization::RenderSettings Serialization::TransportCatalogProtoMapper::Map(co
         settings.layers.emplace_back(l);
     }
     settings.outerMargin = pbSettings.outer_margin();
+    settings.companyRadius = pbSettings.company_radius();
+    settings.companyLineWidth = pbSettings.company_line_width();
     return settings;
 }
 

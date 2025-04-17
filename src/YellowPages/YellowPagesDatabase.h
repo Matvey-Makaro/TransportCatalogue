@@ -50,8 +50,12 @@ namespace YellowPages
             YellowPagesDatabase& operator=(YellowPagesDatabase&& other) noexcept = default;
 
             const std::vector<Company>& GetCompanies() const;
+            const std::vector<const Company*> GetCompaniesPtr() const;
             const std::unordered_map<Rubric::IdType, Rubric>& GetRubrics() const;
 
+            const Company* GetCompanyByMainName(std::string_view mainName) const;
+
+            const Rubric* GetRubricById(Rubric::IdType id) const;
             std::vector<const Company*> FindCompanies(const CompanyRestrictions& companyRestrictions) const;
 
         private:

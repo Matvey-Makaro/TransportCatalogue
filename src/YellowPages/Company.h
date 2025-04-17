@@ -119,6 +119,8 @@ namespace YellowPages
 
         struct Company
         {
+            using IdType = uint64_t;
+
             Address address;
             std::vector<Name> names;
             std::vector<Phone> phones;
