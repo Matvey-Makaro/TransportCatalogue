@@ -5,11 +5,13 @@
 #include "RenderSettings.h"
 #include "Svg/Rgb.h"
 #include "Svg/Rgba.h"
+#include "ProgramState.h"
 
 using namespace Serialization;
 
 TransportCatalog Serialization::TransportCatalogProtoMapper::Map(const TransportDatabase& db)
 {
+    REGISTER_CURR_FUNC();
     auto pbBuses = Map(db.GetBusesDescriptions());
     auto pbStops = Map(db.GetStopsDescriptions());
     TransportCatalog catalog;
@@ -28,6 +30,7 @@ TransportCatalog Serialization::TransportCatalogProtoMapper::Map(const Transport
 
 TransportDatabase Serialization::TransportCatalogProtoMapper::Map(const TransportCatalog& catalog)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Descriptions::Bus> buses;
     buses.reserve(catalog.buses_size());
     for (const auto& pbBus : catalog.buses())
@@ -49,6 +52,7 @@ TransportDatabase Serialization::TransportCatalogProtoMapper::Map(const Transpor
 
 Serialization::Bus Serialization::TransportCatalogProtoMapper::Map(const Descriptions::Bus& bus)
 {
+    REGISTER_CURR_FUNC();
     Serialization::Bus pbBus;
     pbBus.set_name(bus.name);
     pbBus.set_isroundtrip(bus.isRoundtrip);
@@ -76,6 +80,7 @@ Descriptions::Bus Serialization::TransportCatalogProtoMapper::Map(const Serializ
 
 std::vector<Serialization::Bus> Serialization::TransportCatalogProtoMapper::Map(const std::vector<const Descriptions::Bus*>& buses)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Serialization::Bus> pbBuses;
     pbBuses.reserve(buses.size());
     for (const auto* bus : buses)
@@ -87,6 +92,7 @@ std::vector<Serialization::Bus> Serialization::TransportCatalogProtoMapper::Map(
 
 std::vector<Descriptions::Bus> Serialization::TransportCatalogProtoMapper::Map(const std::vector<Serialization::Bus>& pbBuses)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Descriptions::Bus> buses;
     buses.reserve(pbBuses.size());
     for (const auto& pbBus : pbBuses)
@@ -98,6 +104,7 @@ std::vector<Descriptions::Bus> Serialization::TransportCatalogProtoMapper::Map(c
 
 Serialization::Stop Serialization::TransportCatalogProtoMapper::Map(const Descriptions::Stop& stop)
 {
+    REGISTER_CURR_FUNC();
     Serialization::Stop pbStop;
     pbStop.set_name(stop.name);
     *pbStop.mutable_position() = Map(stop.position);
@@ -113,6 +120,7 @@ Serialization::Stop Serialization::TransportCatalogProtoMapper::Map(const Descri
 
 Descriptions::Stop Serialization::TransportCatalogProtoMapper::Map(const Serialization::Stop& pbStop)
 {
+    REGISTER_CURR_FUNC();
     std::unordered_map<std::string, int> distances;
     distances.reserve(pbStop.distances_size());
     for (const auto& dist : pbStop.distances())
@@ -128,6 +136,7 @@ Descriptions::Stop Serialization::TransportCatalogProtoMapper::Map(const Seriali
 
 std::vector<Serialization::Stop> Serialization::TransportCatalogProtoMapper::Map(const std::vector<const Descriptions::Stop*>& stops)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Serialization::Stop> pbStops;
     pbStops.reserve(stops.size());
     for (const auto* s : stops)
@@ -139,6 +148,7 @@ std::vector<Serialization::Stop> Serialization::TransportCatalogProtoMapper::Map
 
 std::vector<Descriptions::Stop> Serialization::TransportCatalogProtoMapper::Map(const std::vector<Serialization::Stop>& pbStops)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Descriptions::Stop> stops;
     stops.reserve(pbStops.size());
     for (const auto& pbStop : pbStops)
@@ -150,6 +160,7 @@ std::vector<Descriptions::Stop> Serialization::TransportCatalogProtoMapper::Map(
 
 Serialization::Point Serialization::TransportCatalogProtoMapper::Map(const Sphere::Point& point)
 {
+    REGISTER_CURR_FUNC();
     Serialization::Point pbPoing;
     pbPoing.set_latitude(point.latitude);
     pbPoing.set_longitude(point.longitude);
@@ -158,12 +169,14 @@ Serialization::Point Serialization::TransportCatalogProtoMapper::Map(const Spher
 
 Sphere::Point Serialization::TransportCatalogProtoMapper::Map(const Serialization::Point& pbPoint)
 {
+    REGISTER_CURR_FUNC();
     return Sphere::Point{ .latitude = pbPoint.latitude(),
                             .longitude = pbPoint.longitude() };
 }
 
 Serialization::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(const Router::RoutingSettings& settings)
 {
+    REGISTER_CURR_FUNC();
     Serialization::RoutingSettings pbSettings;
     pbSettings.set_bus_wait_time(settings.busWaitTime);
     pbSettings.set_bus_velocity(settings.busVelocity);
@@ -173,6 +186,7 @@ Serialization::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(c
 
 Router::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(const Serialization::RoutingSettings& pbSettings)
 {
+    REGISTER_CURR_FUNC();
     return Router::RoutingSettings{
         .busWaitTime = pbSettings.bus_wait_time(),
         .busVelocity = pbSettings.bus_velocity(),
@@ -182,6 +196,7 @@ Router::RoutingSettings Serialization::TransportCatalogProtoMapper::Map(const Se
 
 Serialization::RenderSettings Serialization::TransportCatalogProtoMapper::Map(const Visualization::RenderSettings& settings)
 {
+    REGISTER_CURR_FUNC();
     Serialization::RenderSettings pbSettings;
     pbSettings.set_max_map_width(settings.maxMapWidth);
     pbSettings.set_max_map_height(settings.maxMapHeight);
@@ -210,6 +225,7 @@ Serialization::RenderSettings Serialization::TransportCatalogProtoMapper::Map(co
 
 Visualization::RenderSettings Serialization::TransportCatalogProtoMapper::Map(const Serialization::RenderSettings& pbSettings)
 {
+    REGISTER_CURR_FUNC();
     Visualization::RenderSettings settings;
     settings.maxMapWidth = pbSettings.max_map_width();
     settings.maxMapHeight = pbSettings.max_map_height();
@@ -240,6 +256,7 @@ Visualization::RenderSettings Serialization::TransportCatalogProtoMapper::Map(co
 
 Serialization::SvgPoint Serialization::TransportCatalogProtoMapper::Map(const Svg::Point& point)
 {
+    REGISTER_CURR_FUNC();
     Serialization::SvgPoint pbPoint;
     pbPoint.set_x(point.x);
     pbPoint.set_y(point.y);
@@ -248,6 +265,7 @@ Serialization::SvgPoint Serialization::TransportCatalogProtoMapper::Map(const Sv
 
 Svg::Point Serialization::TransportCatalogProtoMapper::Map(const Serialization::SvgPoint& pbPoint)
 {
+    REGISTER_CURR_FUNC();
     return Svg::Point{
         .x = pbPoint.x(),
         .y = pbPoint.y()
@@ -256,6 +274,7 @@ Svg::Point Serialization::TransportCatalogProtoMapper::Map(const Serialization::
 
 Serialization::SvgColor Serialization::TransportCatalogProtoMapper::Map(const Svg::Color& color)
 {
+    REGISTER_CURR_FUNC();
     struct ColorMapper
     {
         Serialization::SvgColor pbColor;
@@ -288,6 +307,7 @@ Serialization::SvgColor Serialization::TransportCatalogProtoMapper::Map(const Sv
 
 Svg::Color Serialization::TransportCatalogProtoMapper::Map(const Serialization::SvgColor& pbColor)
 {
+    REGISTER_CURR_FUNC();
     switch (pbColor.color_case())
     {
     case SvgColor::ColorCase::kColorName:
@@ -302,6 +322,7 @@ Svg::Color Serialization::TransportCatalogProtoMapper::Map(const Serialization::
 
 Serialization::Rgb Serialization::TransportCatalogProtoMapper::Map(const Svg::Rgb& rgb)
 {
+    REGISTER_CURR_FUNC();
     Serialization::Rgb pbRgb;
     pbRgb.set_red(rgb.red);
     pbRgb.set_green(rgb.green);
@@ -320,6 +341,7 @@ Svg::Rgb Serialization::TransportCatalogProtoMapper::Map(const Serialization::Rg
 
 Serialization::Rgba Serialization::TransportCatalogProtoMapper::Map(const Svg::Rgba& rgba)
 {
+    REGISTER_CURR_FUNC();
     Serialization::Rgba pbRgba;
     pbRgba.set_red(rgba.red);
     pbRgba.set_green(rgba.green);
@@ -330,6 +352,7 @@ Serialization::Rgba Serialization::TransportCatalogProtoMapper::Map(const Svg::R
 
 Svg::Rgba Serialization::TransportCatalogProtoMapper::Map(const Serialization::Rgba& pbRgba)
 {
+    REGISTER_CURR_FUNC();
     return Svg::Rgba{
         .red = static_cast<uint8_t>(pbRgba.red()),
         .green = static_cast<uint8_t>(pbRgba.green()),

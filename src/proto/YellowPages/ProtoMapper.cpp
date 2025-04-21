@@ -9,10 +9,13 @@
 #include "YellowPages/Company.h"
 #include "YellowPages/Rubric.h"
 #include "Sphere.h"
+#include "ProgramState.h"
 
+#include <google/protobuf/util/json_util.h>
 
 YellowPages::Database YellowPages::ProtoMapper::Map(const BLL::YellowPagesDatabase &db)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::Database pbDatabase;
     for (const auto &company : db.GetCompanies())
     {
@@ -27,6 +30,7 @@ YellowPages::Database YellowPages::ProtoMapper::Map(const BLL::YellowPagesDataba
 
 YellowPages::BLL::YellowPagesDatabase YellowPages::ProtoMapper::Map(const Database &pbDb)
 {
+    REGISTER_CURR_FUNC();
     std::vector<YellowPages::BLL::Company> companies;
     companies.reserve(pbDb.companies_size());
     for(const auto& company : pbDb.companies())
@@ -44,6 +48,7 @@ YellowPages::BLL::YellowPagesDatabase YellowPages::ProtoMapper::Map(const Databa
 
 YellowPages::Rubric YellowPages::ProtoMapper::Map(const BLL::Rubric &rubric)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::Rubric pbRubric;
     pbRubric.set_name(rubric.name);
     for (const auto &w : rubric.keywords)
@@ -67,6 +72,7 @@ YellowPages::BLL::Rubric YellowPages::ProtoMapper::Map(const Rubric &pbRubric)
 
 YellowPages::Company YellowPages::ProtoMapper::Map(const BLL::Company &company)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::Company pbCompany;
     *pbCompany.mutable_address() = Map(company.address);
     for (const auto &name : company.names)
@@ -95,6 +101,7 @@ YellowPages::Company YellowPages::ProtoMapper::Map(const BLL::Company &company)
 
 YellowPages::BLL::Company YellowPages::ProtoMapper::Map(const Company &pbCompany)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::Company company;
     company.address = Map(pbCompany.address());
     company.names.reserve(pbCompany.names_size());
@@ -128,6 +135,7 @@ YellowPages::BLL::Company YellowPages::ProtoMapper::Map(const Company &pbCompany
 
 YellowPages::Address YellowPages::ProtoMapper::Map(const BLL::Address &address)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::Address pbAddress;
     pbAddress.set_formatted(address.formatted);
     for (const auto &component : address.components)
@@ -141,6 +149,7 @@ YellowPages::Address YellowPages::ProtoMapper::Map(const BLL::Address &address)
 
 YellowPages::BLL::Address YellowPages::ProtoMapper::Map(const Address &pbAddress)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::Address address;
     address.formatted = pbAddress.formatted();
     address.components.reserve(pbAddress.components_size());
@@ -155,6 +164,7 @@ YellowPages::BLL::Address YellowPages::ProtoMapper::Map(const Address &pbAddress
 
 YellowPages::Name YellowPages::ProtoMapper::Map(const BLL::Name &name)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::Name pbName;
     pbName.set_value(name.value);
     pbName.set_type(static_cast<Name_Type>(name.type));
@@ -163,6 +173,7 @@ YellowPages::Name YellowPages::ProtoMapper::Map(const BLL::Name &name)
 
 YellowPages::BLL::Name YellowPages::ProtoMapper::Map(const Name &pbName)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::Name name;
     name.value = pbName.value();
     name.type = static_cast<YellowPages::BLL::Name::Type>(pbName.type());
@@ -171,6 +182,7 @@ YellowPages::BLL::Name YellowPages::ProtoMapper::Map(const Name &pbName)
 
 YellowPages::Phone YellowPages::ProtoMapper::Map(const BLL::Phone &phone)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::Phone pbPhone;
     pbPhone.set_formatted(phone.formatted);
     pbPhone.set_type(static_cast<Phone_Type>(phone.type));
@@ -197,6 +209,7 @@ YellowPages::BLL::Phone YellowPages::ProtoMapper::Map(const Phone &pbPhone)
 
 YellowPages::Url YellowPages::ProtoMapper::Map(const BLL::Url &url)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::Url pbUrl;
     pbUrl.set_value(url.value);
     return pbUrl;
@@ -204,6 +217,7 @@ YellowPages::Url YellowPages::ProtoMapper::Map(const BLL::Url &url)
 
 YellowPages::BLL::Url YellowPages::ProtoMapper::Map(const Url &pbUrl)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::Url url;
     url.value = pbUrl.value();
     return url;
@@ -211,6 +225,7 @@ YellowPages::BLL::Url YellowPages::ProtoMapper::Map(const Url &pbUrl)
 
 YellowPages::WorkingTime YellowPages::ProtoMapper::Map(const BLL::WorkingTime &workingTime)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::WorkingTime pbWorkingTime;
     pbWorkingTime.set_formatted(workingTime.formatted);
     for (const auto &interval : workingTime.intervals)
@@ -222,6 +237,7 @@ YellowPages::WorkingTime YellowPages::ProtoMapper::Map(const BLL::WorkingTime &w
 
 YellowPages::BLL::WorkingTime YellowPages::ProtoMapper::Map(const WorkingTime &pbWorkingTime)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::WorkingTime workingTime;
     workingTime.formatted = pbWorkingTime.formatted();
     workingTime.intervals.reserve(pbWorkingTime.intervals_size());
@@ -234,6 +250,7 @@ YellowPages::BLL::WorkingTime YellowPages::ProtoMapper::Map(const WorkingTime &p
 
 YellowPages::NearbyStop YellowPages::ProtoMapper::Map(const BLL::NearbyStop &nearbyStop)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::NearbyStop pbNearbyStop;
     pbNearbyStop.set_name(nearbyStop.name);
     pbNearbyStop.set_meters(nearbyStop.meters);
@@ -242,6 +259,7 @@ YellowPages::NearbyStop YellowPages::ProtoMapper::Map(const BLL::NearbyStop &nea
 
 YellowPages::BLL::NearbyStop YellowPages::ProtoMapper::Map(const NearbyStop &pbNearbyStop)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::NearbyStop nearbyStop;
     nearbyStop.name = pbNearbyStop.name();
     nearbyStop.meters = pbNearbyStop.meters();
@@ -250,6 +268,7 @@ YellowPages::BLL::NearbyStop YellowPages::ProtoMapper::Map(const NearbyStop &pbN
 
 YellowPages::AddressComponent YellowPages::ProtoMapper::Map(const BLL::AddressComponent &addressComponent)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::AddressComponent pbAddressComponent;
     pbAddressComponent.set_value(addressComponent.value);
     return pbAddressComponent;
@@ -257,6 +276,7 @@ YellowPages::AddressComponent YellowPages::ProtoMapper::Map(const BLL::AddressCo
 
 YellowPages::BLL::AddressComponent YellowPages::ProtoMapper::Map(const AddressComponent &pbAddressComponent)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::AddressComponent addressComponent;
     addressComponent.value = pbAddressComponent.value();
     return addressComponent;
@@ -264,6 +284,7 @@ YellowPages::BLL::AddressComponent YellowPages::ProtoMapper::Map(const AddressCo
 
 SphereProto::Coords YellowPages::ProtoMapper::Map(const Sphere::Point &point)
 {
+    REGISTER_CURR_FUNC();
     SphereProto::Coords pbCoords;
     pbCoords.set_lat(point.latitude);
     pbCoords.set_lon(point.longitude);
@@ -272,6 +293,7 @@ SphereProto::Coords YellowPages::ProtoMapper::Map(const Sphere::Point &point)
 
 Sphere::Point YellowPages::ProtoMapper::Map(const SphereProto::Coords &pbCoords)
 {
+    REGISTER_CURR_FUNC();
     Sphere::Point point;
     point.latitude = pbCoords.lat();
     point.longitude = pbCoords.lon();
@@ -280,6 +302,7 @@ Sphere::Point YellowPages::ProtoMapper::Map(const SphereProto::Coords &pbCoords)
 
 YellowPages::WorkingTimeInterval YellowPages::ProtoMapper::Map(const BLL::WorkingTimeInterval &workingTimeInterval)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::WorkingTimeInterval pbWorkingTimeInterval;
     pbWorkingTimeInterval.set_day(static_cast<WorkingTimeInterval_Day>(workingTimeInterval.day));
     pbWorkingTimeInterval.set_minutes_from(workingTimeInterval.minutesFrom);
@@ -289,6 +312,7 @@ YellowPages::WorkingTimeInterval YellowPages::ProtoMapper::Map(const BLL::Workin
 
 YellowPages::BLL::WorkingTimeInterval YellowPages::ProtoMapper::Map(const WorkingTimeInterval &pbWorkingTimeInterval)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::WorkingTimeInterval workingTimeInterval;
     workingTimeInterval.day = static_cast<YellowPages::BLL::WorkingTimeInterval::Day>(pbWorkingTimeInterval.day());
     workingTimeInterval.minutesFrom = pbWorkingTimeInterval.minutes_from();

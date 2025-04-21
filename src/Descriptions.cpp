@@ -1,10 +1,12 @@
 #include "Descriptions.h"
+#include "ProgramState.h"
 
 using namespace std;
 
 namespace Descriptions {
 
 Stop Stop::ParseFrom(const Json::Dict& attrs) {
+    REGISTER_CURR_FUNC();
     Stop stop = {
         .name = attrs.at("name").AsString(),
         .position = {
@@ -21,6 +23,7 @@ Stop Stop::ParseFrom(const Json::Dict& attrs) {
 }
 
 vector<string> ParseStops(const vector<Json::Node>& stop_nodes, bool is_roundtrip) {
+    REGISTER_CURR_FUNC();
     vector<string> stops;
     stops.reserve(stop_nodes.size());
     for (const Json::Node& stop_node : stop_nodes) {
@@ -37,6 +40,7 @@ vector<string> ParseStops(const vector<Json::Node>& stop_nodes, bool is_roundtri
 }
 
 int ComputeStopsDistance(const Stop& lhs, const Stop& rhs) {
+    REGISTER_CURR_FUNC();
     if (auto it = lhs.distances.find(rhs.name); it != lhs.distances.end()) {
         return it->second;
     } else {
@@ -46,6 +50,7 @@ int ComputeStopsDistance(const Stop& lhs, const Stop& rhs) {
 
 Bus::Terminals Bus::GetTerminals() const
 {
+    REGISTER_CURR_FUNC();
     if(stops.empty())
         return {};
     if(isRoundtrip)
@@ -55,6 +60,7 @@ Bus::Terminals Bus::GetTerminals() const
 }
 
 Bus Bus::ParseFrom(const Json::Dict& attrs) {
+    REGISTER_CURR_FUNC();
     return Bus{
         .name = attrs.at("name").AsString(),
         .stops = ParseStops(attrs.at("stops").AsArray(), attrs.at("is_roundtrip").AsBool()),
@@ -63,6 +69,7 @@ Bus Bus::ParseFrom(const Json::Dict& attrs) {
 }
 
 InputQueries ReadDescriptions(const vector<Json::Node>& nodes) {
+    REGISTER_CURR_FUNC();
     InputQueries result;
     for (const Json::Node& node : nodes) {
         const auto& node_dict = node.AsMap();

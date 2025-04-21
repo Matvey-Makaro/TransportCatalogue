@@ -3,11 +3,13 @@
 #include <cctype>
 #include <cmath>
 #include "Json.h"
+#include "ProgramState.h"
 
 using namespace std;
 
 string_view Strip(string_view line)
 {
+    REGISTER_CURR_FUNC();
     while (!line.empty() && isspace(line.front()))
     {
         line.remove_prefix(1);
@@ -20,11 +22,13 @@ string_view Strip(string_view line)
 }
 bool IsEqualAbs(double lhs, double rhs, double eps)
 {
+    REGISTER_CURR_FUNC();
     return std::fabs(lhs - rhs) < eps;
 }
 
 bool IsEqualRel(double lhs, double rhs, double eps)
 {
+    REGISTER_CURR_FUNC();
     double diff = fabs(lhs - rhs);
     lhs = fabs(lhs);
     rhs = fabs(rhs);
@@ -34,6 +38,7 @@ bool IsEqualRel(double lhs, double rhs, double eps)
 
 std::string EscapeSpecialCharacters(const std::string &input)
 {
+    REGISTER_CURR_FUNC();
 #ifndef NoEscapeNeeded
     static std::unordered_map<char, std::string> escape_map = {
         {'\n', "\\n"},
@@ -62,6 +67,7 @@ std::string EscapeSpecialCharacters(const std::string &input)
 
 const Json::Node* GetNodeByName(const Json::Dict &dict, const std::string &name)
 {
+    REGISTER_CURR_FUNC();
     auto it = dict.find(name);
     if (it == cend(dict))
     {
@@ -72,5 +78,6 @@ const Json::Node* GetNodeByName(const Json::Dict &dict, const std::string &name)
 
 double ConvertToMetersPerMin(double velocityKmH)
 {
+    REGISTER_CURR_FUNC();
     return velocityKmH * 1000.0 / 60.0;
 }

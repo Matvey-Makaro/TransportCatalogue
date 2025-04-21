@@ -3,6 +3,7 @@
 #include "YellowPagesDatabase.h"
 #include "Utils.h"
 #include "Json.h"
+#include "ProgramState.h"
 
 using namespace YellowPages::BLL;
 
@@ -11,15 +12,18 @@ YellowPages::BLL::YellowPagesDatabase::YellowPagesDatabase(std::vector<Company> 
     _companies(std::move(companies)),
     _rubrics(std::move(rubrics))
 {
+    REGISTER_CURR_FUNC();
 }
 
 const std::vector<Company>& YellowPages::BLL::YellowPagesDatabase::GetCompanies() const
 {
+    REGISTER_CURR_FUNC();
     return _companies;
 }
 
 const std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::GetCompaniesPtr() const
 {
+    REGISTER_CURR_FUNC();
     std::vector<const Company*> companiesPtr(_companies.size(), nullptr);
     for (size_t i = 0; i < _companies.size(); i++)
     {
@@ -30,12 +34,14 @@ const std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::GetComp
 
 const std::unordered_map<Rubric::IdType, Rubric>& YellowPages::BLL::YellowPagesDatabase::GetRubrics() const
 {
+    REGISTER_CURR_FUNC();
     return _rubrics;
 }
 
 std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::FindCompanies(
     const CompanyRestrictions& companyRestrictions) const
 {
+    REGISTER_CURR_FUNC();
     auto foundCompanies = GetCompaniesPtr();
     FilterByNames(foundCompanies, companyRestrictions);
     FilterByUrls(foundCompanies, companyRestrictions);
@@ -48,6 +54,7 @@ std::vector<const Company*> YellowPages::BLL::YellowPagesDatabase::FindCompanies
 void YellowPages::BLL::YellowPagesDatabase::FilterByNames(std::vector<const Company*>& foundCompanies,
     const CompanyRestrictions& companyRestrictions) const
 {
+    REGISTER_CURR_FUNC();
     if (companyRestrictions.names.empty())
     {
         return;
@@ -70,6 +77,7 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByNames(std::vector<const Comp
 void YellowPages::BLL::YellowPagesDatabase::FilterByUrls(std::vector<const Company*>& foundCompanies,
     const CompanyRestrictions& companyRestrictions) const
 {
+    REGISTER_CURR_FUNC();
     if (companyRestrictions.urls.empty())
     {
         return;
@@ -92,6 +100,7 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByUrls(std::vector<const Compa
 void YellowPages::BLL::YellowPagesDatabase::FilterByRubrics(std::vector<const Company*>& foundCompanies,
     const CompanyRestrictions& companyRestrictions) const
 {
+    REGISTER_CURR_FUNC();
     if (companyRestrictions.rubrics.empty())
     {
         return;
@@ -125,6 +134,7 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByRubrics(std::vector<const Co
 void YellowPages::BLL::YellowPagesDatabase::FilterByPhoneTemplates(std::vector<const Company*>& foundCompanies,
     const CompanyRestrictions& companyRestrictions) const
 {
+    REGISTER_CURR_FUNC();
     if (companyRestrictions.phoneTemplates.empty())
     {
         return;
@@ -150,6 +160,7 @@ void YellowPages::BLL::YellowPagesDatabase::FilterByPhoneTemplates(std::vector<c
 bool YellowPages::BLL::YellowPagesDatabase::IsPhoneMatch(const Phone& phone,
     const PhoneTemplate& phoneTemplate) const
 {
+    REGISTER_CURR_FUNC();
     if (phoneTemplate.type.has_value() && phone.type != *phoneTemplate.type)
     {
         return false;
@@ -172,6 +183,7 @@ bool YellowPages::BLL::YellowPagesDatabase::IsPhoneMatch(const Phone& phone,
 
 PhoneTemplate YellowPages::BLL::PhoneTemplate::FromJson(const Json::Dict& attrs)
 {
+    REGISTER_CURR_FUNC();
     using namespace YellowPages::BLL;
     PhoneTemplate phoneTemplate;
     const auto* typeNode = GetNodeByName(attrs, "type");
@@ -204,6 +216,7 @@ PhoneTemplate YellowPages::BLL::PhoneTemplate::FromJson(const Json::Dict& attrs)
 
 CompanyRestrictions YellowPages::BLL::CompanyRestrictions::FromJson(const Json::Dict& attrs)
 {
+    REGISTER_CURR_FUNC();
     YellowPages::BLL::CompanyRestrictions restrictions;
     const auto* namesNode = GetNodeByName(attrs, "names");
     if (namesNode != nullptr)
@@ -242,6 +255,7 @@ CompanyRestrictions YellowPages::BLL::CompanyRestrictions::FromJson(const Json::
 
 const Company* YellowPages::BLL::YellowPagesDatabase::GetCompanyByMainName(std::string_view mainName) const
 {
+    REGISTER_CURR_FUNC();
     auto it = std::find_if(begin(_companies), end(_companies), [mainName](const Company& company)
         {
             return company.GetMainName().value == mainName;
@@ -255,6 +269,7 @@ const Company* YellowPages::BLL::YellowPagesDatabase::GetCompanyByMainName(std::
 
 const Rubric* YellowPages::BLL::YellowPagesDatabase::GetRubricById(Rubric::IdType id) const
 {
+    REGISTER_CURR_FUNC();
     auto it = _rubrics.find(id);
     if (it == _rubrics.end())
     {

@@ -7,8 +7,11 @@
 #include <csignal>
 
 #include "Program.h"
+#include "ProgramState.h"
 
 using namespace std;
+
+static const char* mode = nullptr;
 
 void print_stacktrace() {
   void* buffer[100];
@@ -24,21 +27,25 @@ void print_stacktrace() {
 }
 
 void crash_handler(int sig) {
-  fprintf(stderr, "Error: signal %d\n", sig);
-  print_stacktrace();
+  std::cerr << "Mode: " << mode << std::endl;
+  std::cerr << "Curr func: " << ProgramState::GetCurrFunc() << std::endl;
+  // fprintf(stderr, "Error: signal %d\n", sig);
+  // print_stacktrace();
   signal(sig, SIG_DFL);
   raise(sig);
 }
 
 int main(int argc, const char* argv[])
 {
-  signal(SIGSEGV, crash_handler);  // Segfault
-  signal(SIGABRT, crash_handler);  // Assert/abort
-
   if (argc != 2) {
     cerr << "Usage: transport_catalog_part_o [make_base|process_requests]\n";
     return 5;
   }
+
+  mode = argv[1];
+
+  signal(SIGSEGV, crash_handler);  // Segfault
+  signal(SIGABRT, crash_handler);  // Assert/abort
 
   try
   {

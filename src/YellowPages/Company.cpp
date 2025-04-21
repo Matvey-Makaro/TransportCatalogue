@@ -3,10 +3,11 @@
 #include <algorithm>
 #include "Company.h"
 #include "Utils.h"
-
+#include "ProgramState.h"
 
 YellowPages::BLL::Name::Type YellowPages::BLL::Name::NameToType(std::string_view name)
 {
+    REGISTER_CURR_FUNC();
     using namespace YellowPages::BLL;
     if (name == "MAIN")
     {
@@ -30,6 +31,7 @@ YellowPages::BLL::Name::Type YellowPages::BLL::Name::NameToType(std::string_view
 
 YellowPages::BLL::Phone::Type YellowPages::BLL::Phone::NameToType(std::string_view name)
 {
+    REGISTER_CURR_FUNC();
     using namespace YellowPages::BLL;
     if (name == "PHONE")
     {
@@ -49,6 +51,7 @@ YellowPages::BLL::Phone::Type YellowPages::BLL::Phone::NameToType(std::string_vi
 
 YellowPages::BLL::AddressComponent::Type YellowPages::BLL::AddressComponent::NameToType(std::string_view name)
 {
+    REGISTER_CURR_FUNC();
     using namespace YellowPages::BLL;
     if (name == "COUNTRY")
     {
@@ -80,6 +83,7 @@ YellowPages::BLL::AddressComponent::Type YellowPages::BLL::AddressComponent::Nam
 
 YellowPages::BLL::WorkingTimeInterval::Day YellowPages::BLL::WorkingTimeInterval::NameToDay(std::string_view name)
 {
+    REGISTER_CURR_FUNC();
     using namespace YellowPages::BLL;
     if (name == "EVERYDAY")
     {
@@ -123,11 +127,13 @@ YellowPages::BLL::WorkingTimeInterval::Day YellowPages::BLL::WorkingTimeInterval
 
 bool YellowPages::BLL::operator==(const AddressComponent &lhs, const AddressComponent &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.value == rhs.value && lhs.type == rhs.type;
 }
 
 bool YellowPages::BLL::operator==(const Address &lhs, const Address &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.formatted == rhs.formatted &&
            std::equal(cbegin(lhs.components), cend(lhs.components), cbegin(rhs.components), cend(rhs.components)) &&
            IsEqual(lhs.coords, rhs.coords) &&
@@ -136,12 +142,14 @@ bool YellowPages::BLL::operator==(const Address &lhs, const Address &rhs)
 
 bool YellowPages::BLL::operator==(const Name &lhs, const Name &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.value == rhs.value &&
            lhs.type == rhs.type;
 }
 
 bool YellowPages::BLL::operator==(const Phone &lhs, const Phone &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.formatted == rhs.formatted &&
            lhs.type == rhs.type &&
            lhs.countryCode == rhs.countryCode &&
@@ -153,11 +161,13 @@ bool YellowPages::BLL::operator==(const Phone &lhs, const Phone &rhs)
 
 bool YellowPages::BLL::operator==(const Url &lhs, const Url &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.value == rhs.value;
 }
 
 bool YellowPages::BLL::operator==(const WorkingTimeInterval &lhs, const WorkingTimeInterval &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.day == rhs.day &&
            lhs.minutesFrom == rhs.minutesFrom &&
            lhs.minutesTo == rhs.minutesTo;
@@ -165,18 +175,21 @@ bool YellowPages::BLL::operator==(const WorkingTimeInterval &lhs, const WorkingT
 
 bool YellowPages::BLL::operator==(const WorkingTime &lhs, const WorkingTime &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.formatted == rhs.formatted &&
            std::equal(cbegin(lhs.intervals), cend(lhs.intervals), cbegin(rhs.intervals), cend(rhs.intervals));
 }
 
 bool YellowPages::BLL::operator==(const NearbyStop &lhs, const NearbyStop &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.name == rhs.name && 
         lhs.meters == rhs.meters;
 }
 
 bool YellowPages::BLL::operator==(const Company &lhs, const Company &rhs)
 {
+    REGISTER_CURR_FUNC();
     return lhs.address == rhs.address &&
     std::equal(cbegin(lhs.names), cend(lhs.names), cbegin(rhs.names), cend(rhs.names)) &&
     std::equal(cbegin(lhs.phones), cend(lhs.phones), cbegin(rhs.phones), cend(rhs.phones)) &&
@@ -188,11 +201,16 @@ bool YellowPages::BLL::operator==(const Company &lhs, const Company &rhs)
 
 const YellowPages::BLL::Name& YellowPages::BLL::Company::GetMainName() const
 {
+    REGISTER_CURR_FUNC();
     using namespace YellowPages::BLL;
     auto it = std::find_if(cbegin(names), cend(names), [](const Name& name){
         return name.type == Name::Type::Main;
     });
     assert(it != cend(names));
+    if(it == cend(names))
+    {
+        std::cerr << __FILE__ << ":" << __LINE__ << " No main name found" << std::endl;
+    }
     return *it;
 }
 

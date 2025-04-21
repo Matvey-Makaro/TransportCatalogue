@@ -7,6 +7,7 @@
 #include "Svg/MapVisualizer.h"
 #include "YellowPages/Company.h"
 #include "Utils.h"
+#include "ProgramState.h"
 
 using namespace std;
 using namespace Router;
@@ -16,16 +17,18 @@ namespace Requests
   Stop::Stop(std::string stopName, TransportDatabaseShp transportDb) : _name(std::move(stopName)),
     _transportDb(std::move(transportDb))
   {
+    REGISTER_CURR_FUNC();
   }
 
   Json::Dict Stop::Process() const
   {
+    REGISTER_CURR_FUNC();
     if (_transportDb == nullptr)
     {
       return {};
     }
-    const auto* stop = _transportDb->GetStop(_name);
     Json::Dict dict;
+    const auto* stop = _transportDb->GetStop(_name);
 #ifndef OnlyMap
     if (!stop)
     {
@@ -48,10 +51,12 @@ namespace Requests
   Bus::Bus(std::string busName, TransportDatabaseShp transportDb) : _name(std::move(busName)),
     _transportDb(std::move(transportDb))
   {
+    REGISTER_CURR_FUNC();
   }
 
   Json::Dict Bus::Process() const
   {
+    REGISTER_CURR_FUNC();
     if (_transportDb == nullptr)
     {
       return {};
@@ -80,6 +85,7 @@ namespace Requests
   {
     Json::Dict operator()(const TransportRouter::RouteInfo::RideBusItem& bus_item) const
     {
+      REGISTER_CURR_FUNC();
       return Json::Dict{
           {"type", Json::Node("RideBus"s)},
           {"bus", Json::Node(bus_item.bus_name)},
@@ -88,6 +94,7 @@ namespace Requests
     }
     Json::Dict operator()(const TransportRouter::RouteInfo::WaitBusItem& wait_item) const
     {
+      REGISTER_CURR_FUNC();
       return Json::Dict{
           {"type", Json::Node("WaitBus"s)},
           {"stop_name", Json::Node(wait_item.stop_name)},
@@ -96,6 +103,7 @@ namespace Requests
     }
     Json::Dict operator()(const TransportRouter::RouteInfo::WalkToCompany& walk_to_company) const
     {
+      REGISTER_CURR_FUNC();
       return Json::Dict{
           {"type", Json::Node("WalkToCompany"s)},
           {"time", Json::Node(walk_to_company.time)},
@@ -113,6 +121,7 @@ namespace Requests
 
   Json::Dict Route::Process() const
   {
+    REGISTER_CURR_FUNC();
     if (_context == nullptr || _context->transportDb == nullptr)
     {
       return {};
@@ -152,10 +161,12 @@ namespace Requests
 
   Map::Map(Svg::MapVisualizerShp mapVisualizer) : _mapVisualizer(std::move(mapVisualizer))
   {
+    REGISTER_CURR_FUNC();
   }
 
   Json::Dict Map::Process() const
   {
+    REGISTER_CURR_FUNC();
     Json::Dict dict;
 #ifndef OnlyMap
     std::stringstream ss;
@@ -167,6 +178,7 @@ namespace Requests
 
   Request Read(const ContextShp& context, const Json::Dict& attrs)
   {
+    REGISTER_CURR_FUNC();
     assert(context != nullptr);
 
     const string& type = attrs.at("type").AsString();
@@ -207,6 +219,7 @@ namespace Requests
   vector<Json::Node> ProcessAll(const ContextShp& context,
     const vector<Json::Node>& requests)
   {
+    REGISTER_CURR_FUNC();
     vector<Json::Node> responses;
     responses.reserve(requests.size());
     for (const Json::Node& requestNode : requests)
@@ -229,6 +242,7 @@ namespace Requests
 
   Json::Dict FindCompanies::Process() const
   {
+    REGISTER_CURR_FUNC();
     using namespace YellowPages::BLL;
     if (_yellowPagesDb == nullptr)
     {
@@ -259,6 +273,7 @@ namespace Requests
 
   Json::Dict RouteToCompany::Process() const
   {
+    REGISTER_CURR_FUNC();
     // TODO: Вынести общий код с Route?
     if (_context == nullptr || _context->transportDb == nullptr || _context->yellowPagesDb == nullptr)
     {

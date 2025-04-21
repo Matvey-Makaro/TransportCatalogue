@@ -12,16 +12,19 @@
 #include "proto/ProtoSerializer.h"
 #include "TransportRouter.h"
 #include "YellowPages/JsonParser.h"
+#include "ProgramState.h"
 
 using namespace std;
 
 Program::Program(std::string mode) :
     _mode(std::move(mode))
 {
+    REGISTER_CURR_FUNC();
 }
 
 void Program::Run(std::istream& in, std::ostream& out)
 {
+    REGISTER_CURR_FUNC();
     if (_mode == "make_base")
     {
         MakeBase(in);
@@ -34,6 +37,7 @@ void Program::Run(std::istream& in, std::ostream& out)
 
 void Program::MakeBase(std::istream& in)
 {
+    REGISTER_CURR_FUNC();
     const auto inputDoc = Json::Load(in);
     const auto& inputMap = inputDoc.GetRoot().AsMap();
 
@@ -51,6 +55,7 @@ void Program::MakeBase(std::istream& in)
 
 void Program::ProcessRequests(std::istream& in, std::ostream& out)
 {
+    REGISTER_CURR_FUNC();
     const auto inputDoc = Json::Load(in);
     const auto& inputMap = inputDoc.GetRoot().AsMap();
     auto serializationSettings = SerializationSettings::ParseFrom(inputMap.at("serialization_settings").AsMap());

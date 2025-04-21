@@ -1,7 +1,9 @@
 #include "TransportDatabase.h"
 #include "RenderSettings.h"
 #include "YellowPages/Company.h"
+#include "ProgramState.h"
 #include <sstream>
+
 
 using namespace std;
 using namespace Router;
@@ -17,6 +19,7 @@ TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
     _router(),
     _renderSettings(renderSettings)
 {
+    REGISTER_CURR_FUNC();
     Descriptions::StopsDict stops_dict;
     for (const auto& stop : _stopsDescr) {
         stops_dict[stop.name] = &stop;
@@ -42,15 +45,18 @@ TransportDatabase::TransportDatabase(Descriptions::InputQueries data,
 }
 
 const TransportDatabase::Stop* TransportDatabase::GetStop(const string& name) const {
+    REGISTER_CURR_FUNC();
     return GetValuePointer(_stops, name);
 }
 
 const TransportDatabase::Bus* TransportDatabase::GetBus(const string& name) const {
+    REGISTER_CURR_FUNC();
     return GetValuePointer(_buses, name);
 }
 
 std::vector<const Descriptions::Bus*> TransportDatabase::GetBusesDescriptions() const
 {
+    REGISTER_CURR_FUNC();
     std::vector<const Descriptions::Bus*> buses;
     buses.reserve(_busesDescr.size());
     for (const auto& bus : _busesDescr)
@@ -60,6 +66,7 @@ std::vector<const Descriptions::Bus*> TransportDatabase::GetBusesDescriptions() 
 
 std::vector<const Descriptions::Stop*> TransportDatabase::GetStopsDescriptions() const
 {
+    REGISTER_CURR_FUNC();
     std::vector<const Descriptions::Stop*> stops;
     stops.reserve(_stops.size());
     for (const auto& stop : _stopsDescr)
@@ -68,13 +75,14 @@ std::vector<const Descriptions::Stop*> TransportDatabase::GetStopsDescriptions()
 }
 
 optional<TransportRouter::RouteInfo> TransportDatabase::FindRoute(const string& stopFrom, const string& stopTo) const {
+    REGISTER_CURR_FUNC();
     return _router->FindRoute(stopFrom, stopTo);
 }
 
 int TransportDatabase::ComputeRoadRouteLength(
     const vector<string>& stops,
-    const Descriptions::StopsDict& stops_dict
-) {
+    const Descriptions::StopsDict& stops_dict) {
+    REGISTER_CURR_FUNC();
     int result = 0;
     for (size_t i = 1; i < stops.size(); ++i) {
         result += Descriptions::ComputeStopsDistance(*stops_dict.at(stops[i - 1]), *stops_dict.at(stops[i]));
@@ -84,8 +92,8 @@ int TransportDatabase::ComputeRoadRouteLength(
 
 double TransportDatabase::ComputeGeoRouteDistance(
     const vector<string>& stops,
-    const Descriptions::StopsDict& stops_dict
-) {
+    const Descriptions::StopsDict& stops_dict) {
+    REGISTER_CURR_FUNC();
     double result = 0;
     for (size_t i = 1; i < stops.size(); ++i) {
         result += Sphere::Distance(
@@ -97,24 +105,32 @@ double TransportDatabase::ComputeGeoRouteDistance(
 
 const Router::RoutingSettings& TransportDatabase::GetRoutingSettings() const
 {
+    REGISTER_CURR_FUNC();
     return _routingSettings;
 }
 
 const Visualization::RenderSettings& TransportDatabase::GetRenderSettings() const
 {
+    REGISTER_CURR_FUNC();
     return _renderSettings;
 }
 
 std::optional<Router::TransportRouter::RouteInfo> TransportDatabase::FindRouteToCompany(const std::string& stopFrom,
     const std::vector<const YellowPages::BLL::Company*>& companies) const
 {
+    REGISTER_CURR_FUNC();
     std::optional<Router::TransportRouter::RouteInfo> bestRoute;
     for(const auto* company : companies)
     {
+        if(company == nullptr)
+        {
+            std::cerr << __FILE__ << ":" << __LINE__ << " Company is nullptr" << std::endl;
+            continue;
+        }
         for(const auto& nearbyStop : company->nearbyStops)
         {
             double walkTime = nearbyStop.meters / ConvertToMetersPerMin(_routingSettings.pedestrianVelocity); // m / (m/min) = min  
-            if(auto route = FindRoute(stopFrom, nearbyStop.name))
+            if(auto route = FindRoute(stopFrom, nearbyStop.name); route.has_value())
             {
                 if(!bestRoute || bestRoute->total_time > route->total_time + walkTime)
                 {

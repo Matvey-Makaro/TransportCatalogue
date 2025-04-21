@@ -5,12 +5,14 @@
 #include <string_view>
 #include "JsonParser.h"
 #include "Utils.h"
+#include "ProgramState.h"
 
 using namespace YellowPages::BLL;
 
 
 YellowPagesDatabase YellowPages::BLL::JsonParser::ParseYellowPages(const Json::Dict &yellowPages)
 {
+    REGISTER_CURR_FUNC();
     auto companies = ParseCompanies(yellowPages);
     auto rubrics = ParseRubrics(yellowPages);
     return YellowPagesDatabase(companies, rubrics);
@@ -18,6 +20,7 @@ YellowPagesDatabase YellowPages::BLL::JsonParser::ParseYellowPages(const Json::D
 
 JsonParser::RubricMap JsonParser::ParseRubrics(const Json::Dict &yellowPages)
 {
+    REGISTER_CURR_FUNC();
     const auto &rubricsJson = yellowPages.at("rubrics").AsMap();
     RubricMap allRubrics;
     for (const auto &[idStr, rubric] : rubricsJson)
@@ -30,6 +33,7 @@ JsonParser::RubricMap JsonParser::ParseRubrics(const Json::Dict &yellowPages)
 
 std::vector<Company> YellowPages::BLL::JsonParser::ParseCompanies(const Json::Dict &yellowPages)
 {
+    REGISTER_CURR_FUNC();
     const auto &companiesJson = yellowPages.at("companies").AsArray();
     std::vector<Company> companies;
     companies.reserve(companiesJson.size());
@@ -42,6 +46,7 @@ std::vector<Company> YellowPages::BLL::JsonParser::ParseCompanies(const Json::Di
 
 Rubric YellowPages::BLL::JsonParser::ParseRubric(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     Rubric rubric;
     rubric.name = json.at("name").AsString();
     auto keywordsIt = json.find("keywords");
@@ -59,6 +64,7 @@ Rubric YellowPages::BLL::JsonParser::ParseRubric(const Json::Dict &json)
 
 Company YellowPages::BLL::JsonParser::ParseCompany(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     Company company;
     const auto* addressNode = GetNodeByName(json, "address");
     if(addressNode)
@@ -100,6 +106,7 @@ Company YellowPages::BLL::JsonParser::ParseCompany(const Json::Dict &json)
 
 Address YellowPages::BLL::JsonParser::ParseAddress(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     Address address;
     const auto* formattedNode = GetNodeByName(json, "formatted");
     if(formattedNode)
@@ -126,6 +133,7 @@ Address YellowPages::BLL::JsonParser::ParseAddress(const Json::Dict &json)
 
 std::vector<Name> YellowPages::BLL::JsonParser::ParseNames(const Json::Arr &json)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Name> names;
     names.reserve(json.size());
     for(const auto& node : json)
@@ -137,6 +145,7 @@ std::vector<Name> YellowPages::BLL::JsonParser::ParseNames(const Json::Arr &json
 
 std::vector<Phone> YellowPages::BLL::JsonParser::ParsePhones(const Json::Arr &json)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Phone> phones;
     phones.reserve(json.size());
     for(const auto& node : json)
@@ -148,6 +157,7 @@ std::vector<Phone> YellowPages::BLL::JsonParser::ParsePhones(const Json::Arr &js
 
 std::vector<Url> YellowPages::BLL::JsonParser::ParseUrls(const Json::Arr &json)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Url> urls;
     urls.reserve(json.size());
     for(const auto& node : json)
@@ -159,6 +169,7 @@ std::vector<Url> YellowPages::BLL::JsonParser::ParseUrls(const Json::Arr &json)
 
 std::vector<Rubric::IdType> YellowPages::BLL::JsonParser::ParseRubricIds(const Json::Arr &json)
 {
+    REGISTER_CURR_FUNC();
     std::vector<Rubric::IdType> rubricIds;
     rubricIds.reserve(json.size());
     for(const auto& idNode : json)
@@ -170,6 +181,7 @@ std::vector<Rubric::IdType> YellowPages::BLL::JsonParser::ParseRubricIds(const J
 
 WorkingTime YellowPages::BLL::JsonParser::ParseWorkingTime(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     WorkingTime workingTime;
     const auto* formattedNode = GetNodeByName(json, "formatted");
     if(formattedNode)
@@ -186,6 +198,7 @@ WorkingTime YellowPages::BLL::JsonParser::ParseWorkingTime(const Json::Dict &jso
 
 std::vector<NearbyStop> YellowPages::BLL::JsonParser::ParseNearbyStops(const Json::Arr &json)
 {
+    REGISTER_CURR_FUNC();
     std::vector<NearbyStop> nearbyStops;
     nearbyStops.reserve(json.size());
     for(const auto& stopNode : json)
@@ -197,6 +210,7 @@ std::vector<NearbyStop> YellowPages::BLL::JsonParser::ParseNearbyStops(const Jso
 
 std::vector<AddressComponent> YellowPages::BLL::JsonParser::ParseAddressComponentVec(const Json::Arr &json)
 {
+    REGISTER_CURR_FUNC();
     std::vector<AddressComponent> components;
     components.reserve(json.size());
     for(const auto& componentJson : json)
@@ -208,6 +222,7 @@ std::vector<AddressComponent> YellowPages::BLL::JsonParser::ParseAddressComponen
 
 AddressComponent YellowPages::BLL::JsonParser::ParseAddressComponent(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     AddressComponent addressComponent;
     const auto* valueNode = GetNodeByName(json, "value");
     if(valueNode)
@@ -224,6 +239,7 @@ AddressComponent YellowPages::BLL::JsonParser::ParseAddressComponent(const Json:
 
 Name YellowPages::BLL::JsonParser::ParseName(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     Name name;
     name.type = Name::Main;
     const Json::Node *typeNode = GetNodeByName(json, "type");
@@ -241,6 +257,7 @@ Name YellowPages::BLL::JsonParser::ParseName(const Json::Dict &json)
 
 Phone YellowPages::BLL::JsonParser::ParsePhone(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     Phone phone;
     phone.type = Phone::PhoneNum;
     const auto *formattedNode = GetNodeByName(json, "formatted");
@@ -283,6 +300,7 @@ Phone YellowPages::BLL::JsonParser::ParsePhone(const Json::Dict &json)
 
 Url YellowPages::BLL::JsonParser::ParseUrl(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     const auto* valueNode = GetNodeByName(json, "value");
     if(valueNode)
     {
@@ -293,6 +311,7 @@ Url YellowPages::BLL::JsonParser::ParseUrl(const Json::Dict &json)
 
 std::vector<WorkingTimeInterval> YellowPages::BLL::JsonParser::ParseWorkingTimeIntervalVec(const Json::Arr &jsonArr)
 {
+    REGISTER_CURR_FUNC();
     std::vector<WorkingTimeInterval> intervals;
     intervals.reserve(jsonArr.size());
     for(const auto& intervalNode : jsonArr)
@@ -304,6 +323,7 @@ std::vector<WorkingTimeInterval> YellowPages::BLL::JsonParser::ParseWorkingTimeI
 
 WorkingTimeInterval YellowPages::BLL::JsonParser::ParseWorkingTimeInterval(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     WorkingTimeInterval interval;
     const auto* dayNode = GetNodeByName(json, "day");
     if(dayNode)
@@ -325,6 +345,7 @@ WorkingTimeInterval YellowPages::BLL::JsonParser::ParseWorkingTimeInterval(const
 
 NearbyStop YellowPages::BLL::JsonParser::ParseNearbyStop(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     NearbyStop nearbyStop;
     const auto* nameNode = GetNodeByName(json, "name");
     if(nameNode)
@@ -341,6 +362,7 @@ NearbyStop YellowPages::BLL::JsonParser::ParseNearbyStop(const Json::Dict &json)
 
 Sphere::Point YellowPages::BLL::JsonParser::ParseCoords(const Json::Dict &json)
 {
+    REGISTER_CURR_FUNC();
     auto latStr = json.at("lat").AsString();
     auto lonStr = json.at("lon").AsString();
     return Sphere::Point {

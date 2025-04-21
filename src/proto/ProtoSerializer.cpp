@@ -6,6 +6,7 @@
 #include "TransportCatalog/TransportCatalogProtoMapper.h"
 #include "YellowPages/ProtoMapper.h"
 #include "YellowPages/YellowPagesDatabase.h"
+#include "ProgramState.h"
 
 using namespace Serialization;
 
@@ -13,6 +14,7 @@ void Serialization::ProtoSerializer::Serialize(const SerializationSettings &sett
                                                const TransportDatabase &transportDb,
                                                const YellowPages::BLL::YellowPagesDatabase &yellowPagesDb)
 {
+    REGISTER_CURR_FUNC();
     std::ofstream out(settings.file, std::ios::out | std::ios::binary);
     auto transportCatalog = TransportCatalogProtoMapper::Map(transportDb);
     transportCatalog.mutable_yellow_pages_database()->CopyFrom(YellowPages::ProtoMapper::Map(yellowPagesDb));
@@ -26,6 +28,7 @@ void Serialization::ProtoSerializer::Serialize(const SerializationSettings &sett
 std::pair<TransportDatabaseUnp, YellowPages::BLL::YellowPagesDatabaseUnp> Serialization::ProtoSerializer::Deserialize(
     const SerializationSettings &settings)
 {
+    REGISTER_CURR_FUNC();
     std::ifstream in(settings.file, std::ios::in | std::ios::binary);
     TransportCatalog transportCatalog;
     {

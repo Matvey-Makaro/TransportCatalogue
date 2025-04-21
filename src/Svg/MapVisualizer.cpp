@@ -4,6 +4,7 @@
 #include "MapVisualizer.h"
 #include "Objects.h"
 #include "YellowPages/YellowPagesDatabase.h"
+#include "ProgramState.h"
 
 using namespace Svg;
 using namespace Router;
@@ -25,6 +26,7 @@ namespace
     template <typename T>
     std::map<std::string, T> Map(const std::vector<T>& vec)
     {
+        REGISTER_CURR_FUNC();
         std::map<std::string, T> result;
         for (const auto* obj : vec)
         {
@@ -48,6 +50,7 @@ MapVisualizer::MapVisualizer(
     _mapDoc(),
     _busNameToColor()
 {
+    REGISTER_CURR_FUNC();
     auto [stopsDTO, companiesDTO] = _stopsMapper->Map(stops, _yellowPagesDatabase->GetCompaniesPtr());
     _stops = std::move(stopsDTO);
     _companies = std::move(companiesDTO);
@@ -56,18 +59,23 @@ MapVisualizer::MapVisualizer(
 
 void MapVisualizer::Render(std::ostream& out) const
 {
+    REGISTER_CURR_FUNC();
     RenderWholeMapIfNeeded();
     _mapDoc.Render(out);
 }
 
 void Svg::MapVisualizer::RenderRoute(std::ostream& out, const TransportRouter::RouteInfo& routeInfo) const
 {
+    REGISTER_CURR_FUNC();
     RenderWholeMapIfNeeded();
     Document routeDoc = _mapDoc;
     RenderTranslucentRect(routeDoc);
     auto busRoute = MapRoute(routeInfo);
 
-    bool isRouteWithCompany = std::holds_alternative<TransportRouter::RouteInfo::WalkToCompany>(routeInfo.items.back());
+
+    bool isRouteWithCompany = routeInfo.items.size() > 0 ?
+        std::holds_alternative<TransportRouter::RouteInfo::WalkToCompany>(routeInfo.items.back()) :
+        false;
     bool isRouteWithBus = !busRoute.empty();
 
     using RenderBusRouteLayerFunc = void (MapVisualizer::*)(Document&, const Route&) const;
@@ -86,17 +94,13 @@ void Svg::MapVisualizer::RenderRoute(std::ostream& out, const TransportRouter::R
         {StopLabelsLayerName, &MapVisualizer::RenderFromStopName}
     };
 
-    // TODO: Тут могут быть слои, которые не отрисовываются для маршрутов без компаний
-    // TODO В случае, когда маршрут не содержит элементов RideBus и WaitBus, слой stop_labels должен содержать название одной остановки — той, от которой проложен маршрут.
     for (const auto& layer : _renderSettings.layers)
     {
         if (layer == StopLabelsLayerName && isRouteWithCompany && !isRouteWithBus)
         {
-
             auto renderFunc = renderCompanyRouteFuncs.at(layer);
             (this->*renderFunc)(routeDoc, routeInfo);
             continue;
-
         }
         if (isRouteWithBus)
         {
@@ -123,6 +127,7 @@ void Svg::MapVisualizer::RenderRoute(std::ostream& out, const TransportRouter::R
 
 void Svg::MapVisualizer::RenderWholeMapIfNeeded() const
 {
+    REGISTER_CURR_FUNC();
     if (!_mapDoc.Empty())
         return;
     for (const auto& layer : _renderSettings.layers)
@@ -134,6 +139,7 @@ void Svg::MapVisualizer::RenderWholeMapIfNeeded() const
 
 MapVisualizer::RenderFunc MapVisualizer::GetRenderFuncByLayerName(const std::string& layerName) const
 {
+    REGISTER_CURR_FUNC();
     static const std::unordered_map<std::string, RenderFunc> layerNameToRenderFunc = {
         {BusLinesLayerName, &MapVisualizer::RenderAllBusesLines},
         {BusLabelsLayerName, &MapVisualizer::RenderAllBusesNames},
@@ -150,6 +156,7 @@ MapVisualizer::RenderFunc MapVisualizer::GetRenderFuncByLayerName(const std::str
 
 void MapVisualizer::RenderAllBusesLines() const
 {
+    REGISTER_CURR_FUNC();
     for (auto it = cbegin(_buses); it != cend(_buses); it++)
     {
         const auto* bus = it->second;
@@ -159,6 +166,7 @@ void MapVisualizer::RenderAllBusesLines() const
 
 void MapVisualizer::RenderAllBusesNames() const
 {
+    REGISTER_CURR_FUNC();
     for (auto it = cbegin(_buses); it != cend(_buses); it++)
     {
         const auto* bus = it->second;
@@ -171,6 +179,7 @@ void MapVisualizer::RenderAllBusesNames() const
 
 void MapVisualizer::RenderAllStopPoints() const
 {
+    REGISTER_CURR_FUNC();
     for (const auto& [_, pos] : _stops)
     {
         RenderStopPoint(_mapDoc, pos);
@@ -179,6 +188,7 @@ void MapVisualizer::RenderAllStopPoints() const
 
 void MapVisualizer::RenderAllStopNames() const
 {
+    REGISTER_CURR_FUNC();
     static const Color textColor("black");
     for (const auto& [stopName, stopPoint] : _stops)
     {
@@ -188,6 +198,7 @@ void MapVisualizer::RenderAllStopNames() const
 
 MapVisualizer::Route Svg::MapVisualizer::MapRoute(const TransportRouter::RouteInfo& routeInfo) const
 {
+    REGISTER_CURR_FUNC();
     Route route;
     route.reserve(routeInfo.items.size() / 2);
     std::string_view firstStopName;
@@ -237,6 +248,7 @@ MapVisualizer::RouteItem Svg::MapVisualizer::MapRouteItem(const TransportRouter:
     std::string_view firstStopName,
     std::string_view lastStopName) const
 {
+    REGISTER_CURR_FUNC();
     const auto* bus = _buses.at(busItem->bus_name);
     auto firstStopIt = std::find(cbegin(bus->stops), cend(bus->stops), firstStopName);
     while (true)
@@ -258,6 +270,7 @@ MapVisualizer::RouteItem Svg::MapVisualizer::MapRouteItem(const TransportRouter:
 
 void Svg::MapVisualizer::RenderTranslucentRect(Document& doc) const
 {
+    REGISTER_CURR_FUNC();
     Svg::Rect rect;
     rect.SetLeftTop(Point{ .x = -_renderSettings.outerMargin, .y = -_renderSettings.outerMargin });
     rect.SetWidth(_renderSettings.maxMapWidth + 2 * _renderSettings.outerMargin);
@@ -268,6 +281,7 @@ void Svg::MapVisualizer::RenderTranslucentRect(Document& doc) const
 
 void Svg::MapVisualizer::RenderRouteBusesLines(Document& doc, const Route& route) const
 {
+    REGISTER_CURR_FUNC();
     for (const auto& routeItem : route)
     {
         RenderBusLine(doc, routeItem.bus, cbegin(routeItem.stopNames), cend(routeItem.stopNames));
@@ -276,6 +290,7 @@ void Svg::MapVisualizer::RenderRouteBusesLines(Document& doc, const Route& route
 
 void Svg::MapVisualizer::RenderRouteBusesNames(Document& doc, const Route& route) const
 {
+    REGISTER_CURR_FUNC();
     for (const auto& routeItem : route)
     {
         auto [firstStop, lastStop] = routeItem.bus->GetTerminals();
@@ -292,6 +307,7 @@ void Svg::MapVisualizer::RenderRouteBusesNames(Document& doc, const Route& route
 
 void Svg::MapVisualizer::RenderRouteStopPoints(Document& doc, const Route& route) const
 {
+    REGISTER_CURR_FUNC();
     for (const auto& routeItem : route)
     {
         for (const auto& stop : routeItem.stopNames)
@@ -303,6 +319,7 @@ void Svg::MapVisualizer::RenderRouteStopPoints(Document& doc, const Route& route
 
 void Svg::MapVisualizer::RenderRouteStopNames(Document& doc, const Route& route) const
 {
+    REGISTER_CURR_FUNC();
     if (route.empty())
         return;
     for (const auto& routeItem : route)
@@ -319,6 +336,7 @@ void Svg::MapVisualizer::RenderRouteStopNames(Document& doc, const Route& route)
 
 void Svg::MapVisualizer::RenderCompanyLines(Document& doc, const Router::TransportRouter::RouteInfo& routeInfo) const
 {
+    REGISTER_CURR_FUNC();
     const auto* walkToCompanyItem = GetWalkToCompany(routeInfo);
     if (walkToCompanyItem == nullptr)
     {
@@ -337,6 +355,7 @@ void Svg::MapVisualizer::RenderCompanyLines(Document& doc, const Router::Transpo
 
 void Svg::MapVisualizer::RenderCompanyPoints(Document& doc, const Router::TransportRouter::RouteInfo& routeInfo) const
 {
+    REGISTER_CURR_FUNC();
     const auto* walkToCompanyItem = GetWalkToCompany(routeInfo);
     if (walkToCompanyItem == nullptr)
     {
@@ -353,6 +372,7 @@ void Svg::MapVisualizer::RenderCompanyPoints(Document& doc, const Router::Transp
 
 void Svg::MapVisualizer::RenderCompanyLabels(Document& doc, const Router::TransportRouter::RouteInfo& routeInfo) const
 {
+    REGISTER_CURR_FUNC();
     const auto* walkToCompanyItem = GetWalkToCompany(routeInfo);
     if (walkToCompanyItem == nullptr)
     {
@@ -369,6 +389,7 @@ void Svg::MapVisualizer::RenderCompanyLabels(Document& doc, const Router::Transp
 
 void Svg::MapVisualizer::RenderFromStopName(Document& doc, const Router::TransportRouter::RouteInfo& routeInfo) const
 {
+    REGISTER_CURR_FUNC();
     const auto* walkToCompanyItem = GetWalkToCompany(routeInfo);
     if (walkToCompanyItem == nullptr)
     {
@@ -380,6 +401,7 @@ void Svg::MapVisualizer::RenderFromStopName(Document& doc, const Router::Transpo
 const Router::TransportRouter::RouteInfo::WalkToCompany* Svg::MapVisualizer::GetWalkToCompany(
     const Router::TransportRouter::RouteInfo& routeInfo)
 {
+    REGISTER_CURR_FUNC();
     if (routeInfo.items.empty())
     {
         return nullptr;
@@ -390,6 +412,7 @@ const Router::TransportRouter::RouteInfo::WalkToCompany* Svg::MapVisualizer::Get
 
 std::string Svg::MapVisualizer::CreateFullName(const YellowPages::BLL::Company& company) const
 {
+    REGISTER_CURR_FUNC();
     std::string fullName;
     if (!company.rubrics.empty())
     {
@@ -405,6 +428,7 @@ std::string Svg::MapVisualizer::CreateFullName(const YellowPages::BLL::Company& 
 
 std::string Svg::MapVisualizer::GetFinishStopName(const Router::TransportRouter::RouteInfo& routeInfo) const
 {
+    REGISTER_CURR_FUNC();
     if (routeInfo.items.empty())
     {
         return std::string();
@@ -419,23 +443,41 @@ std::string Svg::MapVisualizer::GetFinishStopName(const Router::TransportRouter:
             return std::holds_alternative<Router::TransportRouter::RouteInfo::WaitBusItem>(item);
         });
     assert(waitBusIt != crend(routeInfo.items));
+    if (waitBusIt == crend(routeInfo.items))
+    {
+        std::cerr << __FILE__ << ":" << __LINE__ << " No wait bus item found" << std::endl;
+    }
 
     auto rideBusIt = std::find_if(crbegin(routeInfo.items), crend(routeInfo.items), [](const auto& item)
         {
             return std::holds_alternative<Router::TransportRouter::RouteInfo::RideBusItem>(item);
         });
     assert(rideBusIt != crend(routeInfo.items));
+    if (rideBusIt == crend(routeInfo.items))
+    {
+        std::cerr << __FILE__ << ":" << __LINE__ << " No ride bus item found" << std::endl;
+    }
     const auto& waitBusItem = std::get<Router::TransportRouter::RouteInfo::WaitBusItem>(*waitBusIt);
     const auto& rideBusItem = std::get<Router::TransportRouter::RouteInfo::RideBusItem>(*rideBusIt);
-    const auto& bus = _buses.at(rideBusItem.bus_name);
+    const auto* bus = _buses.at(rideBusItem.bus_name);
+    if (bus == nullptr)
+    {
+        std::cerr << __FILE__ << ":" << __LINE__ << " Bus not found: " << rideBusItem.bus_name << std::endl;
+        assert(false);
+    }
     auto firstStopIt = std::find(cbegin(bus->stops), cend(bus->stops), waitBusItem.stop_name);
     auto lastStopIt = std::next(firstStopIt, rideBusItem.span_count);
     assert(lastStopIt != cend(bus->stops));
+    if (lastStopIt == cend(bus->stops))
+    {
+        std::cerr << __FILE__ << ":" << __LINE__ << " Last stop not found: " << rideBusItem.bus_name << std::endl;
+    }
     return *lastStopIt;
 }
 
 void MapVisualizer::RenderBusName(Document& doc, const std::string& busName, const std::string& stopName, const Color& busColor) const
 {
+    REGISTER_CURR_FUNC();
     auto stopIt = _stops.find(stopName);
     if (stopIt == cend(_stops))
         return;
@@ -469,6 +511,7 @@ void MapVisualizer::RenderBusName(Document& doc, const std::string& busName, con
 
 void Svg::MapVisualizer::RenderStopPoint(Document& doc, const Point& pos) const
 {
+    REGISTER_CURR_FUNC();
     static const Color defaultStopColor("white");
     Circle busCirle;
     busCirle.SetPrecision(Precision);
@@ -480,6 +523,7 @@ void Svg::MapVisualizer::RenderStopPoint(Document& doc, const Point& pos) const
 
 void Svg::MapVisualizer::RenderName(Document& doc, const std::string& name, const Point& point) const
 {
+    REGISTER_CURR_FUNC();
     static const Color textColor("black");
     Text substrate;
     substrate.SetPrecision(Precision);
@@ -508,6 +552,7 @@ void Svg::MapVisualizer::RenderName(Document& doc, const std::string& name, cons
 
 void Svg::MapVisualizer::CalculateBusColors()
 {
+    REGISTER_CURR_FUNC();
     if (_renderSettings.colorPalette.empty())
     {
         return;
@@ -522,7 +567,7 @@ void Svg::MapVisualizer::CalculateBusColors()
 
 const Color& MapVisualizer::GetBusColor(const Descriptions::Bus* bus) const
 {
-
+    REGISTER_CURR_FUNC();
     return _busNameToColor.at(bus->name);
 }
 

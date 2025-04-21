@@ -1,11 +1,13 @@
 #include "TransportRouter.h"
 #include "Utils.h"
+#include "ProgramState.h"
 
 using namespace std;
 using namespace Router;
 
 RoutingSettings RoutingSettings::FromJson(const Json::Dict& json)
 {
+  REGISTER_CURR_FUNC();
   return RoutingSettings{
     json.at("bus_wait_time").AsInt(),
     json.at("bus_velocity").AsDouble(),
@@ -18,6 +20,7 @@ TransportRouter::TransportRouter(const Descriptions::StopsDict& stops_dict,
   const RoutingSettings& routingSettings)
   : routing_settings_(routingSettings)
 {
+  REGISTER_CURR_FUNC();
   const size_t vertex_count = stops_dict.size() * 2;
   vertices_info_.resize(vertex_count);
   graph_ = BusGraph(vertex_count);
@@ -29,6 +32,7 @@ TransportRouter::TransportRouter(const Descriptions::StopsDict& stops_dict,
 }
 
 void TransportRouter::FillGraphWithStops(const Descriptions::StopsDict& stops_dict) {
+  REGISTER_CURR_FUNC();
   Graph::VertexId vertex_id = 0;
 
   for (const auto& [stop_name, _] : stops_dict) {
@@ -52,6 +56,7 @@ void TransportRouter::FillGraphWithStops(const Descriptions::StopsDict& stops_di
 
 void TransportRouter::FillGraphWithBuses(const Descriptions::StopsDict& stops_dict,
   const Descriptions::BusesDict& buses_dict) {
+  REGISTER_CURR_FUNC();
   for (const auto& [_, bus_item] : buses_dict) {
     const auto& bus = *bus_item;
     const size_t stop_count = bus.stops.size();
@@ -82,6 +87,7 @@ void TransportRouter::FillGraphWithBuses(const Descriptions::StopsDict& stops_di
 }
 
 optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& stopFrom, const string& stopTo) const {
+  REGISTER_CURR_FUNC();
   const Graph::VertexId vertex_from = stops_vertex_ids_.at(stopFrom).out;
   const Graph::VertexId vertex_to = stops_vertex_ids_.at(stopTo).out;
   const auto route = router_->BuildRoute(vertex_from, vertex_to);
@@ -120,6 +126,7 @@ optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& st
 
 bool Router::operator==(const TransportRouter::RouteInfo::RideBusItem& lhs, const TransportRouter::RouteInfo::RideBusItem& rhs)
 {
+  REGISTER_CURR_FUNC();
   return lhs.bus_name == rhs.bus_name &&
     IsEqualRel(lhs.time, rhs.time) &&
     lhs.span_count == rhs.span_count;
@@ -127,12 +134,14 @@ bool Router::operator==(const TransportRouter::RouteInfo::RideBusItem& lhs, cons
 
 bool Router::operator==(const TransportRouter::RouteInfo::WaitBusItem& lhs, const TransportRouter::RouteInfo::WaitBusItem& rhs)
 {
+  REGISTER_CURR_FUNC();
   return lhs.stop_name == rhs.stop_name &&
     IsEqualRel(lhs.time, rhs.time);
 }
 
 bool Router::operator==(const TransportRouter::RouteInfo::WalkToCompany& lhs, const TransportRouter::RouteInfo::WalkToCompany& rhs)
 {
+  REGISTER_CURR_FUNC();
   return IsEqualRel(lhs.time, rhs.time) &&
     lhs.stop_name == rhs.stop_name &&
     lhs.company_name == rhs.company_name;
@@ -140,6 +149,7 @@ bool Router::operator==(const TransportRouter::RouteInfo::WalkToCompany& lhs, co
 
 bool Router::operator==(const TransportRouter::RouteInfo::Item& lhs, const TransportRouter::RouteInfo::Item& rhs)
 {
+  REGISTER_CURR_FUNC();
   if (lhs.index() != rhs.index())
     return false;
 
@@ -151,6 +161,7 @@ bool Router::operator==(const TransportRouter::RouteInfo::Item& lhs, const Trans
 
 bool Router::operator==(const TransportRouter::RouteInfo& lhs, const TransportRouter::RouteInfo& rhs)
 {
+  REGISTER_CURR_FUNC();
   return IsEqualRel(lhs.total_time, rhs.total_time) &&
     std::equal(begin(lhs.items), end(lhs.items), begin(rhs.items), end(rhs.items));
 }
